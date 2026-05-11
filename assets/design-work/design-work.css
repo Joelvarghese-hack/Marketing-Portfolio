@@ -232,6 +232,16 @@ h1 {
   transition: opacity 0.3s ease;
   display: flex; align-items: center; justify-content: center;
   padding: 32px;
+  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+/* Gallery mode: the BACKDROP itself scrolls — no nested scroll container
+   means iOS Safari can always reach top + bottom smoothly */
+.lb-backdrop.scroll-mode {
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 16px;
 }
 .lb-backdrop.show { opacity: 1; pointer-events: auto; }
 .lb-frame {
@@ -267,23 +277,25 @@ h1 {
   width: 92vw; height: 88vh;
   max-width: 1100px;
 }
-/* Gallery mode: vertically stacked, scrollable pages of a multi-page document */
+/* Gallery mode: scrolling handled by .lb-backdrop.scroll-mode (above).
+   Frame becomes a natural-height container that holds the page stack. */
 .lb-frame.gallery-mode {
-  width: 92vw; height: 88vh;
-  max-width: 1100px;
+  width: 92vw;
+  max-width: 1000px;
+  height: auto;
+  max-height: none;
   background: #f5f0eb;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: visible;
+  margin: 0 auto;
+  /* Leave space for the close button (fixed at top-right of viewport) */
+  margin-top: calc(env(safe-area-inset-top, 0px) + 76px);
+  margin-bottom: 32px;
 }
 .lb-gallery {
   display: flex; flex-direction: column;
   align-items: center;
   gap: 12px;
-  padding: 12px;
-}
-/* On mobile, push first page below the close button so it isn't covered */
-@media (max-width: 640px) {
-  .lb-gallery { padding-top: 76px; padding-bottom: 24px; }
+  padding: 16px;
 }
 .lb-gallery img {
   width: 100%;
@@ -295,6 +307,13 @@ h1 {
   border-radius: 4px;
   background: #fff;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+@media (max-width: 640px) {
+  .lb-frame.gallery-mode {
+    width: 94vw;
+    margin-top: calc(env(safe-area-inset-top, 0px) + 72px);
+  }
+  .lb-gallery { padding: 10px; gap: 10px; }
 }
 .lb-frame iframe {
   width: 100%; height: 100%;

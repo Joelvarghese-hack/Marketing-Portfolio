@@ -38,6 +38,7 @@ function buildLightbox() {
 function openLightbox(src, type) {
   buildLightbox();
   lbFrame.classList.remove('pdf-mode', 'video-mode', 'gallery-mode');
+  lbBackdrop.classList.remove('scroll-mode');
   lbFrame.innerHTML = '';
   if (type === 'image') {
     var img = document.createElement('img');
@@ -57,9 +58,11 @@ function openLightbox(src, type) {
     vid.oncontextmenu = function(){ return false; };
     lbFrame.appendChild(vid);
   } else if (type === 'gallery') {
-    // Multi-page document shown as vertically stacked, scrollable images.
-    // Works on every device (iOS Safari can't render PDFs in iframes).
+    // Multi-page document shown as vertically stacked images.
+    // The BACKDROP scrolls (not a nested container) so iOS Safari can
+    // always reach the very top and the very bottom smoothly.
     lbFrame.classList.add('gallery-mode');
+    lbBackdrop.classList.add('scroll-mode');
     var urls = src.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
     var container = document.createElement('div');
     container.className = 'lb-gallery';
@@ -82,11 +85,10 @@ function openLightbox(src, type) {
   // Force reflow then add .show for transition
   void lbBackdrop.offsetWidth;
   lbBackdrop.classList.add('show');
-  // Always start gallery/pdf scroll at the very top
+  // Always start at the very top (gallery uses backdrop scroll, others use frame)
   requestAnimationFrame(function(){
+    lbBackdrop.scrollTop = 0;
     lbFrame.scrollTop = 0;
-    var inner = lbFrame.querySelector('.lb-gallery');
-    if (inner) inner.scrollTop = 0;
   });
 }
 
@@ -96,12 +98,12 @@ function closeLightbox() {
   document.body.style.overflow = '';
   setTimeout(function(){
     if (lbFrame) {
-      // Pause any video before clearing
       var v = lbFrame.querySelector('video');
       if (v) try { v.pause(); } catch (e) {}
       lbFrame.innerHTML = '';
-      lbFrame.classList.remove('pdf-mode');
+      lbFrame.classList.remove('pdf-mode', 'video-mode', 'gallery-mode');
     }
+    if (lbBackdrop) lbBackdrop.classList.remove('scroll-mode');
   }, 300);
 }
 
