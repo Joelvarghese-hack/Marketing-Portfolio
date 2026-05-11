@@ -1,0 +1,804 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Joel Varghese, Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700;800;900&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Pinyon+Script&family=Inter:wght@400;700;900&display=swap" rel="stylesheet" />
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: #fdf9f5; color: #1a1a1a; font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #f5f0eb; }
+    ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 3px; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: translateY(0); } }
+    .reveal { opacity: 0; transform: translateY(36px); transition: opacity 0.75s ease, transform 0.75s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .modal-box { background: #fff; border-radius: 20px; max-width: 720px; width: 100%; max-height: 80vh; overflow-y: auto; padding: 56px; }
+    .modal-box h2 { font-family: 'Work Sans', sans-serif; font-weight: 800; font-size: 32px; margin-bottom: 8px; }
+    .modal-box h3 { font-family: 'Work Sans', sans-serif; font-weight: 700; font-size: 18px; margin: 32px 0 10px; }
+    .modal-box p { font-family: 'Montserrat', sans-serif; font-size: 14px; line-height: 1.8; color: #444; margin-bottom: 12px; }
+    .modal-box a { color: #1a1a1a; }
+    .scroll-top-btn { position: fixed; bottom: 36px; right: 36px; z-index: 200; width: 48px; height: 48px; border-radius: 50%; background: #1a1a1a; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0,0,0,0.18); transition: opacity 0.3s ease, transform 0.2s ease; color: #fff; }
+    .scroll-top-btn:hover { transform: translateY(-3px); }
+    .scroll-top-btn.hidden { opacity: 0; pointer-events: none; }
+    .copyable { cursor: pointer; transition: color 0.2s; user-select: none; -webkit-user-select: none; }
+    .copy-toast { position: fixed; bottom: 90px; right: 36px; background: #1a1a1a; color: #fff; padding: 12px 22px; border-radius: 30px; font-family: 'Montserrat', sans-serif; font-size: 13px; z-index: 600; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+    .copy-toast.show { opacity: 1; }
+
+    /* Hamburger button — hidden by default (desktop & tablet) */
+    .hamburger-btn {
+      display: none;
+      width: 40px; height: 40px;
+      background: none; border: none; cursor: pointer;
+      padding: 0; position: relative;
+      flex-direction: column; justify-content: center; align-items: center; gap: 6px;
+    }
+    .hamburger-btn span {
+      display: block; width: 26px; height: 2.5px;
+      background: var(--hb-color, #1a1a1a); border-radius: 2px;
+      transition: transform 0.35s ease, opacity 0.25s ease, background 0.3s ease;
+      transform-origin: center;
+    }
+    .hamburger-btn.open span:nth-child(1) { transform: translateY(8.5px) rotate(45deg); }
+    .hamburger-btn.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger-btn.open span:nth-child(3) { transform: translateY(-8.5px) rotate(-45deg); }
+
+    /* Mobile menu drawer — hidden by default */
+    .mobile-menu {
+      position: fixed; top: 70px; left: 0; right: 0; bottom: 0;
+      background: rgba(26,26,26,0.98); backdrop-filter: blur(14px);
+      z-index: 99;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+      display: none;
+    }
+    .mobile-menu.open { opacity: 1; pointer-events: auto; }
+    .mobile-menu-inner {
+      display: flex; flex-direction: column;
+      padding: 48px 32px;
+      gap: 4px;
+    }
+    .mobile-menu-inner a {
+      font-family: 'Work Sans', sans-serif;
+      font-weight: 800; font-size: 32px;
+      letter-spacing: 1px; text-decoration: none;
+      color: #fff; text-transform: uppercase;
+      padding: 18px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      opacity: 0; transform: translateY(-12px);
+      transition: opacity 0.35s ease, transform 0.35s ease, color 0.2s ease;
+      transition-delay: calc(var(--i) * 60ms + 100ms);
+    }
+    .mobile-menu.open .mobile-menu-inner a {
+      opacity: 1; transform: translateY(0);
+    }
+    .mobile-menu-inner a:active { color: #c5b8a0; }
+    /* Tablet */
+    @media (max-width: 1024px) {
+      .skills-grid, .contact-grid { grid-template-columns: 1fr !important; gap: 56px !important; }
+      .about-grid { grid-template-columns: 1fr 1fr !important; gap: 48px !important; }
+      .tools-grid { grid-template-columns: repeat(3, 1fr) !important; }
+      .folders-grid { grid-template-columns: repeat(3, 1fr) !important; }
+      .project-inner { flex-direction: column !important; align-items: stretch !important; gap: 48px !important; }
+      .project-inner > div { max-width: 100% !important; }
+      .project-logo-box { height: 280px !important; }
+      nav, section, footer { padding-left: 32px !important; padding-right: 32px !important; }
+    }
+    /* Phone */
+    @media (max-width: 640px) {
+      .about-grid {
+        grid-template-columns: 1fr !important;
+        gap: 32px !important;
+      }
+      /* Reorder About section on phone: heading → text-block (which contains greeting/paragraphs/connect) → photo+socials */
+      .about-text-block { order: 1; }
+      .about-photo-block {
+        order: 2;
+        align-items: center !important;
+        min-height: auto !important;
+      }
+      /* Round photo on phone only */
+      .about-photo {
+        max-width: 240px !important;
+        width: 240px !important;
+        height: 240px !important;
+        aspect-ratio: 1 / 1 !important;
+        border-radius: 50% !important;
+      }
+      .about-photo img {
+        object-position: center 20% !important;
+      }
+      .tools-grid { grid-template-columns: repeat(2, 1fr) !important; }
+      .folders-grid { grid-template-columns: repeat(2, 1fr) !important; }
+      section, footer { padding-left: 20px !important; padding-right: 20px !important; }
+      .modal-box { padding: 32px 24px !important; }
+      /* Nav on phone: J V initials + hamburger menu */
+      nav { padding-left: 20px !important; padding-right: 16px !important; }
+      .nav-logo-full { display: none !important; }
+      .nav-logo-short { display: inline-block !important; }
+      .nav-links { display: none !important; }
+      .hamburger-btn { display: flex !important; }
+      .mobile-menu { display: block !important; }
+      .project-inner { padding: 56px 24px !important; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+
+/* ── Tweaks Panel ──────────────────────────────────────────── */
+function useTweaks(defaults) {
+  const [tweaks, setTweaksState] = React.useState(() => {
+    try {
+      const saved = localStorage.getItem('jv-portfolio-tweaks');
+      return saved ? { ...defaults, ...JSON.parse(saved) } : defaults;
+    } catch { return defaults; }
+  });
+  const setTweak = (key, value) => {
+    setTweaksState(prev => {
+      const next = { ...prev, [key]: value };
+      try { localStorage.setItem('jv-portfolio-tweaks', JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
+  return [tweaks, setTweak];
+}
+
+function TweaksPanel({ children }) {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <div style={{ position: 'fixed', bottom: 32, left: 32, zIndex: 400 }}>
+      <button onClick={() => setOpen(o => !o)} title="Tweaks"
+        style={{ width: 44, height: 44, borderRadius: '50%', background: '#1a1a1a', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.2)', transition: 'transform 0.2s' }}
+        onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.08)'}
+        onMouseLeave={e => e.currentTarget.style.transform = ''}
+      >⚙</button>
+      {open && (
+        <div style={{ position: 'absolute', bottom: 54, left: 0, background: '#fff', borderRadius: 16, padding: '20px 22px', boxShadow: '0 8px 40px rgba(0,0,0,0.15)', minWidth: 224, border: '1px solid #ede8e2' }}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TweakSection({ label }) {
+  return <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#999', marginBottom: 14, marginTop: 4 }}>{label}</p>;
+}
+
+function TweakToggle({ label, value, onChange }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+      <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 13, color: '#333' }}>{label}</span>
+      <button onClick={() => onChange(!value)}
+        style={{ width: 44, height: 24, borderRadius: 12, background: value ? '#1a1a1a' : '#ddd', border: 'none', cursor: 'pointer', position: 'relative', flexShrink: 0, transition: 'background 0.2s' }}
+      >
+        <span style={{ position: 'absolute', top: 3, left: value ? 23 : 3, width: 18, height: 18, borderRadius: '50%', background: '#fff', transition: 'left 0.2s', display: 'block' }} />
+      </button>
+    </div>
+  );
+}
+
+const TWEAK_DEFAULTS = { showPhoto: true, darkNav: true };
+
+/* ── Icons ─────────────────────────────────────────────────── */
+function IconMail() {
+  return <svg width="18" height="14" viewBox="0 0 18 14" fill="currentColor"><path d="M16 0H2C0.9 0 0 .9 0 2v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V2c0-1.1-.9-2-2-2zm0 4l-7 4.5L2 4V2l7 4.5L16 2v2z"/></svg>;
+}
+function IconPhone() {
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57a1.02 1.02 0 00-1.02.24l-2.2 2.2a15.05 15.05 0 01-6.59-6.58l2.2-2.21c.27-.27.35-.65.24-1A11.36 11.36 0 018.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1z"/></svg>;
+}
+function IconLinkedIn() {
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>;
+}
+function IconFacebook() {
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.69.23 2.69.23v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.27h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg>;
+}
+function IconInstagram() {
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.71 3.71 0 01-1.38-.9 3.71 3.71 0 01-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63a5.88 5.88 0 00-2.13 1.38A5.88 5.88 0 00.63 4.14C.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.31.79.73 1.46 1.38 2.13a5.88 5.88 0 002.13 1.38c.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56a5.88 5.88 0 002.13-1.38 5.88 5.88 0 001.38-2.13c.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91a5.88 5.88 0 00-1.38-2.13A5.88 5.88 0 0019.86.63c-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0zm0 5.84a6.16 6.16 0 100 12.32 6.16 6.16 0 000-12.32zM12 16a4 4 0 110-8 4 4 0 010 8zm6.41-11.85a1.44 1.44 0 100 2.88 1.44 1.44 0 000-2.88z"/></svg>;
+}
+function IconArrow() {
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>;
+}
+function IconUp() {
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>;
+}
+function IconFolder() {
+  return (
+    <svg width="80" height="64" viewBox="0 0 80 64" fill="none">
+      <path d="M4 8a4 4 0 014-4h20l6 6h38a4 4 0 014 4v42a4 4 0 01-4 4H8a4 4 0 01-4-4V8z" fill="#d2c3b4" stroke="#a89684" strokeWidth="1.5"/>
+      <path d="M4 18h72v38a4 4 0 01-4 4H8a4 4 0 01-4-4V18z" fill="#e8dcc9" stroke="#a89684" strokeWidth="1.5"/>
+    </svg>
+  );
+}
+function IconCert() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <circle cx="14" cy="11" r="7" stroke="#1a1a1a" strokeWidth="1.8"/>
+      <path d="M10 17.5L8 26l6-3 6 3-2-8.5" stroke="#1a1a1a" strokeWidth="1.8" strokeLinejoin="round"/>
+      <path d="M11 11l2 2 4-4" stroke="#1a1a1a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+function ToolLogo({ src, name }) {
+  return (
+    <div style={{ width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <img src={src} alt={name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+    </div>
+  );
+}
+
+/* ── Hooks ─────────────────────────────────────────────────── */
+function useReveal() {
+  const ref = React.useRef(null);
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { el.classList.add('visible'); obs.unobserve(el); } }, { threshold: 0.1 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return ref;
+}
+
+function useCopy() {
+  const [toast, setToast] = React.useState('');
+  const copy = (text, label) => {
+    navigator.clipboard.writeText(text).then(() => { setToast(`${label} copied!`); setTimeout(() => setToast(''), 1800); });
+  };
+  return [toast, copy];
+}
+
+function ScrollTopBtn() {
+  const [show, setShow] = React.useState(false);
+  React.useEffect(() => {
+    const h = () => setShow(window.scrollY > window.innerHeight * 0.5);
+    window.addEventListener('scroll', h);
+    return () => window.removeEventListener('scroll', h);
+  }, []);
+  return (
+    <button className={`scroll-top-btn${show ? '' : ' hidden'}`} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} aria-label="Scroll to top"><IconUp /></button>
+  );
+}
+
+/* ── NAV ───────────────────────────────────────────────────── */
+function Nav({ tweaks }) {
+  const [scrolled, setScrolled] = React.useState(false);
+  const [active, setActive] = React.useState('');
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  React.useEffect(() => {
+    const h = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', h);
+    return () => window.removeEventListener('scroll', h);
+  }, []);
+  React.useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
+  const links = ['About', 'Skills', 'Projects', 'Contact'];
+  const bg = scrolled || menuOpen ? (tweaks.darkNav ? 'rgba(26,26,26,0.96)' : 'rgba(253,249,245,0.96)') : 'transparent';
+  const tc = scrolled || menuOpen ? (tweaks.darkNav ? '#fff' : '#1a1a1a') : '#1a1a1a';
+  const handleNavClick = () => setMenuOpen(false);
+  return (
+    <>
+      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 60px', height: 70, background: bg, backdropFilter: (scrolled || menuOpen) ? 'blur(14px)' : 'none', transition: 'background 0.4s ease', boxShadow: scrolled ? '0 1px 0 rgba(0,0,0,0.07)' : 'none' }}>
+        <a href="#hero" onClick={handleNavClick} style={{ textDecoration: 'none', opacity: scrolled && !menuOpen ? 0 : 1, pointerEvents: scrolled && !menuOpen ? 'none' : 'auto', transition: 'opacity 0.3s ease', flexShrink: 0 }}>
+          <span className="nav-logo-full" style={{ fontFamily: "'Pinyon Script', cursive", fontSize: 32, color: tc, transition: 'color 0.3s', lineHeight: 1 }}>Joel Varghese</span>
+          <span className="nav-logo-short" style={{ display: 'none', fontFamily: "'Pinyon Script', cursive", fontSize: 32, color: tc, transition: 'color 0.3s', lineHeight: 1, letterSpacing: '4px' }}>JV</span>
+        </a>
+        <div className="nav-links" style={{ display: 'flex', gap: 44, alignItems: 'center' }}>
+          {links.map(l => (
+            <a key={l} href={`#${l.toLowerCase()}`}
+              style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: '1.2px', textDecoration: 'none', color: tc, textTransform: 'uppercase', opacity: active === l ? 1 : 0.65, transition: 'opacity 0.2s' }}
+              onMouseEnter={() => setActive(l)} onMouseLeave={() => setActive('')}
+            >{l}</a>
+          ))}
+        </div>
+        <button
+          className={`hamburger-btn${menuOpen ? ' open' : ''}`}
+          onClick={() => setMenuOpen(o => !o)}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+          style={{ '--hb-color': tc }}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </nav>
+      <div className={`mobile-menu${menuOpen ? ' open' : ''}`} aria-hidden={!menuOpen}>
+        <div className="mobile-menu-inner">
+          {links.map((l, i) => (
+            <a key={l} href={`#${l.toLowerCase()}`} onClick={handleNavClick}
+              style={{ '--i': i }}
+            >{l}</a>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ── HERO ──────────────────────────────────────────────────── */
+function Hero() {
+  return (
+    <section id="hero" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '120px 60px 80px', background: '#fdf9f5', position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
+      <div style={{ width: '100%', maxWidth: 1400, margin: '0 auto', position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <h1 style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 900, fontSize: 'clamp(72px, 14vw, 220px)', lineHeight: 0.9, letterSpacing: '-6px', color: '#1a1a1a', textTransform: 'uppercase', animation: 'fadeUp 0.8s ease both', animationDelay: '0.1s' }}>PORTFOLIO</h1>
+        <p style={{ fontFamily: "'Pinyon Script', cursive", fontSize: 'clamp(60px, 10vw, 150px)', color: '#1a1a1a', animation: 'fadeUp 0.8s ease both', animationDelay: '0.25s', marginTop: 28, marginBottom: 56, lineHeight: 1.1 }}>Joel Varghese</p>
+        <div style={{ display: 'flex', gap: 18, animation: 'fadeUp 0.8s ease both', animationDelay: '0.4s', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <a href="#projects" style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 15, letterSpacing: '0.5px', textDecoration: 'none', padding: '17px 38px', borderRadius: 40, background: '#1a1a1a', color: '#fff', display: 'flex', alignItems: 'center', gap: 10, transition: 'transform 0.2s ease, box-shadow 0.2s ease' }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(0,0,0,0.2)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; }}
+          >View My Work <IconArrow /></a>
+          <a href="#contact" style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 15, letterSpacing: '0.5px', textDecoration: 'none', padding: '17px 38px', borderRadius: 40, border: '2px solid #1a1a1a', color: '#1a1a1a', background: 'transparent', transition: 'background 0.2s ease, color 0.2s ease' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#1a1a1a'; e.currentTarget.style.color = '#fff'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#1a1a1a'; }}
+          >Get In Touch</a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── ABOUT ─────────────────────────────────────────────────── */
+function About() {
+  const headRef = useReveal();
+  const bodyRef = useReveal();
+  const [toast, copy] = useCopy();
+  return (
+    <section id="about" style={{ padding: '100px 60px 120px', background: '#1a1a1a', color: '#fff' }}>
+      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
+        <div ref={headRef} className="reveal" style={{ marginBottom: 56 }}>
+          <h2 style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 800, fontSize: 'clamp(44px, 5vw, 76px)', lineHeight: 1, letterSpacing: '-2px', textTransform: 'uppercase' }}>ABOUT ME</h2>
+        </div>
+        <div ref={bodyRef} className="reveal about-grid" style={{ transitionDelay: '0.18s', display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 80, alignItems: 'start' }}>
+          <div className="about-text-block">
+            <p style={{ fontFamily: "'Pinyon Script', cursive", fontSize: 56, color: '#fff', lineHeight: 1.1, marginBottom: 24 }}>Hi, I'm Joel Varghese</p>
+            <p style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 500, fontSize: 18, lineHeight: 1.85, color: 'rgba(255,255,255,0.72)', marginBottom: 24 }}>
+              A digital marketer and UX designer with a background in business development and influencer marketing. I have an MBA in Marketing and hands-on experience in branding, social media, and user experience.
+            </p>
+            <p style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 500, fontSize: 18, lineHeight: 1.85, color: 'rgba(255,255,255,0.72)', marginBottom: 40 }}>
+              I focus on creating ideas that are simple, clear, and actually connect with people. I enjoy working in the space where storytelling and design come together, building things that not only look good but also make sense and get results.
+            </p>
+            <p style={{ fontFamily: "'Pinyon Script', cursive", fontSize: 42, color: '#fff', lineHeight: 1, marginBottom: 20 }}>Let's connect</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <span className="copyable" onClick={() => copy('joelvoffcial101@gmail.com', 'Email')}
+                style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 600, fontSize: 16, color: 'rgba(255,255,255,0.85)', display: 'flex', alignItems: 'center', gap: 12 }}
+                onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.85)'}
+              ><IconMail /> joelvoffcial101@gmail.com</span>
+              <span className="copyable" onClick={() => copy('647 669 8325', 'Phone')}
+                style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 600, fontSize: 16, color: 'rgba(255,255,255,0.85)', display: 'flex', alignItems: 'center', gap: 12 }}
+                onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.85)'}
+              ><IconPhone /> 647 669 8325</span>
+            </div>
+          </div>
+          <div className="about-photo-block" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-end', minHeight: 480, gap: 32 }}>
+            <div className="about-photo" style={{ width: '100%', maxWidth: 440, aspectRatio: '4/5', borderRadius: 18, overflow: 'hidden', background: '#2a2218', boxShadow: '0 20px 60px rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <img src="assets/joel-about.png" alt="Joel Varghese"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: 16 }}>
+              {[
+                { href: 'https://www.facebook.com/profile.php?id=100008405078173', icon: <IconFacebook />, hoverBg: '#1877F2' },
+                { href: 'https://www.instagram.com/joelvarghese007/?hl=en', icon: <IconInstagram />, hoverBg: '#E4405F' },
+                { href: 'https://www.linkedin.com/in/joel-varghese-604a51184/', icon: <IconLinkedIn />, hoverBg: '#0A66C2' },
+              ].map(({ href, icon, hoverBg }, i) => (
+                <a key={i} href={href} target="_blank" rel="noopener noreferrer"
+                  style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(255,255,255,0.1)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', transition: 'background 0.2s, transform 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = hoverBg; e.currentTarget.style.transform = 'translateY(-3px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.transform = ''; }}
+                >{icon}</a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      {toast && <div className="copy-toast show">{toast}</div>}
+    </section>
+  );
+}
+
+/* ── SKILLS ────────────────────────────────────────────────── */
+const TOOLS = [
+  { name: 'Canva', src: 'assets/logo-canva.png' },
+  { name: 'CapCut', src: 'assets/logo-capcut.png' },
+  { name: 'Figma', src: 'assets/logo-figma.png' },
+  { name: 'Adobe Suite', src: 'assets/logo-adobe.png' },
+  { name: 'Gemini AI', src: 'assets/logo-gemini.png' },
+  { name: 'Meta Business Suite', src: 'assets/logo-meta.png' },
+  { name: 'Claude AI', src: 'assets/logo-claude.png' },
+  { name: 'Microsoft Suite', src: 'assets/logo-office.png' },
+];
+const CERTS = [
+  { name: 'Five Digital Marketing Strategies to Drive Conversions', url: 'assets/cert-five-digital.pdf' },
+  { name: 'Hootsuite Platform Certificate', url: 'assets/cert-hootsuite-platform.pdf' },
+  { name: 'Hootsuite Social Media Marketing Certificate', url: 'assets/cert-hootsuite-social.pdf' },
+  { name: 'Advertising on Facebook', url: 'assets/cert-facebook-ads.pdf' },
+];
+
+function Skills() {
+  const headRef = useReveal();
+  const certsRef = useReveal();
+  const toolsRef = useReveal();
+  return (
+    <section id="skills" style={{ padding: '120px 60px', background: '#fdf9f5' }}>
+      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
+        <div ref={headRef} className="reveal" style={{ marginBottom: 80 }}>
+          <h2 style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 800, fontSize: 'clamp(40px, 5vw, 72px)', lineHeight: 1, letterSpacing: '-2px', color: '#1a1a1a', textTransform: 'uppercase' }}>SKILLS &amp;<br />CERTIFICATES</h2>
+        </div>
+        <div className="skills-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'start' }}>
+          <div ref={certsRef} className="reveal" style={{ transitionDelay: '0.1s' }}>
+            <h3 style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 20, letterSpacing: '0.5px', marginBottom: 32, color: '#1a1a1a', textTransform: 'uppercase' }}>CERTIFICATES</h3>
+            {CERTS.map((c, i) => (
+              <a key={i} href={c.url} target="_blank" rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', gap: 18, padding: '22px 0', borderBottom: '1px solid #ede8e2', textDecoration: 'none', color: 'inherit', transition: 'padding-left 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.paddingLeft = '8px'}
+                onMouseLeave={e => e.currentTarget.style.paddingLeft = '0px'}
+              >
+                <div style={{ width: 48, height: 48, borderRadius: 12, background: '#f5f0eb', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><IconCert /></div>
+                <p style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 700, fontSize: 15, color: '#1a1a1a', lineHeight: 1.4 }}>{c.name}</p>
+              </a>
+            ))}
+          </div>
+          <div ref={toolsRef} className="reveal" style={{ transitionDelay: '0.22s' }}>
+            <h3 style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 20, letterSpacing: '0.5px', marginBottom: 32, color: '#1a1a1a', textTransform: 'uppercase' }}>TOOLS &amp; SOFTWARE</h3>
+            <div className="tools-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+              {TOOLS.map(({ name, src }) => (
+                <div key={name} style={{ background: '#fff', borderRadius: 16, padding: '20px 12px', border: '1px solid #ede8e2', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, transition: 'transform 0.2s ease, box-shadow 0.2s ease', cursor: 'default', minHeight: 130 }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.09)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; }}
+                >
+                  <ToolLogo src={src} name={name} />
+                  <span style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 600, fontSize: 12, color: '#444', textAlign: 'center', lineHeight: 1.3 }}>{name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── PROJECTS ──────────────────────────────────────────────── */
+const PROJECTS = [
+  {
+    id: 'kingston',
+    title: 'City of Kingston',
+    category: 'UX Research / Information Architecture',
+    description: 'Conducted UX research and designed a centralised grants management portal for the City of Kingston, replacing a fragmented system of email, Excel, Dropbox, and Google Drive. Led research across three phases including a focus group with City staff and a partner organisation interview.',
+    tags: ['UX Research', 'Focus Groups', 'Figma', 'Government'],
+    metrics: [{ val: '6', label: 'Municipalities Benchmarked' }, { val: '5', label: 'Staff Interviewed' }, { val: '70%', label: 'Reduction Target' }],
+    logo: 'assets/projects/kingston-logo.png',
+    page: 'kingston.html',
+    color: '#f5f0eb', accent: '#1a1a1a',
+  },
+  {
+    id: 'kasador',
+    title: 'Kasador',
+    category: 'Digital Marketing Plan',
+    description: 'Created a full digital marketing plan for Kasador, an emerging indie rock band from Kingston Ontario, under the Nova Solutions student agency. Designed TikTok retargeting, segmented email campaigns, local partnerships, and SEO improvements to convert TikTok momentum into Spotify and Instagram growth.',
+    tags: ['Meta Ads', 'Mailchimp', 'SEO', 'Influencer Marketing'],
+    metrics: [{ val: '15%', label: 'Spotify Listeners' }, { val: '25%', label: 'IG Engagement' }, { val: '30%', label: 'Organic Traffic' }],
+    logo: 'assets/projects/kasador-logo.png',
+    page: 'kasador.html',
+    color: '#2a2218', accent: '#fff',
+  },
+  {
+    id: 'spwc',
+    title: 'SPWC',
+    category: 'Social Media Marketing Plan',
+    description: 'Developed a comprehensive social media marketing plan for Sandy Pines Wildlife Centre, a non-profit wildlife rehabilitation organisation in Kingston Ontario. Designed the Spring Into Action campaign with five content pillars and platform-specific strategies across Facebook, Instagram, and TikTok.',
+    tags: ['Social Media', 'Content Strategy', 'Canva', 'Meta Insights'],
+    metrics: [{ val: '$10K', label: 'Fundraising Goal' }, { val: '25%', label: 'IG Engagement Lift' }, { val: '15%', label: 'FB Follower Growth' }],
+    logo: 'assets/projects/spwc-logo.jpg',
+    page: 'spwc.html',
+    color: '#f5f0eb', accent: '#1a1a1a',
+  },
+  {
+    id: 'aurafilms',
+    title: 'Aura Films',
+    category: 'Branding / Social Media',
+    description: 'Built the brand identity and social media presence for Aura Films, including a brand playbook, visual system, and content calendar to grow membership and engagement.',
+    tags: ['Brand Identity', 'Brand Playbook', 'Social Media', 'Content Design'],
+    metrics: [],
+    logo: 'assets/projects/aura-films-logo.png',
+    externalUrl: 'http://localhost:3000',
+    color: '#2a2218', accent: '#fff',
+  },
+  {
+    id: 'designwork',
+    title: 'Design Work',
+    category: 'Visual Design / Illustration',
+    description: 'A curated collection of design work spanning visual identity, illustration, social content, and marketing collateral across multiple clients and personal projects.',
+    tags: ['Visual Design', 'Illustration', 'Branding', 'Print'],
+    metrics: [],
+    logo: 'assets/projects/design-work-logo.png',
+    page: 'designwork.html',
+    color: '#f5f0eb', accent: '#1a1a1a',
+  },
+];
+
+function Projects() {
+  const headRef = useReveal();
+  const foldersRef = useReveal();
+  const scrollTo = id => { const el = document.getElementById(`project-${id}`); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+  return (
+    <section id="projects" style={{ background: '#fff' }}>
+      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '120px 60px 60px', textAlign: 'center' }}>
+        <div ref={headRef} className="reveal" style={{ marginBottom: 64 }}>
+          <h2 style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 800, fontSize: 'clamp(40px, 5vw, 72px)', lineHeight: 1, letterSpacing: '-2px', color: '#1a1a1a', textTransform: 'uppercase' }}>PROJECTS</h2>
+        </div>
+        <div ref={foldersRef} className="reveal folders-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 28, justifyItems: 'center', marginBottom: 40 }}>
+          {PROJECTS.map(p => (
+            <button key={p.id} onClick={() => scrollTo(p.id)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, transition: 'transform 0.25s ease', padding: 8 }}
+              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-6px)'}
+              onMouseLeave={e => e.currentTarget.style.transform = ''}
+            >
+              <IconFolder />
+              <span style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 700, fontSize: 14, color: '#1a1a1a', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{p.title}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+      {PROJECTS.map((p, i) => <ProjectCard key={p.id} project={p} index={i} />)}
+    </section>
+  );
+}
+
+function ProjectCard({ project: p, index }) {
+  const ref = useReveal();
+  const [hov, setHov] = React.useState(false);
+  const isEven = index % 2 === 0;
+  const goToPage = p.page ? () => { window.location.href = p.page; } : null;
+  const goToExternal = p.externalUrl ? () => { window.open(p.externalUrl, '_blank', 'noopener,noreferrer'); } : null;
+  const onLogoClick = goToPage || goToExternal;
+  const logoClickable = !!onLogoClick;
+
+  const logoBox = (
+    <div className="project-logo-box" style={{
+      height: 300, borderRadius: 18,
+      background: '#ffffff',
+      border: '1px solid rgba(0,0,0,0.08)',
+      boxShadow: p.color === '#2a2218' || p.color === '#1a1a1a' ? '0 12px 40px rgba(0,0,0,0.35)' : '0 8px 28px rgba(0,0,0,0.08)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      transform: hov && logoClickable ? 'scale(1.025) rotate(0.4deg)' : 'scale(1)',
+      transition: 'transform 0.4s ease', overflow: 'hidden', padding: 36,
+      cursor: logoClickable ? 'pointer' : 'default',
+      width: '100%',
+    }}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      onClick={logoClickable ? onLogoClick : undefined}
+    >
+      {p.logo ? (
+        <img src={p.logo} alt={p.title} style={{ maxWidth: '85%', maxHeight: '85%', objectFit: 'contain', display: 'block' }} />
+      ) : (
+        <p style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 800, fontSize: 72, color: 'rgba(0,0,0,0.07)', letterSpacing: '-4px', lineHeight: 1 }}>
+          {p.title.split(' ').map(w => w[0]).join('').slice(0,3)}
+        </p>
+      )}
+    </div>
+  );
+
+  return (
+    <div id={`project-${p.id}`} ref={ref} className="reveal" style={{ transitionDelay: `${index * 0.06}s`, scrollMarginTop: '80px' }}>
+      <div
+        className="project-inner"
+        style={{
+          padding: '80px 60px', background: p.color,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          gap: 80, flexDirection: isEven ? 'row' : 'row-reverse',
+        }}
+      >
+        <div style={{ flex: '1 1 0', maxWidth: 560, minWidth: 0 }}>
+          <p style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: '2px', textTransform: 'uppercase', color: p.accent === '#fff' ? 'rgba(255,255,255,0.5)' : '#999', marginBottom: 14 }}>{p.category}</p>
+          <h3 style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 800, fontSize: 'clamp(32px, 3.6vw, 56px)', lineHeight: 1.06, letterSpacing: '-1px', color: p.accent, marginBottom: 20, textTransform: 'uppercase' }}>{p.title}</h3>
+          <p style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 500, fontSize: 16, lineHeight: 1.8, color: p.accent === '#fff' ? 'rgba(255,255,255,0.7)' : '#555', marginBottom: 28 }}>{p.description}</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: p.metrics.length ? 36 : 0 }}>
+            {p.tags.map(t => <span key={t} style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 600, fontSize: 12, padding: '6px 15px', borderRadius: 40, border: `1.5px solid ${p.accent === '#fff' ? 'rgba(255,255,255,0.22)' : '#ddd'}`, color: p.accent === '#fff' ? 'rgba(255,255,255,0.78)' : '#555' }}>{t}</span>)}
+          </div>
+          {p.metrics.length > 0 && (
+            <div style={{ display: 'flex', gap: 44, flexWrap: 'wrap' }}>
+              {p.metrics.map(m => (
+                <div key={m.label}>
+                  <p style={{ fontFamily: "'Inter', sans-serif", fontWeight: 900, fontSize: 34, color: p.accent, lineHeight: 1 }}>{m.val}</p>
+                  <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 11, letterSpacing: '1.5px', textTransform: 'uppercase', color: p.accent === '#fff' ? 'rgba(255,255,255,0.5)' : '#999', marginTop: 6 }}>{m.label}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div style={{ flex: '0 1 420px', minWidth: 0, width: '100%', maxWidth: 420 }}>
+          {logoBox}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── CONTACT ───────────────────────────────────────────────── */
+function Contact() {
+  const headRef = useReveal();
+  const formRef = useReveal();
+  const [sent, setSent] = React.useState(false);
+  const [form, setForm] = React.useState({ name: '', email: '', message: '' });
+  const [errors, setErrors] = React.useState({});
+  const [toast, copy] = useCopy();
+  const validate = () => {
+    const e = {};
+    if (!form.name.trim()) e.name = 'Name required';
+    if (!form.email.includes('@')) e.email = 'Valid email required';
+    if (!form.message.trim()) e.message = 'Message required';
+    return e;
+  };
+  const handleSubmit = ev => { ev.preventDefault(); const errs = validate(); if (Object.keys(errs).length) { setErrors(errs); return; } setSent(true); };
+  const inputBase = field => ({ width: '100%', padding: '15px 18px', borderRadius: 10, border: `1.5px solid ${errors[field] ? '#c0392b' : '#ddd'}`, fontFamily: "'Montserrat', sans-serif", fontSize: 15, color: '#1a1a1a', background: '#fff', outline: 'none', transition: 'border-color 0.2s' });
+  return (
+    <section id="contact" style={{ padding: '120px 60px', background: '#f5f0eb', color: '#1a1a1a' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 100, alignItems: 'start' }} className="contact-grid">
+        <div ref={headRef} className="reveal">
+          <h2 style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 'clamp(44px, 5vw, 76px)', lineHeight: 0.95, letterSpacing: '-2px', marginBottom: 44, textTransform: 'uppercase' }}>GET IN<br />TOUCH!</h2>
+          <div style={{ width: 56, height: 3, background: '#1a1a1a', borderRadius: 2, marginBottom: 52 }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            <span className="copyable" onClick={() => copy('joelvoffcial101@gmail.com', 'Email')} style={{ display: 'flex', alignItems: 'center', gap: 16, color: '#444', fontFamily: "'Montserrat', sans-serif", fontWeight: 600, fontSize: 16 }}>
+              <span style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><IconMail /></span>
+              joelvoffcial101@gmail.com
+            </span>
+            <span className="copyable" onClick={() => copy('647 669 8325', 'Phone')} style={{ display: 'flex', alignItems: 'center', gap: 16, color: '#444', fontFamily: "'Montserrat', sans-serif", fontWeight: 600, fontSize: 16 }}>
+              <span style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><IconPhone /></span>
+              647 669 8325
+            </span>
+            <a href="https://www.linkedin.com/in/joel-varghese-604a51184/" target="_blank" rel="noopener noreferrer"
+              style={{ display: 'flex', alignItems: 'center', gap: 16, textDecoration: 'none', color: '#444', fontFamily: "'Montserrat', sans-serif", fontWeight: 600, fontSize: 16, transition: 'color 0.2s' }}
+              onMouseEnter={e => e.currentTarget.style.color = '#1a1a1a'} onMouseLeave={e => e.currentTarget.style.color = '#444'}
+            >
+              <span style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><IconLinkedIn /></span>
+              LinkedIn
+            </a>
+          </div>
+        </div>
+        <div ref={formRef} className="reveal" style={{ transitionDelay: '0.2s' }}>
+          {sent ? (
+            <div style={{ padding: '60px 0', textAlign: 'center' }}>
+              <p style={{ fontSize: 52, marginBottom: 20 }}>✓</p>
+              <h3 style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 30, marginBottom: 14 }}>Message Sent!</h3>
+              <p style={{ fontFamily: "'Montserrat', sans-serif", color: '#666', fontSize: 16 }}>I will get back to you shortly.</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+              {[{ field: 'name', placeholder: 'Your Name', type: 'text' }, { field: 'email', placeholder: 'Your Email', type: 'email' }].map(({ field, placeholder, type }) => (
+                <div key={field}>
+                  <input placeholder={placeholder} type={type} value={form[field]}
+                    onChange={e => { setForm({ ...form, [field]: e.target.value }); setErrors({ ...errors, [field]: '' }); }}
+                    style={inputBase(field)}
+                    onFocus={e => e.target.style.borderColor = '#1a1a1a'}
+                    onBlur={e => e.target.style.borderColor = errors[field] ? '#c0392b' : '#ddd'}
+                  />
+                  {errors[field] && <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 12, color: '#c0392b', marginTop: 5 }}>{errors[field]}</p>}
+                </div>
+              ))}
+              <div>
+                <textarea placeholder="Your message..." rows={5} value={form.message}
+                  onChange={e => { setForm({ ...form, message: e.target.value }); setErrors({ ...errors, message: '' }); }}
+                  style={{ ...inputBase('message'), resize: 'vertical', minHeight: 130 }}
+                  onFocus={e => e.target.style.borderColor = '#1a1a1a'}
+                  onBlur={e => e.target.style.borderColor = errors.message ? '#c0392b' : '#ddd'}
+                />
+                {errors.message && <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 12, color: '#c0392b', marginTop: 5 }}>{errors.message}</p>}
+              </div>
+              <button type="submit" style={{ padding: '17px 38px', borderRadius: 40, border: 'none', background: '#1a1a1a', color: '#fff', fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 15, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, alignSelf: 'flex-start', transition: 'opacity 0.2s, transform 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = ''; }}
+              >Send Message <IconArrow /></button>
+            </form>
+          )}
+        </div>
+      </div>
+      {toast && <div className="copy-toast show">{toast}</div>}
+    </section>
+  );
+}
+
+/* ── MODALS ────────────────────────────────────────────────── */
+function PrivacyModal({ onClose }) {
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-box" onClick={e => e.stopPropagation()}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+          <h2>Privacy Policy</h2>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, color: '#999' }}>✕</button>
+        </div>
+        <p style={{ fontSize: 12, color: '#aaa', marginBottom: 24 }}>Effective Date: January 1, 2026 | Last Updated: May 2026</p>
+        <p>This Privacy Policy describes how Joel Varghese collects, uses, and protects personal information submitted through this portfolio website, in compliance with PIPEDA and GDPR where applicable.</p>
+        <h3>1. Information I Collect</h3>
+        <p>When you use the contact form, I may collect your name, email address, and message. I do not collect data via cookies or analytics scripts.</p>
+        <h3>2. How I Use Your Information</h3>
+        <p>Information is used solely to respond to your inquiry and is not sold or shared with third parties.</p>
+        <h3>3. Your Rights</h3>
+        <p>Under PIPEDA and GDPR, you may access, correct, or delete your information. Contact <a href="mailto:joelvoffcial101@gmail.com">joelvoffcial101@gmail.com</a>.</p>
+        <h3>4. Contact</h3>
+        <p><a href="mailto:joelvoffcial101@gmail.com">joelvoffcial101@gmail.com</a> | 647 669 8325</p>
+      </div>
+    </div>
+  );
+}
+
+function TermsModal({ onClose }) {
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-box" onClick={e => e.stopPropagation()}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+          <h2>Terms &amp; Conditions</h2>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, color: '#999' }}>✕</button>
+        </div>
+        <p style={{ fontSize: 12, color: '#aaa', marginBottom: 24 }}>Effective Date: January 1, 2026 | Last Updated: May 2026</p>
+        <p>These Terms govern your access to and use of Joel Varghese's personal portfolio website.</p>
+        <h3>1. Intellectual Property</h3>
+        <p>All content, including text, images, designs, case studies, and visual assets, is the intellectual property of Joel Varghese. Third-party logos remain the property of their respective owners.</p>
+        <h3>2. Use of the Website</h3>
+        <p>Use this website only for lawful purposes. Unauthorized access, malicious code, commercial scraping, and impersonation are prohibited.</p>
+        <h3>3. Disclaimer</h3>
+        <p>This website is provided "as is." No warranty is given that it will be uninterrupted or error-free.</p>
+        <h3>4. Governing Law</h3>
+        <p>These Terms are governed by the laws of the Province of Ontario, Canada. Contact: <a href="mailto:joelvoffcial101@gmail.com">joelvoffcial101@gmail.com</a></p>
+      </div>
+    </div>
+  );
+}
+
+/* ── FOOTER ────────────────────────────────────────────────── */
+function Footer({ onPrivacy, onTerms }) {
+  const ls = { background: 'none', border: 'none', cursor: 'pointer', color: '#888', fontFamily: "'Montserrat', sans-serif", fontSize: 12, letterSpacing: '0.3px', transition: 'color 0.2s' };
+  return (
+    <footer style={{ padding: '26px 60px', background: '#fdf9f5', color: '#888', borderTop: '1px solid #ede8e2', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontFamily: "'Montserrat', sans-serif", fontSize: 12, letterSpacing: '0.3px', flexWrap: 'wrap', gap: 14 }}>
+      <p>© 2026 Joel Varghese. All rights reserved.</p>
+      <div style={{ display: 'flex', gap: 28 }}>
+        <button onClick={onTerms} style={ls} onMouseEnter={e => e.currentTarget.style.color = '#1a1a1a'} onMouseLeave={e => e.currentTarget.style.color = '#888'}>Terms &amp; Conditions</button>
+        <button onClick={onPrivacy} style={ls} onMouseEnter={e => e.currentTarget.style.color = '#1a1a1a'} onMouseLeave={e => e.currentTarget.style.color = '#888'}>Privacy Policy</button>
+      </div>
+    </footer>
+  );
+}
+
+/* ── APP ───────────────────────────────────────────────────── */
+function App() {
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const [privacyOpen, setPrivacyOpen] = React.useState(false);
+  const [termsOpen, setTermsOpen] = React.useState(false);
+  const safe = tweaks || TWEAK_DEFAULTS;
+  return (
+    <>
+      <Nav tweaks={safe} />
+      <Hero tweaks={safe} />
+      <About />
+      <Skills />
+      <Projects />
+      <Contact />
+      <Footer onPrivacy={() => setPrivacyOpen(true)} onTerms={() => setTermsOpen(true)} />
+      {privacyOpen && <PrivacyModal onClose={() => setPrivacyOpen(false)} />}
+      {termsOpen && <TermsModal onClose={() => setTermsOpen(false)} />}
+      <ScrollTopBtn />
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
