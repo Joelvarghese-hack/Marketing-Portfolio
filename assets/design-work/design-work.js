@@ -82,6 +82,12 @@ function openLightbox(src, type) {
   // Force reflow then add .show for transition
   void lbBackdrop.offsetWidth;
   lbBackdrop.classList.add('show');
+  // Always start gallery/pdf scroll at the very top
+  requestAnimationFrame(function(){
+    lbFrame.scrollTop = 0;
+    var inner = lbFrame.querySelector('.lb-gallery');
+    if (inner) inner.scrollTop = 0;
+  });
 }
 
 function closeLightbox() {
