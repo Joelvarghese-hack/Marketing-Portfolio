@@ -257,6 +257,12 @@ h1 {
   -webkit-user-drag: none;
 }
 .lb-frame video { background: #000; }
+/* When video is showing, kill the frame radius so the native control bar
+   isn't clipped at the bottom corners on mobile Safari */
+.lb-frame.video-mode {
+  border-radius: 0;
+  background: #000;
+}
 .lb-frame.pdf-mode {
   width: 92vw; height: 88vh;
   max-width: 1100px;
@@ -404,26 +410,39 @@ h1 {
   .grid.grid-3 { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 640px) {
-  .wrap { padding: 40px 20px 60px; }
-  .folders { grid-template-columns: repeat(2, 1fr); gap: 20px; }
-  .folder { min-height: 160px; padding: 16px 6px; gap: 14px; }
+  .wrap { padding: 28px 16px 48px; }
+  .folders { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .folder { min-height: 160px; padding: 14px 6px; gap: 14px; }
   .folder svg { width: 96px; height: 76px; }
   .folder-name { font-size: 12px; }
-  .grid, .grid.grid-2, .grid.grid-3 { grid-template-columns: 1fr; gap: 28px; }
-  h1 { font-size: 38px !important; }
-  .section-title { font-size: 20px; margin-top: 52px; line-height: 1.25; }
-  .back { margin-bottom: 28px; }
-  .dw-footer { padding: 64px 20px 32px; margin-top: 64px; }
-  .dw-footer-h { font-size: 36px !important; }
-  .lb-close { top: 16px; right: 16px; }
+  .grid, .grid.grid-2, .grid.grid-3 {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    justify-items: center;
+  }
+  .item { width: 100%; max-width: 420px; align-items: center; }
+  .item-frame { width: 100%; }
+  h1 { font-size: 36px !important; text-align: center; }
+  .eyebrow, .tagline { text-align: center; }
+  .section-title { font-size: 19px; margin-top: 44px; line-height: 1.3; text-align: center; }
+  /* Hide top "Back" button on mobile (footer keeps a back link) */
+  .back { display: none !important; }
+  .dw-footer { padding: 56px 20px 28px; margin-top: 48px; }
+  .dw-footer-h { font-size: 32px !important; }
+  .dw-footer-inner { text-align: center; }
+  .dw-contact-rows { align-items: center; }
+  .dw-socials { justify-content: center; }
+  .dw-footer-bottom { justify-content: center; text-align: center; }
+  .lb-close { top: 12px; right: 12px; }
+  .lb-backdrop { padding: 12px; }
+  .lb-frame.pdf-mode { width: 96vw; height: 86vh; }
 
   /* Clamp wide aspect ratios on mobile so 6.9:1 web mockups and other
-     ultra-wide PDFs don't shrink to a 50px-tall strip. Max 1.8:1. */
-  .item-frame { aspect-ratio: max(0.6, min(1.8, var(--ratio, 1.333))); }
+     ultra-wide content don't shrink to a 50px-tall strip. Max 1.6:1. */
+  .item-frame { aspect-ratio: max(0.6, min(1.6, var(--ratio, 1.333))); }
   /* Switch fit to contain so clamped frames show the FULL content
      (with small white padding) instead of cropping. */
   .item-frame img,
   .item-frame.video-frame video { object-fit: contain; background: #fff; }
-  /* PDFs already use iframe; iframe will fit content to its width */
   .item-frame.pdf iframe { background: #fff; }
 }

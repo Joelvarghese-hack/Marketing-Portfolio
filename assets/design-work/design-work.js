@@ -37,7 +37,7 @@ function buildLightbox() {
 
 function openLightbox(src, type) {
   buildLightbox();
-  lbFrame.classList.remove('pdf-mode');
+  lbFrame.classList.remove('pdf-mode', 'video-mode');
   lbFrame.innerHTML = '';
   if (type === 'image') {
     var img = document.createElement('img');
@@ -46,6 +46,7 @@ function openLightbox(src, type) {
     img.oncontextmenu = function(){ return false; };
     lbFrame.appendChild(img);
   } else if (type === 'video') {
+    lbFrame.classList.add('video-mode');
     var vid = document.createElement('video');
     vid.src = src;
     vid.controls = true;
@@ -58,8 +59,9 @@ function openLightbox(src, type) {
   } else if (type === 'pdf') {
     lbFrame.classList.add('pdf-mode');
     var iframe = document.createElement('iframe');
-    // Hide PDF toolbar (download button) but allow scrolling for multi-page documents
-    iframe.src = src + '#toolbar=0&navpanes=0';
+    // Hide PDF toolbar (download button); FitH so PDF auto-fits to width
+    // and scrolls vertically for multi-page documents
+    iframe.src = src + '#toolbar=0&navpanes=0&view=FitH';
     iframe.title = 'Document viewer';
     lbFrame.appendChild(iframe);
   }
