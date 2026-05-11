@@ -128,7 +128,7 @@ h1 {
 /* Item frame — fits exactly to content via --ratio */
 .item-frame {
   background: #ffffff;
-  border-radius: 14px;
+  border-radius: 6px;
   border: 1px solid #ede8e2;
   overflow: hidden;
   box-shadow: 0 6px 24px rgba(0,0,0,0.05);
@@ -237,7 +237,7 @@ h1 {
 .lb-frame {
   position: relative;
   background: #ffffff;
-  border-radius: 18px;
+  border-radius: 8px;
   overflow: hidden;
   max-width: 92vw; max-height: 88vh;
   transform: scale(0.96);
@@ -332,7 +332,7 @@ h1 {
 .dw-contact-row:hover { color: #fff; }
 .dw-contact-row .icon-pill {
   width: 40px; height: 40px;
-  border-radius: 12px;
+  border-radius: 6px;
   background: rgba(255,255,255,0.1);
   display: inline-flex; align-items: center; justify-content: center;
   flex-shrink: 0;
@@ -409,11 +409,21 @@ h1 {
   .folder { min-height: 160px; padding: 16px 6px; gap: 14px; }
   .folder svg { width: 96px; height: 76px; }
   .folder-name { font-size: 12px; }
-  .grid, .grid.grid-2, .grid.grid-3 { grid-template-columns: 1fr; gap: 32px; }
+  .grid, .grid.grid-2, .grid.grid-3 { grid-template-columns: 1fr; gap: 28px; }
   h1 { font-size: 38px !important; }
-  .section-title { font-size: 20px; margin-top: 52px; }
+  .section-title { font-size: 20px; margin-top: 52px; line-height: 1.25; }
   .back { margin-bottom: 28px; }
   .dw-footer { padding: 64px 20px 32px; margin-top: 64px; }
   .dw-footer-h { font-size: 36px !important; }
   .lb-close { top: 16px; right: 16px; }
+
+  /* Clamp wide aspect ratios on mobile so 6.9:1 web mockups and other
+     ultra-wide PDFs don't shrink to a 50px-tall strip. Max 1.8:1. */
+  .item-frame { aspect-ratio: max(0.6, min(1.8, var(--ratio, 1.333))); }
+  /* Switch fit to contain so clamped frames show the FULL content
+     (with small white padding) instead of cropping. */
+  .item-frame img,
+  .item-frame.video-frame video { object-fit: contain; background: #fff; }
+  /* PDFs already use iframe; iframe will fit content to its width */
+  .item-frame.pdf iframe { background: #fff; }
 }
