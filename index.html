@@ -540,8 +540,9 @@ function Projects() {
   return (
     <section id="projects" style={{ background: '#fff' }}>
       <div style={{ maxWidth: 1400, margin: '0 auto', padding: '120px 60px 60px', textAlign: 'center' }}>
-        <div ref={headRef} className="reveal" style={{ marginBottom: 64 }}>
-          <h2 style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 800, fontSize: 'clamp(40px, 5vw, 72px)', lineHeight: 1, letterSpacing: '-2px', color: '#1a1a1a', textTransform: 'uppercase' }}>PROJECTS</h2>
+        <div ref={headRef} className="reveal" style={{ marginBottom: 56 }}>
+          <h2 style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 800, fontSize: 'clamp(40px, 5vw, 72px)', lineHeight: 1, letterSpacing: '-2px', color: '#1a1a1a', textTransform: 'uppercase', marginBottom: 18 }}>PROJECTS</h2>
+          <p style={{ fontFamily: "'Pinyon Script', cursive", fontSize: 'clamp(28px, 3.4vw, 42px)', color: '#5a3e2b', lineHeight: 1.1, marginTop: 12 }}>Click any logo to explore the case study</p>
         </div>
         <div ref={foldersRef} className="reveal folders-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 28, justifyItems: 'center', marginBottom: 40 }}>
           {PROJECTS.map(p => (
