@@ -37,7 +37,7 @@ function buildLightbox() {
 
 function openLightbox(src, type) {
   buildLightbox();
-  lbFrame.classList.remove('pdf-mode', 'video-mode');
+  lbFrame.classList.remove('pdf-mode', 'video-mode', 'gallery-mode');
   lbFrame.innerHTML = '';
   if (type === 'image') {
     var img = document.createElement('img');
@@ -56,11 +56,24 @@ function openLightbox(src, type) {
     vid.setAttribute('playsinline', '');
     vid.oncontextmenu = function(){ return false; };
     lbFrame.appendChild(vid);
+  } else if (type === 'gallery') {
+    // Multi-page document shown as vertically stacked, scrollable images.
+    // Works on every device (iOS Safari can't render PDFs in iframes).
+    lbFrame.classList.add('gallery-mode');
+    var urls = src.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    var container = document.createElement('div');
+    container.className = 'lb-gallery';
+    urls.forEach(function(u){
+      var img = document.createElement('img');
+      img.src = u;
+      img.setAttribute('draggable', 'false');
+      img.oncontextmenu = function(){ return false; };
+      container.appendChild(img);
+    });
+    lbFrame.appendChild(container);
   } else if (type === 'pdf') {
     lbFrame.classList.add('pdf-mode');
     var iframe = document.createElement('iframe');
-    // Hide PDF toolbar (download button); FitH so PDF auto-fits to width
-    // and scrolls vertically for multi-page documents
     iframe.src = src + '#toolbar=0&navpanes=0&view=FitH';
     iframe.title = 'Document viewer';
     lbFrame.appendChild(iframe);
