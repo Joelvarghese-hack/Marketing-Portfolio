@@ -107,6 +107,70 @@ function closeLightbox() {
   }, 300);
 }
 
+// ── Sparkle effect on hover ─────────────────────────────────
+(function(){
+  var STARS = ['✦','✧','★','✶','·'];
+  var cooldowns = new WeakMap();
+  function spawnSparkles(frame, e) {
+    if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+    var now = Date.now();
+    if (cooldowns.has(frame) && now - cooldowns.get(frame) < 220) return;
+    cooldowns.set(frame, now);
+    var rect = frame.getBoundingClientRect();
+    var cx = e.clientX - rect.left;
+    var cy = e.clientY - rect.top;
+    var count = 6;
+    for (var i = 0; i < count; i++) {
+      (function(idx){
+        setTimeout(function(){
+          // Dot particle
+          var dot = document.createElement('div');
+          dot.className = 'sparkle-dot';
+          var size = 6 + Math.random() * 10;
+          var angle = (Math.PI * 2 * idx / count) + (Math.random() - 0.5) * 0.7;
+          var dist = 24 + Math.random() * 36;
+          dot.style.cssText = [
+            'left:' + (cx - size/2) + 'px',
+            'top:' + (cy - size/2) + 'px',
+            'width:' + size + 'px',
+            'height:' + size + 'px',
+            '--dx:' + (Math.cos(angle) * dist) + 'px',
+            '--dy:' + (Math.sin(angle) * dist - 10) + 'px',
+          ].join(';');
+          frame.appendChild(dot);
+          setTimeout(function(){ dot.remove(); }, 750);
+
+          // Star glyph (every other)
+          if (idx % 2 === 0) {
+            var star = document.createElement('span');
+            star.className = 'sparkle-star';
+            star.textContent = STARS[Math.floor(Math.random() * STARS.length)];
+            var sAngle = angle + 0.4;
+            var sDist = 20 + Math.random() * 28;
+            star.style.cssText = [
+              'left:' + (cx - 7 + (Math.random()-0.5)*12) + 'px',
+              'top:' + (cy - 7) + 'px',
+              '--dy:' + (-(sDist + 10)) + 'px',
+              '--rot:' + (Math.random() > 0.5 ? '' : '-') + (20 + Math.floor(Math.random()*40)) + 'deg',
+            ].join(';');
+            frame.appendChild(star);
+            setTimeout(function(){ star.remove(); }, 900);
+          }
+        }, idx * 35);
+      })(i);
+    }
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    document.querySelectorAll('.item-frame').forEach(function(frame){
+      var raf = 0;
+      frame.addEventListener('mousemove', function(e){
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(function(){ spawnSparkles(frame, e); });
+      });
+    });
+  });
+})();
+
 // Attach click handlers to all .item-frame[data-lb-src]
 document.addEventListener('DOMContentLoaded', function(){
   var frames = document.querySelectorAll('.item-frame[data-lb-src]');

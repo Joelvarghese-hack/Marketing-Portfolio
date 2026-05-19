@@ -140,7 +140,38 @@ h1 {
   aspect-ratio: var(--ratio, 4 / 3);
   display: block;
 }
-.item-frame:hover { transform: translateY(-4px); box-shadow: 0 14px 36px rgba(0,0,0,0.10); }
+.item-frame:hover { transform: translateY(-6px); box-shadow: 0 20px 48px rgba(0,0,0,0.13), 0 0 0 1.5px rgba(232,167,72,0.18); }
+
+/* Shimmer sweep on hover */
+.item-frame::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(115deg, transparent 25%, rgba(255,255,255,0.38) 50%, transparent 75%);
+  transform: translateX(-150%);
+  transition: transform 0.75s cubic-bezier(0.23,1,0.32,1);
+}
+.item-frame:hover::before { transform: translateX(150%); }
+
+/* Sparkle particle CSS (JS drops these divs) */
+.sparkle-dot {
+  position: absolute; border-radius: 50%; pointer-events: none; z-index: 10;
+  background: radial-gradient(circle, #e8a748 0%, rgba(232,167,72,0) 70%);
+  animation: sparklePop 0.7s cubic-bezier(0.23,1,0.32,1) forwards;
+}
+@keyframes sparklePop {
+  0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.2); }
+}
+.sparkle-star {
+  position: absolute; pointer-events: none; z-index: 10;
+  color: #e8a748; font-size: 14px; line-height: 1;
+  animation: starFloat 0.85s cubic-bezier(0.23,1,0.32,1) forwards;
+  user-select: none; -webkit-user-select: none;
+}
+@keyframes starFloat {
+  0%   { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(var(--dy)) scale(0.5) rotate(var(--rot)); }
+}
 
 /* Image fits fully (no crop) inside its true-ratio frame */
 .item-frame img {

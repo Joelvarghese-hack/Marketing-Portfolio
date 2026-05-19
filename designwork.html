@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -6,42 +6,243 @@
   <title>Design Work | Joel Varghese</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700;800;900&family=Montserrat:wght@400;500;600;700;800&family=Pinyon+Script&family=Inter:wght@400;700;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/design-work/design-work.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@500;700;800;900&family=Satoshi:wght@400;500;700&family=Pinyon+Script&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: #fdf9f5; color: #1a1a1a; font-family: 'Satoshi', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    a { text-decoration: none; color: inherit; }
+
+    /* nav */
+    .cs-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; gap: 16px; padding: 0 48px; height: 64px; background: rgba(253,249,245,0.08); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+    .cs-back { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 40px; background: #1a1a1a; color: #fff; font-family: 'Cabinet Grotesk', sans-serif; font-weight: 700; font-size: 13px; transition: transform 0.25s ease, box-shadow 0.25s ease; }
+    .cs-back:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+    .cs-nav-title { font-family: 'Cabinet Grotesk', sans-serif; font-weight: 700; font-size: 13px; color: #888; letter-spacing: 0.04em; text-transform: uppercase; }
+
+    /* header */
+    .dw-header { padding: 120px 60px 72px; max-width: 1200px; margin: 0 auto; }
+    .dw-eyebrow { font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #999; margin-bottom: 16px; }
+    .dw-h1 { font-family: 'Cabinet Grotesk', sans-serif; font-weight: 900; font-size: clamp(48px, 7vw, 88px); line-height: 1; letter-spacing: -0.04em; text-transform: uppercase; margin-bottom: 16px; }
+    .dw-tagline { font-family: 'Pinyon Script', cursive; font-size: clamp(24px, 3vw, 38px); color: #5a3e2b; line-height: 1.1; }
+
+    /* project grid — same as homepage */
+    .dw-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 1200px; margin: 0 auto; padding: 0 60px 100px; }
+    @media (max-width: 800px) { .dw-grid { grid-template-columns: 1fr; gap: 16px; } }
+
+    .dw-card {
+      display: flex; flex-direction: column; cursor: pointer;
+      text-decoration: none; color: inherit; outline: none;
+    }
+    .dw-card-media {
+      border-radius: 20px; overflow: hidden; aspect-ratio: 4/3;
+      position: relative;
+      transition: transform 0.55s cubic-bezier(0.23,1,0.32,1), box-shadow 0.55s cubic-bezier(0.23,1,0.32,1);
+    }
+    .dw-card:hover .dw-card-media {
+      transform: translateY(-10px);
+      box-shadow: 0 36px 80px rgba(0,0,0,0.22), 0 8px 20px rgba(0,0,0,0.10);
+    }
+    .dw-card:active .dw-card-media { transform: translateY(-4px) scale(0.99); }
+
+    .dw-card-bg {
+      position: absolute; inset: 0;
+      background-size: 250% 250%;
+      animation: gradDrift 14s ease-in-out infinite alternate;
+    }
+    @keyframes gradDrift {
+      0%   { background-position: 0% 0%;   filter: brightness(1); }
+      50%  { background-position: 60% 40%; filter: brightness(1.07); }
+      100% { background-position: 100% 100%; filter: brightness(0.96); }
+    }
+    .dw-card-grain {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.28 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      background-size: 160px 160px; opacity: 0.06; mix-blend-mode: overlay;
+    }
+    .dw-card-label-wrap {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 12px; padding: 32px;
+      background: rgba(0,0,0,0.12);
+    }
+    .dw-card-icon {
+      width: 72px; height: 72px; border-radius: 20px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.25);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .dw-card-icon svg { width: 36px; height: 36px; stroke: rgba(255,255,255,0.9); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .dw-card-title {
+      font-family: 'Cabinet Grotesk', sans-serif; font-weight: 900;
+      font-size: clamp(22px, 3vw, 32px); letter-spacing: -0.03em;
+      color: #fff; text-align: center; line-height: 1.1;
+    }
+    .dw-card-sub {
+      font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: rgba(255,255,255,0.6); text-align: center;
+    }
+
+    .dw-meta-row {
+      padding: 14px 2px 10px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+    .dw-meta-name { font-family: 'Cabinet Grotesk', sans-serif; font-weight: 700; font-size: 17px; color: #1a1a1a; letter-spacing: -0.01em; }
+    .dw-meta-cat { font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #999; }
+
+    /* footer */
+    .dw-footer { background: #1a1a1a; color: #fff; padding: 80px 40px 40px; }
+    .dw-footer-inner { max-width: 1100px; margin: 0 auto; }
+    .dw-footer-eyebrow { font-family: 'Cabinet Grotesk', sans-serif; font-weight: 600; font-size: 12px; letter-spacing: 2.4px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 14px; }
+    .dw-footer-h { font-family: 'Cabinet Grotesk', sans-serif; font-weight: 900; font-size: clamp(40px, 5vw, 64px); line-height: 1; letter-spacing: -1.5px; text-transform: uppercase; margin-bottom: 8px; }
+    .dw-footer-tag { font-family: 'Pinyon Script', cursive; font-size: clamp(28px, 3vw, 40px); color: rgba(255,255,255,0.7); line-height: 1.1; margin-bottom: 40px; }
+    .dw-contact-rows { display: flex; flex-direction: column; gap: 16px; margin-bottom: 36px; }
+    .dw-contact-row { display: inline-flex; align-items: center; gap: 14px; font-family: 'Satoshi', sans-serif; font-weight: 600; font-size: 16px; color: rgba(255,255,255,0.85); cursor: pointer; transition: color 0.2s; user-select: none; }
+    .dw-contact-row:hover { color: #fff; }
+    .dw-contact-row .icon-pill { width: 40px; height: 40px; border-radius: 6px; background: rgba(255,255,255,0.1); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .dw-socials { display: flex; gap: 14px; margin-bottom: 56px; }
+    .dw-social { width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.1); color: #fff; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; transition: background 0.2s, transform 0.2s; }
+    .dw-social:hover { transform: translateY(-3px); }
+    .dw-social.fb:hover { background: #1877F2; }
+    .dw-social.ig:hover { background: #E4405F; }
+    .dw-social.li:hover { background: #0A66C2; }
+    .dw-footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; font-family: 'Satoshi', sans-serif; font-size: 12px; color: rgba(255,255,255,0.45); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .dw-footer-bottom a { color: rgba(255,255,255,0.6); transition: color 0.2s; }
+    .dw-footer-bottom a:hover { color: #fff; }
+    .dw-copy-toast { position: fixed; bottom: 90px; right: 24px; background: #fff; color: #1a1a1a; padding: 12px 22px; border-radius: 30px; font-family: 'Satoshi', sans-serif; font-size: 13px; font-weight: 600; z-index: 1100; opacity: 0; transition: opacity 0.3s; pointer-events: none; box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+    .dw-copy-toast.show { opacity: 1; }
+    .scroll-top-btn { position: fixed; bottom: 28px; right: 28px; z-index: 200; width: 48px; height: 48px; border-radius: 50%; background: #1a1a1a; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0,0,0,0.22); color: #fff; opacity: 0; pointer-events: none; transition: opacity 0.3s, transform 0.2s; }
+    .scroll-top-btn.show { opacity: 1; pointer-events: auto; }
+    .scroll-top-btn:hover { transform: translateY(-3px); }
+
+    @media (max-width: 640px) {
+      .cs-nav { padding: 0 20px; }
+      .dw-header { padding: 100px 20px 48px; }
+      .dw-grid { padding: 0 20px 60px; }
+      .dw-footer { padding: 56px 20px 28px; }
+      .dw-footer-inner { text-align: center; }
+      .dw-contact-rows { align-items: center; }
+      .dw-socials { justify-content: center; }
+      .dw-footer-bottom { justify-content: center; }
+    }
+  </style>
 </head>
 <body>
-  <div class="wrap">
-    <a href="index.html#projects" class="back">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-      Back to Portfolio
+
+  <nav class="cs-nav">
+    <a href="index.html" class="cs-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back
+    </a>
+    <span class="cs-nav-title">Design Work</span>
+  </nav>
+
+  <div class="dw-header">
+    <p class="dw-eyebrow">Visual Design Archive</p>
+    <h1 class="dw-h1">Design Work</h1>
+    <p class="dw-tagline">Click any card to explore the collection</p>
+  </div>
+
+  <div class="dw-grid">
+
+    <!-- Logos -->
+    <a href="dw-logos.html" class="dw-card">
+      <div class="dw-card-media">
+        <div class="dw-card-bg" style="background: linear-gradient(145deg, #1a0a3e 0%, #2d1472 45%, #4a24a8 70%, #150830 100%);"></div>
+        <div class="dw-card-grain"></div>
+        <div class="dw-card-label-wrap">
+          <div class="dw-card-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M8 14l-4 7h16l-4-7"/><line x1="12" y1="13" x2="12" y2="21"/></svg>
+          </div>
+          <h2 class="dw-card-title">Logos</h2>
+          <p class="dw-card-sub">Brand marks &amp; logotype design</p>
+        </div>
+      </div>
+      <div class="dw-meta-row">
+        <span class="dw-meta-name">Logos</span>
+        <span class="dw-meta-cat">Brand Identity</span>
+      </div>
     </a>
 
-    <p class="eyebrow">Visual Design Archive</p>
-    <h1>Design Work</h1>
-    <p class="tagline">A curated collection, open a folder to explore</p>
+    <!-- Brand Identities -->
+    <a href="dw-brand-identities.html" class="dw-card">
+      <div class="dw-card-media">
+        <div class="dw-card-bg" style="background: linear-gradient(145deg, #0d2218 0%, #1a4a30 45%, #2d7a50 70%, #091a12 100%);"></div>
+        <div class="dw-card-grain"></div>
+        <div class="dw-card-label-wrap">
+          <div class="dw-card-icon">
+            <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          </div>
+          <h2 class="dw-card-title">Brand Identities</h2>
+          <p class="dw-card-sub">Full visual identity systems</p>
+        </div>
+      </div>
+      <div class="dw-meta-row">
+        <span class="dw-meta-name">Brand Identities</span>
+        <span class="dw-meta-cat">Visual Systems</span>
+      </div>
+    </a>
 
-    <div class="folders">
-      <a href="dw-logos.html" class="folder">
-        <svg width="120" height="96" viewBox="0 0 80 64" fill="none"><path d="M4 8a4 4 0 014-4h20l6 6h38a4 4 0 014 4v42a4 4 0 01-4 4H8a4 4 0 01-4-4V8z" fill="#d2c3b4" stroke="#a89684" stroke-width="1.5"/><path d="M4 18h72v38a4 4 0 01-4 4H8a4 4 0 01-4-4V18z" fill="#e8dcc9" stroke="#a89684" stroke-width="1.5"/></svg>
-        <p class="folder-name">Logos</p>
-      </a>
-      <a href="dw-brand-identities.html" class="folder">
-        <svg width="120" height="96" viewBox="0 0 80 64" fill="none"><path d="M4 8a4 4 0 014-4h20l6 6h38a4 4 0 014 4v42a4 4 0 01-4 4H8a4 4 0 01-4-4V8z" fill="#d2c3b4" stroke="#a89684" stroke-width="1.5"/><path d="M4 18h72v38a4 4 0 01-4 4H8a4 4 0 01-4-4V18z" fill="#e8dcc9" stroke="#a89684" stroke-width="1.5"/></svg>
-        <p class="folder-name">Brand Identities</p>
-      </a>
-      <a href="dw-posters.html" class="folder">
-        <svg width="120" height="96" viewBox="0 0 80 64" fill="none"><path d="M4 8a4 4 0 014-4h20l6 6h38a4 4 0 014 4v42a4 4 0 01-4 4H8a4 4 0 01-4-4V8z" fill="#d2c3b4" stroke="#a89684" stroke-width="1.5"/><path d="M4 18h72v38a4 4 0 01-4 4H8a4 4 0 01-4-4V18z" fill="#e8dcc9" stroke="#a89684" stroke-width="1.5"/></svg>
-        <p class="folder-name">Posters</p>
-      </a>
-      <a href="dw-social-media.html" class="folder">
-        <svg width="120" height="96" viewBox="0 0 80 64" fill="none"><path d="M4 8a4 4 0 014-4h20l6 6h38a4 4 0 014 4v42a4 4 0 01-4 4H8a4 4 0 01-4-4V8z" fill="#d2c3b4" stroke="#a89684" stroke-width="1.5"/><path d="M4 18h72v38a4 4 0 01-4 4H8a4 4 0 01-4-4V18z" fill="#e8dcc9" stroke="#a89684" stroke-width="1.5"/></svg>
-        <p class="folder-name">Social Media Creatives</p>
-      </a>
-      <a href="dw-thumbnails.html" class="folder">
-        <svg width="120" height="96" viewBox="0 0 80 64" fill="none"><path d="M4 8a4 4 0 014-4h20l6 6h38a4 4 0 014 4v42a4 4 0 01-4 4H8a4 4 0 01-4-4V8z" fill="#d2c3b4" stroke="#a89684" stroke-width="1.5"/><path d="M4 18h72v38a4 4 0 01-4 4H8a4 4 0 01-4-4V18z" fill="#e8dcc9" stroke="#a89684" stroke-width="1.5"/></svg>
-        <p class="folder-name">Thumbnails</p>
-      </a>
-    </div>
+    <!-- Posters -->
+    <a href="dw-posters.html" class="dw-card">
+      <div class="dw-card-media">
+        <div class="dw-card-bg" style="background: linear-gradient(145deg, #1e0a08 0%, #4a1a12 45%, #8b3020 70%, #180806 100%);"></div>
+        <div class="dw-card-grain"></div>
+        <div class="dw-card-label-wrap">
+          <div class="dw-card-icon">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+          </div>
+          <h2 class="dw-card-title">Posters</h2>
+          <p class="dw-card-sub">Print &amp; event design</p>
+        </div>
+      </div>
+      <div class="dw-meta-row">
+        <span class="dw-meta-name">Posters</span>
+        <span class="dw-meta-cat">Print Design</span>
+      </div>
+    </a>
+
+    <!-- Social Media Creatives -->
+    <a href="dw-social-media.html" class="dw-card">
+      <div class="dw-card-media">
+        <div class="dw-card-bg" style="background: linear-gradient(145deg, #0f1c2e 0%, #1a3a5c 45%, #2a6090 70%, #0a1520 100%);"></div>
+        <div class="dw-card-grain"></div>
+        <div class="dw-card-label-wrap">
+          <div class="dw-card-icon">
+            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="rgba(255,255,255,0.9)" stroke="none"/></svg>
+          </div>
+          <h2 class="dw-card-title">Social Media Creatives</h2>
+          <p class="dw-card-sub">Content for Instagram &amp; more</p>
+        </div>
+      </div>
+      <div class="dw-meta-row">
+        <span class="dw-meta-name">Social Media</span>
+        <span class="dw-meta-cat">Digital Content</span>
+      </div>
+    </a>
+
+    <!-- Thumbnails — full width -->
+    <a href="dw-thumbnails.html" class="dw-card" style="grid-column: 1 / -1;">
+      <div class="dw-card-media" style="aspect-ratio: 16/5;">
+        <div class="dw-card-bg" style="background: linear-gradient(145deg, #1a1208 0%, #3d2c10 45%, #6b4a1e 70%, #140e06 100%);"></div>
+        <div class="dw-card-grain"></div>
+        <div class="dw-card-label-wrap" style="flex-direction: row; justify-content: center; gap: 32px;">
+          <div class="dw-card-icon">
+            <svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          </div>
+          <div>
+            <h2 class="dw-card-title" style="text-align: left;">Thumbnails</h2>
+            <p class="dw-card-sub" style="text-align: left;">Video thumbnail design</p>
+          </div>
+        </div>
+      </div>
+      <div class="dw-meta-row">
+        <span class="dw-meta-name">Thumbnails</span>
+        <span class="dw-meta-cat">Video Content</span>
+      </div>
+    </a>
+
   </div>
 
   <footer class="dw-footer">
@@ -75,6 +276,23 @@
   <button class="scroll-top-btn" id="scroll-top-btn" aria-label="Scroll to top">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
   </button>
-  <script src="assets/design-work/design-work.js"></script>
+  <script>
+    (function(){
+      var btn = document.getElementById('scroll-top-btn');
+      window.addEventListener('scroll', function(){ btn.classList.toggle('show', window.scrollY > 400); });
+      btn.addEventListener('click', function(){ window.scrollTo({top:0,behavior:'smooth'}); });
+      var toast = document.getElementById('dw-copy-toast');
+      document.querySelectorAll('[data-copy]').forEach(function(el){
+        el.addEventListener('click', function(){
+          if(!navigator.clipboard) return;
+          navigator.clipboard.writeText(el.getAttribute('data-copy')).then(function(){
+            toast.textContent = (el.getAttribute('data-label')||'Text') + ' copied!';
+            toast.classList.add('show');
+            setTimeout(function(){ toast.classList.remove('show'); }, 1800);
+          });
+        });
+      });
+    })();
+  </script>
 </body>
 </html>

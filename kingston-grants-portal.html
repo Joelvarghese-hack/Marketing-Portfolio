@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="shortcut icon" type="image/svg" href="https://www.cityofkingston.ca/media/nkon4ad4/kingston_favicon.svg?width=32&amp;height=32">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grants Management Portal — City of Kingston</title>
+<style>
+/* ============================================================
+   BASE LAYER — layout skeleton (preserved from prototype)
+   ============================================================ */
+:root {
+  --c-primary: #0054a6;
+  --c-primary-light: #f0f5fb;
+  --c-primary-mid: #5b9bd5;
+  --c-success-bg: #eaf3e6; --c-success-text: #2e5a22;
+  --c-warning-bg: #fef3e6; --c-warning-text: #7a4d0a;
+  --c-danger-bg:  #fceaed; --c-danger-text:  #6d1224;
+  --c-info-bg:    #e6eef7; --c-info-text:    #003d7a;
+  --c-neutral-bg: #f2f0ee; --c-neutral-text: #5a5550;
+
+  /* Kingston Brand Tokens */
+  --sky:    #0054a6;  --sky-dk: #003d7a;  --sky-lt: #e6eef7; --sky-tint: #f0f5fb;
+  --brick:  #971a32;  --brick-dk: #6d1224; --brick-lt: #fceaed;
+  --midnight: #000000;
+  --lake:   #5b9bd5;  --lake-lt: #e8f3fc;
+  --stone:  #8c8279;  --stone-lt: #f2f0ee; --stone-dk: #5a5550;
+  --sunset: #f4a44c;  --sunset-lt: #fef3e6;
+  --grass:  #4e7c3f;  --grass-lt: #eaf3e6;
+  --wheat:  #d4b483;
+
+  --bg:      #f6f4f2;
+  --surface: #ffffff;
+  --border:       rgba(0,0,0,0.10);
+  --border-strong:rgba(0,0,0,0.18);
+  --text:         #1a1612;
+  --text-muted:   #5a5550;
+  --text-hint:    #8c8279;
+  --sidebar-w: 228px;
+  --topbar-h:  80px;
+  --radius:    6px;
+  --radius-lg: 10px;
+}
+
+/* ============================================================
+   GLOBAL TYPOGRAPHY
+   Helvetica Neue / Arial body — Garamond H1 only — AODA 12pt min
+   ============================================================ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font-size: 16px; /* 12pt AODA minimum */
+  line-height: 1.55;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   TOPBAR
+   ============================================================ */
+#topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--topbar-h);
+  background: var(--sky);
+  /*border-bottom: 3px solid var(--brick);*/
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 55px;
+  z-index: 100;
+  color: #fff;
+}
+
+#topbar .brand {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+.kingston-logo {     display: flex;
+    align-items: center;
+    padding: 0 26px 0 0;
+    flex-shrink: 0;
+    background: transparent;}
+.logo-wordmark { display: none; flex-direction: column; line-height: 1.1; }
+.official-logo{
+	height: 44px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    flex-shrink: 0;
+    filter: none;
+    opacity: 1;
+}
+.city-name {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 15px; font-weight: 700; color: #fff;
+  letter-spacing: 3px; text-transform: uppercase;
+}
+.city-slogan {
+  font-family: Garamond, 'EB Garamond', Georgia, serif;
+  font-size: 10px; color: rgba(255,255,255,0.75);
+  font-style: italic; letter-spacing: 0.3px;
+}
+.topbar-sep {
+  width: 1px; height: 30px;
+  background: rgba(255,255,255,0.22);
+  flex-shrink: 0;
+}
+.portal-title {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 18px; font-weight: 400;
+  color: rgba(255,255,255,0.88); letter-spacing: 0.1px;
+}
+
+#topbar .user-info {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 13px; color: rgba(255,255,255,0.9);
+}
+.avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--brick);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.5px; color: #fff;
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+#sidebar {
+  position: fixed; top: var(--topbar-h); left: 0;
+  width: var(--sidebar-w); bottom: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto; padding: 16px 0; z-index: 90;
+  display: flex; flex-direction: column;
+}
+
+.nav-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--text-hint);
+  padding: 14px 18px 5px;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 11px;
+  padding: 10px 18px; cursor: pointer;
+  color: var(--text-muted); font-size: 13px;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  border-left: 3px solid transparent;
+  transition: background 0.1s, color 0.1s, border-color 0.1s;
+  user-select: none;
+}
+.nav-item:hover  { background: var(--sky-tint); color: var(--sky); border-left-color: var(--lake); }
+.nav-item.active { background: var(--sky-lt); color: var(--sky); border-left-color: var(--sky); font-weight: 600; }
+.nav-icon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.65; }
+.nav-item.active .nav-icon { opacity: 1; }
+
+/* Sidebar bottom accent stripe */
+.sidebar-footer-stripe {
+  margin-top: auto;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sky) 100%);
+}
+
+/* ============================================================
+   MAIN CONTENT
+   ============================================================ */
+#main {
+  margin-left: var(--sidebar-w);
+  margin-top: var(--topbar-h);
+  padding: 28px 32px;
+  min-height: calc(100vh - var(--topbar-h));
+}
+
+/* ============================================================
+   PAGES
+   ============================================================ */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ============================================================
+   PAGE HEADERS
+   — H1 uses Garamond per spec; subtext uses Helvetica Neue
+   ============================================================ */
+.page-header { margin-bottom: 4px; }
+.page-header h1 {
+  font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font-size: 26px; font-weight: 700;
+  color: var(--sky); letter-spacing: -0.2px; line-height: 1.2;
+}
+.page-header p {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px; color: var(--text-muted); margin-top: 3px;
+}
+.page-header-row {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px; gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 2px solid var(--sky-lt);
+}
+
+/* ============================================================
+   METRIC CARDS
+   ============================================================ */
+.metrics-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 14px; margin-bottom: 18px;
+}
+.metric-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px 18px;
+  transition: border-color 0.15s;
+}
+.metric-card:hover { border-color: var(--sky); }
+.metric-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin-bottom: 7px;
+  height:34.2px;
+}
+.metric-value {
+  font-size: 28px; font-weight: 700; color: var(--sky); line-height: 1;
+}
+.metric-sub { font-size: 12px; color: var(--text-hint); margin-top: 4px; }
+
+/* ============================================================
+   CARDS & PANELS
+   ============================================================ */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 18px 22px; margin-bottom: 16px;
+}
+.card-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--stone);
+  margin-bottom: 14px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--sky-lt);
+}
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+thead th {
+  text-align: left; padding: 9px 14px;
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.6px;
+  color: var(--stone-dk);
+  border-bottom: 2px solid var(--sky-lt); white-space: nowrap;
+}
+tbody td {
+  padding: 11px 14px; border-bottom: 1px solid var(--border);
+  color: var(--text); font-size: 14px; /* AODA */
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--sky-tint); }
+.link-cell { color: var(--sky); cursor: pointer; font-weight: 600; }
+.link-cell:hover { text-decoration: underline; }
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 3px 9px; border-radius: 3px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.3px; white-space: nowrap;
+}
+.badge-success { background: var(--c-success-bg); color: var(--c-success-text); }
+.badge-warning { background: var(--c-warning-bg); color: var(--c-warning-text); }
+.badge-danger  { background: var(--brick-lt);     color: var(--brick-dk); }
+.badge-info    { background: var(--sky-lt);        color: var(--sky-dk); }
+.badge-neutral { background: var(--stone-lt);      color: var(--stone-dk); }
+
+/* ============================================================
+   BUTTONS — Active, resident-focused copy handled in HTML
+   ============================================================ */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: var(--radius);
+  font-size: 13px; font-weight: 600;
+  border: 1.5px solid var(--border-strong);
+  background: var(--surface); color: var(--text);
+  cursor: pointer; white-space: nowrap;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+.btn:hover { background: var(--sky-tint); border-color: var(--sky); color: var(--sky); }
+.btn-primary { background: var(--sky); color: #fff; border-color: var(--sky); }
+.btn-primary:hover { background: var(--sky-dk); border-color: var(--sky-dk); color: #fff; }
+.btn-danger  { background: var(--brick); color: #fff; border-color: var(--brick); }
+.btn-danger:hover { background: var(--brick-dk); border-color: var(--brick-dk); color: #fff; }
+.btn-sm { padding: 5px 11px; font-size: 12px; }
+.btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ============================================================
+   FORM ELEMENTS — AODA 14px minimum for inputs
+   ============================================================ */
+input[type="text"], input[type="date"], input[type="email"], select, textarea {
+  background: var(--surface); border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius); padding: 8px 12px;
+  font-size: 14px; color: var(--text); outline: none;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  transition: border-color 0.12s;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--sky);
+  box-shadow: 0 0 0 3px rgba(0,84,166,0.12);
+}
+.filter-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.filter-row label { font-size: 13px; color: var(--text-muted); }
+
+/* ============================================================
+   ALERTS — active, resident-focused tone; left-border brand accent
+   ============================================================ */
+.alert {
+  border-radius: var(--radius); padding: 11px 16px;
+  font-size: 14px; /* AODA */ margin-bottom: 8px;
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.alert-warning { background: var(--c-warning-bg); color: var(--c-warning-text); border-left: 3px solid var(--sunset); }
+.alert-danger  { background: var(--brick-lt);     color: var(--brick-dk);       border-left: 3px solid var(--brick); }
+.alert-info    { background: var(--sky-lt);       color: var(--sky-dk);         border-left: 3px solid var(--sky); }
+
+/* ============================================================
+   SECTION DIVIDER
+   ============================================================ */
+.section-divider {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--stone);
+  margin: 20px 0 10px; display: flex; align-items: center; gap: 8px;
+}
+.section-divider::after { content: ''; flex: 1; height: 1px; background: var(--sky-lt); }
+
+/* ============================================================
+   PROGRESS BAR
+   ============================================================ */
+.progress-bar-wrap { background: var(--sky-tint); border-radius: 3px; height: 5px; overflow: hidden; margin-top: 4px; }
+.progress-bar-fill { height: 100%; border-radius: 3px; background: var(--sky); transition: width 0.3s; }
+
+/* ============================================================
+   TIMELINE
+   ============================================================ */
+.timeline-item {
+  display: flex; gap: 12px; padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+.timeline-item:last-child { border-bottom: none; }
+.timeline-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+.dot-done     { background: var(--grass); }
+.dot-active   { background: var(--sky); }
+.dot-upcoming { background: var(--stone); }
+
+/* ============================================================
+   TABS
+   ============================================================ */
+.tab-bar { display: flex; gap: 0; border-bottom: 2px solid var(--sky-lt); margin-bottom: 16px; }
+.tab {
+  padding: 8px 16px; font-size: 13px; font-weight: 500;
+  cursor: pointer; color: var(--text-muted);
+  border-bottom: 2px solid transparent; margin-bottom: -2px;
+  transition: all 0.12s; font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--sky); border-bottom-color: var(--sky); }
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45); z-index: 200;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface); border-radius: var(--radius-lg);
+  border-top: 3px solid var(--sky);
+  padding: 24px; width: 500px; max-width: 92vw;
+  max-height: 82vh; overflow-y: auto;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.2);
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.modal-title {
+  font-family: Garamond, 'EB Garamond', Georgia, serif;
+  font-size: 20px; font-weight: 700; color: var(--sky);
+}
+.modal-close {
+  cursor: pointer; color: var(--text-hint); font-size: 22px;
+  line-height: 1; padding: 2px 7px; border-radius: 4px;
+}
+.modal-close:hover { background: var(--bg); color: var(--text); }
+.form-row { margin-bottom: 13px; }
+.form-row label {
+  display: block; font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--stone-dk); margin-bottom: 5px;
+}
+.form-row input, .form-row select, .form-row textarea { width: 100%; }
+.form-row textarea { min-height: 80px; resize: vertical; }
+.modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+#toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--sky-dk); color: #fff;
+  padding: 11px 20px; border-radius: var(--radius);
+  font-size: 14px; /* AODA */ z-index: 300;
+  border-left: 3px solid var(--brick);
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.2s, transform 0.2s; pointer-events: none;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+#toast.show { opacity: 1; transform: translateY(0); }
+
+/* ============================================================
+   PAGINATION CONTROLS
+   ============================================================ */
+.pagination-controls {
+  display: flex; align-items: center; gap: 6px;
+  padding: 12px 0 4px; flex-wrap: wrap;
+}
+
+/* ============================================================
+   SORT ICON
+   ============================================================ */
+.sort-icon {
+  font-size: 10px; color: var(--stone); cursor: pointer;
+  opacity: 0.6; margin-left: 3px;
+  transition: opacity 0.15s, color 0.15s;
+}
+thead th:hover .sort-icon { opacity: 1; color: var(--sky); }
+
+/* ============================================================
+   PILL TOGGLES
+   ============================================================ */
+.pill-toggle {
+  display: inline-flex; align-items: center;
+  padding: 4px 14px; border-radius: 20px;
+  font-size: 12px; font-weight: 600;
+  border: 1.5px solid var(--border-strong);
+  background: var(--surface); color: var(--text-muted);
+  cursor: pointer; transition: all 0.15s;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+.pill-toggle:hover { border-color: var(--sky); color: var(--sky); background: var(--sky-tint); }
+.pill-toggle-active { background: var(--sky); color: #fff; border-color: var(--sky); }
+
+/* ============================================================
+   ATTACHMENT LINKS
+   ============================================================ */
+.attachment-link {
+  color: var(--sky); text-decoration: underline;
+  cursor: pointer; font-size: 14px;
+}
+.attachment-link:hover { color: var(--sky-dk); }
+
+/* ============================================================
+   SELECTED ROW STATE
+   ============================================================ */
+.row-selected { background-color: var(--c-primary-light); border-left: 4px solid var(--c-primary); }
+.row-selected td { background-color: var(--c-primary-light) !important; }
+/* ============================================================
+   ORG APPLICATION COUNT — clickable drill-down link in org table
+   ============================================================ */
+.org-app-count {
+  color: var(--sky);
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  transition: color 0.12s;
+}
+.org-app-count:hover { color: var(--sky-dk); }
+
+.empty-state { text-align: center; padding: 40px; color: var(--text-hint); font-size: 14px; }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; }
+.detail-row  { padding: 5px 0; }
+.detail-label {
+  font-size: 11px; color: var(--stone); text-transform: uppercase;
+  letter-spacing: 0.5px; font-weight: 700;
+}
+.detail-value { font-size: 14px; font-weight: 500; margin-top: 2px; color: var(--text); }
+.split-layout { display: flex; gap: 16px; }
+.split-main   { flex: 1; min-width: 0; }
+.split-side   { width: 300px; flex-shrink: 0; }
+.search-count { font-size: 13px; color: var(--text-hint); align-self: center; }
+.pagination   { display: flex; align-items: center; gap: 8px; padding-top: 12px; font-size: 13px; color: var(--text-muted); }
+.breadcrumb   { font-size: 13px; color: var(--stone); margin-bottom: 8px; }
+.breadcrumb span { cursor: pointer; }
+.breadcrumb span:hover { color: var(--sky); }
+.breadcrumb .sep { margin: 0 6px; }
+.score-cell   { font-weight: 700; }
+.score-high   { color: var(--grass); }
+.score-mid    { color: var(--sunset); }
+
+/* ============================================================
+   MOBILE HAMBURGER BUTTON
+   ============================================================ */
+#mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  color: #fff;
+  flex-direction: column;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+}
+#mobile-menu-btn span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+/* ============================================================
+   RESPONSIVE — TABLET (≤900px)
+   ============================================================ */
+@media (max-width: 1200px) {
+  :root {
+    --sidebar-w: 200px;
+    --topbar-h: 64px;
+  }
+
+  #topbar {
+    padding: 0 18px;
+  }
+
+  .official-logo {
+    height: 34px;
+  }
+
+  .topbar-sep,
+  .portal-title {
+    display: none;
+  }
+
+  #main {
+    padding: 20px 18px;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+   .metric-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px 10px;
+  transition: border-color 0.15s;
+}
+.metric-card:hover { border-color: var(--sky); }
+.metric-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin-bottom: 7px;
+  height:34.2px;
+}
+
+
+  /* Two-column inline grids → single column */
+  div[style*="grid-template-columns:1fr 1fr"] {
+    display: flex !important;
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE — MOBILE (≤640px)
+   ============================================================ */
+@media (max-width: 640px) {
+  :root {
+    --topbar-h: 58px;
+    --sidebar-w: 240px;
+  }
+
+  /* --- TOPBAR --- */
+  #topbar {
+    padding: 0 14px;
+    gap: 10px;
+  }
+
+  #topbar .brand {
+    gap: 10px;
+  }
+
+  .kingston-logo {
+    padding-right: 0;
+  }
+
+  .official-logo {
+    height: 30px;
+  }
+
+  #topbar .user-info span {
+    display: none; /* hide name, keep avatar */
+  }
+
+  #mobile-menu-btn {
+    display: flex;
+  }
+
+  /* --- SIDEBAR: slide-in drawer on mobile --- */
+  #sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    z-index: 150;
+    width: var(--sidebar-w);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+  }
+
+  #sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* Overlay behind open sidebar */
+  #sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.38);
+    z-index: 140;
+  }
+
+  #sidebar-overlay.open {
+    display: block;
+  }
+
+  /* --- MAIN CONTENT --- */
+  #main {
+    margin-left: 0;
+    padding: 16px 12px;
+  }
+
+  /* --- PAGE HEADER ROW: stack vertically --- */
+  .page-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .page-header h1 {
+    font-size: 20px;
+  }
+
+  /* --- METRICS ROW: 2-column grid on small screens --- */
+  .metrics-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .metric-value {
+    font-size: 22px;
+  }
+
+  /* --- BUTTON GROUPS: wrap naturally --- */
+  .btn-group {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  /* --- FILTER ROWS: stack --- */
+  .filter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-row input,
+  .filter-row select,
+  .filter-row button {
+    width: 100%;
+  }
+
+  /* --- TABLES: horizontal scroll (already has .table-wrap) --- */
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    min-width: 520px;
+  }
+
+  /* --- SPLIT LAYOUT: stack --- */
+  .split-layout {
+    flex-direction: column;
+  }
+
+  .split-side {
+    width: 100%;
+  }
+
+  /* --- MODAL --- */
+  .modal {
+    width: 96vw;
+    max-width: 96vw;
+    padding: 18px 14px;
+  }
+
+  .modal-footer {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .modal-footer .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* --- TOAST --- */
+  #toast {
+    bottom: 16px;
+    right: 12px;
+    left: 12px;
+    text-align: center;
+  }
+
+  /* --- TABS --- */
+  .tab-bar {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    flex-wrap: nowrap;
+  }
+
+  /* --- CARDS --- */
+  .card {
+    padding: 14px 12px;
+  }
+
+  /* --- DETAIL GRID --- */
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* --- PAGINATION --- */
+  .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  /* --- INLINE TWO-COLUMN GRIDS → SINGLE COLUMN --- */
+  div[style*="grid-template-columns:1fr 1fr"],
+  div[style*="grid-template-columns: 1fr 1fr"] {
+    display: flex !important;
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar overlay for mobile -->
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- TOPBAR — Kingston brand identity applied -->
+<div id="topbar">
+  <div class="brand">
+    <button id="mobile-menu-btn" aria-label="Open navigation menu" onclick="toggleSidebar()">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="kingston-logo">
+      <!-- Martello Tower / Waves mark (SVG recreation per brand spec) -->
+      <svg class="official-logo" viewBox="0 0 170.4 63.3" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <style>.cls-1{fill:#fff;stroke-width:0px;}</style>
+        <g>
+          <path class="cls-1" d="M43.9.7c0,.2.2.7.5,1.5,0,.4.2.8.2,1.2h-.8c-.6-.8-1.1-1.4-1.7-1.7-.6-.4-1.3-.5-2-.5s-1.6.4-2.2,1.1c-.8,1-1.1,2.3-1.1,4s0,1.7.2,2.1c.2.7.5,1.3.8,1.7.2.3.6.6,1,.8.5.3,1.1.4,1.7.4s1.3-.2,1.9-.6c.6-.4,1.2-1,1.7-1.8.2,0,.5-.1.9-.1,0,.2,0,.5,0,.7s0,.5-.2,1.1v.3c0,0-.2.4-.2.4-.4.3-.9.5-1.5.6s-1.5.2-2.4.2-1.4-.1-2.1-.2c-.6-.1-1.2-.4-1.7-.6-.7-.4-1.2-.9-1.6-1.4-.4-.5-.7-1-.9-1.6s-.3-1.2-.3-2c0-1.8.6-3.2,1.7-4.3,1.2-1.1,2.6-1.7,4.4-1.7s1.4,0,2.1,0c.5,0,1.1.1,1.7.3Z"></path>
+          <path class="cls-1" d="M49.3,12v-.6c0,0,.3-.1.6-.2.4-.1.7-.2.9-.3,0-.2.2-.4.2-.8v-3.5c0-1.2,0-1.8,0-1.8V1.7c0,0,0-.2,0-.3-.2,0-.6-.2-1.2-.2h-.3V.4h2.4c.3.1.5.1.6.1.3,0,.9,0,1.7,0,.4,0,.7,0,.8,0v.7c-.2,0-.5.2-.8.2-.3,0-.6,0-.7.2,0,.2,0,.4,0,.7v8.5s0,.1,0,.2c.4.1.7.1,1,.2,0,0,.2,0,.5.1v.7h-.7c0,0-.5-.1-1.2-.1h-1.6c-.3,0-.8,0-1.4.1-.4,0-.7.2-.8.2Z"></path>
+          <path class="cls-1" d="M59.9,0h.5c0,0,0,0,0,0,.2.3.3.5.4.6h8.9c0,0,.2-.2.3-.5,0,0,0,0,0-.2h.7v3.5c-.2,0-.5,0-.6,0-.2-.2-.3-.6-.5-1s-.3-.7-.3-.7c0,0-.2,0-.2-.2h-2.5v8.3c0,.4,0,.7,0,.9,0,0,.3.1.5.1,0,0,.3.1.7.1s.3.1.5.1v.6h-.3c-.6,0-1.1,0-1.5-.1s-1.2-.1-2.3-.1-.7,0-1.6.1h-.7v-.4.2c0-.2.4-.3.7-.4.6-.1,1-.3,1.3-.4,0-.1,0-.3,0-.4,0-.7,0-1.8,0-3.4v-3.3c0-.9,0-1.5,0-1.7q0,0,0,0h-1.9c-.6,0-.9,0-1.1.2-.3,0-.6.5-1.1,1.2,0,.2-.3.3-.3.3-.6-.3-.8-.4-.8-.5.2-.4.4-1.1.8-2.3,0-.3.1-.6.1-.7Z"></path>
+          <path class="cls-1" d="M74.4.6c0,0,.5,0,1.1,0h.5c0,0,.3,0,.7,0,.7,0,1.3,0,1.7,0s.9,0,1.4,0h.2v.7c0,0-.3,0-.5,0h-.4c0,0-.3.1-.5.1h0c.2.5.6,1.2,1.2,2.1.2.3.3.5.5.8,0,0,.2.3.5.8,0,0,0,0,0,.2.1,0,.2.2.2.2,0,.1.2.2.2.3,0,.2.2.3.3.4l.9-1.3c.3-.4.7-1,1.2-1.7h0l.8-1.3c0-.2.2-.3.2-.4v-.2c0,0-.2,0-.2,0h-.4c0,0-.2,0-.4,0,0,0-.2,0-.3,0,0,0,0-.3,0-.7h1.8q0,0,.2,0h.5c.2,0,.4,0,.7,0h.3v.7h0c-.5,0-.8.2-1,.3-.3.2-.6.7-1.1,1.4l-1.1,1.7c-.7.9-1.1,1.6-1.3,1.9,0,.1,0,.2,0,.3v4.1h0c0,.1.3.2.6.2.6.1.9.1.9.2,0,0,0,.1,0,.2v.4h-1.9c0-.1-.7-.1-.7-.1h-2.1c-.3,0-.5.1-.7.1h-.6v-.6l1.6-.3c0,0,0-.1.2-.1v-3.1c0-.4-.2-.8-.6-1.3-.2-.2-.3-.3-.3-.4l-1.7-2.5-.8-1.3s-.2-.3-.5-.7c0,0-.2-.2-.3-.2s-.3,0-.8-.2h0v-.2c0,0,0-.2,0-.3Z"></path>
+          <path class="cls-1" d="M98.4,6.1c0-.7,0-1.5.4-2.2.2-.5.5-1,.9-1.5.4-.4.8-.8,1.4-1.2.6-.3,1.1-.6,1.7-.7.6-.2,1.2-.2,2-.2,1.2,0,2.3.2,3.2.7.9.5,1.6,1.1,2.1,1.9.7,1,1,2.1,1,3.2,0,1.7-.6,3.1-1.7,4.3s-2.7,1.8-4.7,1.8-1,0-1.4-.1c-.3,0-.6-.1-.9-.2-.4-.1-.7-.2-.8-.3-.6-.4-1.2-.7-1.5-1.1-.4-.4-.7-.8-1-1.3,0-.3-.3-.8-.5-1.5,0-.5-.2-1-.2-1.6ZM104.4,1.2c-.5,0-1,0-1.4.4-.4.2-.7.5-.9.8-.3.5-.6,1-.7,1.6s-.2,1.3-.2,2.1,0,.9,0,1.1c0,.1,0,.2,0,.4,0,.4,0,.8.2,1,.3.7.4,1.2.5,1.4.2.3.4.6.8.9.2.2.4.3.8.4.3.1.7.2,1,.2.6,0,1.2-.1,1.8-.4.5-.3,1-.8,1.3-1.5s.5-1.6.5-2.8,0-1.1,0-1.9v-.2s0-.2,0-.4c-.2-1-.6-1.7-1.2-2.2-.8-.7-1.6-.9-2.5-.9Z"></path>
+          <path class="cls-1" d="M115.7,12v-.6c0,0,.3-.1.6-.1.3-.1.6-.1.9-.2h.2c0-.3,0-.6,0-.8h0V1.5c-.2,0-.5-.2-1-.2s-.3,0-.5,0h-.2v-.7h1.2c.7,0,1.7,0,3.1,0s1.4,0,2.2,0h3.3c0,.2,0,.4,0,.5v1.7c0,.2,0,.3,0,.4h-.5c0,0-.2,0-.3,0,0,0,0-.2-.2-.4-.2-.6-.5-.9-.6-1.1-.2,0-.7-.2-1.5-.2h-1.2c-.5,0-.9,0-1.2,0,0,0-.2,0-.3,0,0,.1,0,.3,0,.5v2.3c0,.6,0,1,0,1.1,0,0,0,0,0,0h1.7c.2,0,.6,0,1.1,0,.3,0,.5,0,.6,0,0,0,.2-.2.3-.4,0,0,0-.5,0-1.1h.8v1.4c0,.3,0,.6,0,.8v1.8h-.3s-.2,0-.3-.1c0-.1,0-.3-.2-.5,0-.5-.3-.7-.4-.8-.3-.1-1.2-.2-2.7-.2s-.5,0-.8.1c0,.2,0,.5,0,.9v2.7c0,.5,0,.8.2.9,0,.1.3.1.7.2h.2c.3,0,.5.1.7.1h.2v.8h-1.8c0-.1-.8-.1-2-.1s-.6,0-.9.1c-.5.1-.7.1-.8.1h-.5Z"></path>
+        </g>
+        <g id="Artwork_1" data-name="Artwork 1">
+          <g>
+            <path class="cls-1" d="M83.8,33.7c0-2.2.2-2.6,1.5-2.7l.7-.2c.3-.2.3-.9,0-1-1.5,0-2.8,0-4.3,0-2.5,0-4.2-.1-5.6-.1-.3,0-.3.8,0,1l1.2.3c2.4.4,2.5.6,2.5,3.2v1.2c0,1.3-.1,1.9-.4,2.3-.4.5-1.4.7-3.2.7-2.1,0-5-.7-6.8-3-2-2.3-2.5-5.5-2.5-8.3,0-6,3-10.5,9.3-10.5,3.6,0,6.1,1.8,6.8,5.2.2.4,1,.3,1.1,0,0-2.9-.3-4.7-.3-5.7-.5,0-1.5-.2-2.3-.3-1.3-.3-3.1-.6-4.8-.6-5,0-8.9,1.4-11.5,4.1-2.3,2.4-3.3,5.4-3.3,8.4,0,3,.9,6,3.1,8.2,2.6,2.8,6.6,4,10.9,4,2,0,4.8-.3,7-.9.7-.2,1.3-.3,1.7-.3,0,0,0-.4,0-.5-.7-.4-.8-1.2-.8-2.6v-2"></path>
+            <path class="cls-1" d="M132.9,15.7c-7.4,0-12.8,5.3-12.9,12.6,0,6.4,4.6,12,12.7,12.1,7.2,0,12.6-5.1,12.7-12.2,0-6.5-4.2-12.4-12.5-12.5M132.4,17.1c5.7,0,8.1,6.4,8.1,11.7,0,7.2-3.4,10.2-7.5,10.1-6.1,0-8.1-6.7-8.1-11.7,0-7.6,4-10.2,7.5-10.1"></path>
+            <path class="cls-1" d="M167.3,25.5c0-2.9,0-5.9.5-7,.3-.6.9-.7,1.5-.7l.9-.2c.3-.3.2-.9,0-1-1.3,0-2.2,0-3.7,0-1.4,0-2.8,0-4.2-.1-.3,0-.4.8,0,1h.8c1,.2,1.5.5,1.8,1,.7,1.1.6,4.4.6,7.1v7c0,.6,0,.8-.2.9-.4-.2-3.7-4-5.1-5.7l-3.6-3.9c-1.2-1.3-5.1-5.9-5.7-7.4-.9,0-1.7,0-2.5,0-.9,0-2.9,0-4.2-.1-.4,0-.4.8-.2,1h.6c.5.2,1.5.5,1.9.8,1.1,1.1,1.1,1.6,1.1,4.4v8.5c-.1,2.9-.1,6-.6,7-.2.6-.9.8-1.5.8l-.9.2c-.3.2-.2.9,0,1,1.2,0,2.2-.2,3.7-.2,1.3,0,2.8.1,4.1.2.4-.2.4-.9.1-1h-.9c-.9-.3-1.4-.5-1.8-1.1-.6-1.1-.5-4.4-.5-7.1v-7c0-1.9,0-2.3.2-2.3.6.6,1.7,1.9,4,4.5l8.3,9.7c2.6,2.9,3.6,4.1,4.2,4.9.5,0,1,0,1.2-.5,0-.9,0-5.2,0-6.3v-8.6"></path>
+            <path class="cls-1" d="M92.8,40c-3.3,0-5.1-1.1-5.9-1.5-.6-.8-1-3.2-1-5.4.2-.4.9-.4,1.1-.2.7,1.8,2.5,5.6,6.1,5.7,2.7,0,4.2-1.6,4.2-3.8,0-2-.9-3.6-3.6-5.2l-1.5-.9c-2.7-1.5-5-3.8-5-6.9,0-3.6,2.7-6.5,7.9-6.5,1.7,0,2.2.1,3.6.5.8.1,3.6.1,5.4.1h14.6c1.8.1,2.3,0,2.8-.8,0,0,.3,0,.4,0,.2,0,.4,0,.5.2-.4,1.4-.7,4.5-.6,5.6,0,.3-.8.4-1.1,0-.5-2.8-1.1-3.4-4.9-3.5h-2.1c-.9,0-1,0-1,1.5v15.4c-.2,3.8.2,3.9,1.8,4.1l1.3.2c.2.2.2.9-.1,1-2.1-.1-3.7-.2-5.2-.2-1.6,0-3.2,0-5.5.1-.3-.2-.4-.9,0-1l1.5-.2c1.6-.2,2-.3,2-4.1v-15.4c.1-1.4,0-1.5-.8-1.5h-2c-3.3,0-4.5,0-5,2.9,0,.2,0,.4,0,.6-.2.4-.9.4-1.1.2,0-.3-.2-.5-.3-.7h0c-.7-1.8-1.9-3.6-4.5-3.7-2.9,0-4,1.8-4,3.7,0,1.5,1,3.2,3.3,4.4l2.3,1.2c2.3,1.3,4.8,3.5,4.8,7.1,0,4.1-3.2,6.9-8.4,6.9"></path>
+            <path class="cls-1" d="M119.6,50.3c-4.2,2.2-18.9,9-36,8.8-20.9-.2-39.2-12-54.3-22.7-4.7-3.4-7.6-5.5-11.5-8-2.5-1.6-4.6-2.4-5.5-2.8.4-.5,1.3-1.3,2-2l4.3-4.1c2.7-2.5,5.4-4.7,6.7-5.5,1.3-.7,3.2-1.2,4.4-1.3.3-.3.3-1,0-1.1-1.4,0-3.1,0-4.7,0-1.7,0-3.6,0-5.2-.1-.4.2-.5.9-.1,1.1l1.2.3c.7.2.9.3.9.5,0,.2,0,.5-.4.8-.5.7-2.8,3.1-3.8,4,0,0-6.9,6.7-7.6,7.3-.4.3-1,.6-1.3.6-.6,0-.7-1-.7-1.8v-5.5c0-5,.2-5.7,3-6h1c.3-.3.2-1.1,0-1.2-2.1,0-3.7,0-5.5,0-2.2,0-3.7,0-6-.1-.3,0-.4.9-.1,1.1h1.1c2.8.4,2.9,1.2,2.8,6.1v17.1c-.2,5-.3,5.6-2.8,6H.4c-.3.5-.2,1.1,0,1.3,1.9,0,3.5-.2,5.5-.1,1.8,0,3.4.1,5.8.2.3-.2.4-1,.1-1.2h-1.3c-2.7-.4-2.8-1.1-2.7-6.1v-6.1c0-1.7.2-2.2.9-2.3.3,0,1,0,1.1.2,3.6,1.7,6,4.1,11.9,8.7,20.9,15.9,41.2,26.7,61.8,26.9,21.5.2,32.5-9.9,35.9-13"></path>
+            <path class="cls-1" d="M60.1,24.6v8.6c0,1-.1,5.4,0,6.3-.3.4-.8.5-1.2.5-.6-.8-1.6-2-4.2-4.9l-8.2-9.7c-2.4-2.6-3.5-3.9-4.1-4.5,0,0,0,.4-.1,2.3v7c0,2.7-.1,6,.4,7.1.4.6.9.8,1.9,1h.8c.3.3.3,1-.1,1.1-1.3-.1-2.7-.2-4.1-.2-1.4,0-2.5,0-3.7.2-.3-.2-.3-.9,0-1l.8-.2c.7,0,1.3-.3,1.5-.8.5-1,.5-4.2.5-7v-8.3c0-2.4,0-3.2-.7-4-.6-.8-1.2-1.2-2.1-1.2h-2.4c-1.6.2-2,.4-2,4.2v16.4c-1.4-1-3.3-2.3-4.3-3v-13.7c.2-3.8-.1-3.9-1.8-4.1h-.8c-.2-.4-.2-1.1.1-1.1,1.5.1,2.8.1,4.4.1,1.6,0,7.3,0,8.9,0,.8,0,3.2,0,4.1,0,.6,1.5,4.4,6,5.7,7.4l3.6,3.9c1.4,1.6,4.7,5.5,5.1,5.7,0,0,0-.3.1-.9v-7c0-2.7.1-6-.5-7.1-.3-.5-.9-.8-1.8-.9h-.8c-.4-.4-.3-1.1,0-1.1,1.4.1,2.8.1,4.2.1,1.5,0,2.4,0,3.7,0,.3.2.4.8,0,1l-.9.2c-.7,0-1.2.2-1.5.7-.5,1.1-.5,4.2-.5,7"></path>
+          </g>
+        </g>
+      </svg>
+      <div class="logo-wordmark">
+        <span class="city-name">Kingston</span>
+        <span class="city-slogan">where history and innovation thrive.</span>
+      </div>
+    </div>
+    <div class="topbar-sep"></div>
+    <span class="portal-title">Grants Management Portal</span>
+  </div>
+  <div class="user-info">
+    <span>Admin User</span>
+    <div class="avatar">AU</div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="nav-section-label">Navigation</div>
+  <div class="nav-item active" data-page="dashboard">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+    Dashboard
+  </div>
+  <div class="nav-item" data-page="grants-list">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 3h12v2H2zm0 4h12v2H2zm0 4h8v2H2z"/></svg>
+    Grants List
+  </div>
+  <div class="nav-item" data-page="grant-details">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1zm1 3v2h8V5H4zm0 4v2h5V9H4z"/></svg>
+    Grant Details
+  </div>
+  <div class="nav-item" data-page="applications-list">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="2" width="12" height="3" rx="0.5"/><rect x="2" y="7" width="12" height="3" rx="0.5"/><rect x="2" y="12" width="12" height="3" rx="0.5"/></svg>
+    Applications List
+  </div>
+  <div class="nav-item" data-page="application-details">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M9 1H4a1 1 0 00-1 1v12a1 1 0 001 1h8a1 1 0 001-1V5L9 1zm-1 1.5L11.5 5H8V2.5zM5 8h6v1H5zm0 2.5h6v1H5zm0-5h2v1H5z"/></svg>
+    Application Details
+  </div>
+  <div class="nav-item" data-page="review-scoring">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l1.8 3.6L14 5.3l-3 2.9.7 4.1L8 10.4l-3.7 1.9.7-4.1L2 5.3l4.2-.7z"/></svg>
+    Review &amp; Scoring
+  </div>
+  <div class="nav-item" data-page="organizations">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><circle cx="6" cy="4" r="2.5"/><path d="M1 13c0-2.8 2.2-5 5-5s5 2.2 5 5"/><circle cx="12" cy="5" r="2"/><path d="M10 13c0-1.5.5-2.9 1.4-4"/></svg>
+    Organizations
+  </div>
+  <div class="nav-item" data-page="reporting">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 12V4l4 4 3-3 4 4v3H2z" opacity=".4"/><path d="M2 12V4l4 4 3-3 4 4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+    Reporting &amp; Outcomes
+  </div>
+  <div class="nav-item" data-page="payments">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 6h14" stroke="white" stroke-width="2"/><rect x="3" y="9" width="3" height="1.5" rx="0.5" fill="white" opacity=".7"/></svg>
+    Payments &amp; Funding
+  </div>
+  <div class="nav-item" data-page="user-management">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><circle cx="5" cy="5" r="2.5"/><path d="M0 13c0-2.8 2.2-5 5-5s5 2.2 5 5"/><path d="M11 7v4m-2-2h4" stroke="currentColor" stroke-width="1.5"/></svg>
+    User Management
+  </div>
+  <div class="sidebar-footer-stripe"></div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main">
+
+<!-- ========== DASHBOARD ========== -->
+<div class="page active" id="page-dashboard">
+  <div class="page-header-row">
+    <div>
+      <div class="page-header"><h1>Dashboard</h1><p>Welcome back. Here's what needs your attention today.</p></div>
+    </div>
+    <button class="btn btn-primary" onclick="showToast('Dashboard data refreshed')">↺ Refresh Data</button>
+  </div>
+
+  <div class="metrics-row">
+    <div class="metric-card"><div class="metric-label">Active Grants</div><div class="metric-value">12</div><div class="metric-sub">3 closing this month</div></div>
+    <div class="metric-card"><div class="metric-label">Total Applications</div><div class="metric-value">146</div><div class="metric-sub">+14 this week</div></div>
+    <div class="metric-card"><div class="metric-label">Action Required: Eligibility Pending</div><div class="metric-value" style="color:var(--brick)">18</div><div class="metric-sub">Awaiting review</div></div>
+    <div class="metric-card"><div class="metric-label">Under Review</div><div class="metric-value">52</div><div class="metric-sub">Assigned to reviewers</div></div>
+    <div class="metric-card"><div class="metric-label">Reports Due Soon</div><div class="metric-value" style="color:var(--brick)">6</div><div class="metric-sub">Within 7 days</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Action Required</div>
+    <div class="alert alert-danger">12 applications are waiting for eligibility review — <span class="link-cell" onclick="navigate('applications-list')">Review now →</span></div>
+    <div class="alert alert-warning">5 reviewers have not yet submitted scores — <span class="link-cell" onclick="navigate('review-scoring')">Send reminders →</span></div>
+    <div class="alert alert-warning">3 outcome reports are due within 7 days — <span class="link-cell" onclick="navigate('reporting')">View reports →</span></div>
+    <div class="alert alert-info">2 applications have missing documentation — <span class="link-cell" onclick="navigate('applications-list')">Follow up now →</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Recent Applications</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>App ID</th><th>Organization</th><th>Grant Program</th><th>Submitted</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="link-cell" onclick="navigate('application-details')">A1023</td><td>Kingston Arts Council</td><td>Community Arts Grant</td><td>Mar 8</td><td><span class="badge badge-info">Submitted</span></td><td><button class="btn btn-sm" onclick="navigate('application-details')">View</button></td></tr>
+        <tr><td class="link-cell" onclick="navigate('application-details')">A1022</td><td>Youth Outreach Centre</td><td>Youth Development Grant</td><td>Mar 7</td><td><span class="badge badge-warning">Eligibility Review</span></td><td><button class="btn btn-sm" onclick="navigate('application-details')">View</button></td></tr>
+        <tr><td class="link-cell" onclick="navigate('application-details')">A1021</td><td>Green Kingston</td><td>Environmental Impact Grant</td><td>Mar 6</td><td><span class="badge badge-neutral">Under Review</span></td><td><button class="btn btn-sm" onclick="navigate('application-details')">View</button></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Review Progress by Program</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Grant Program</th><th>Total</th><th>Assigned</th><th>Completed</th><th>Outstanding</th><th>Progress</th></tr></thead>
+      <tbody>
+        <tr><td class="link-cell" onclick="navigate('review-scoring')">Community Arts Grant</td><td>42</td><td>42</td><td>30</td><td>12</td><td style="width:140px"><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:71%"></div></div><div style="font-size:11px;color:var(--text-hint);margin-top:2px">71%</div></td></tr>
+        <tr><td class="link-cell" onclick="navigate('review-scoring')">Youth Development Grant</td><td>33</td><td>33</td><td>21</td><td>12</td><td><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:64%"></div></div><div style="font-size:11px;color:var(--text-hint);margin-top:2px">64%</div></td></tr>
+        <tr><td class="link-cell" onclick="navigate('review-scoring')">Environmental Impact Grant</td><td>24</td><td>24</td><td>18</td><td>6</td><td><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:75%"></div></div><div style="font-size:11px;color:var(--text-hint);margin-top:2px">75%</div></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Upcoming Deadlines</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Grant Program</th><th>Deadline Type</th><th>Date</th><th>Days Left</th></tr></thead>
+      <tbody>
+        <tr><td>Community Arts Grant</td><td>Application Deadline</td><td>Mar 20</td><td><span class="badge badge-danger">9 days</span></td></tr>
+        <tr><td>Youth Development Grant</td><td>Review Completion</td><td>Mar 22</td><td><span class="badge badge-warning">11 days</span></td></tr>
+        <tr><td>Environmental Impact Grant</td><td>Reporting Deadline</td><td>Mar 25</td><td><span class="badge badge-info">14 days</span></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ========== GRANTS LIST ========== -->
+<div class="page" id="page-grants-list">
+  <div class="page-header-row">
+    <div class="page-header"><h1>Grant Programs</h1><p>Manage all City of Kingston grant programs across departments.</p></div>
+    <button class="btn btn-primary" onclick="openModal('modal-create-grant')">+ Create Grant Program</button>
+  </div>
+  <div class="card">
+    <div class="filter-row">
+      <input type="text" id="grant-search" placeholder="Search by grant name…" style="width:210px" oninput="filterGrants()">
+      <select id="grant-dept-filter" onchange="filterGrants()"><option value="">All Departments</option><option>Culture</option><option>Recreation</option><option>Social Services</option><option>Environment</option></select>
+      <select id="grant-status-filter" onchange="filterGrants()"><option value="">All Statuses</option><option>Draft</option><option>Open</option><option>Under Review</option><option>Decision Pending</option><option>Closed</option></select>
+      <select id="grant-year-filter" onchange="filterGrants()"><option value="">All Years</option><option>2026</option><option>2025</option><option>2024</option></select>
+      <button class="btn btn-sm" onclick="resetGrantFilters()">Clear filters</button>
+      <button class="btn btn-sm btn-primary" onclick="openModal('modal-create-grant')">+ Create Grant Program</button>
+      <span class="search-count" id="grant-count">Showing 5 grants</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="table-wrap"><table id="grants-table">
+      <thead><tr><th>Grant Name <span class="sort-icon" title="Sort">⇅</span></th><th>Department</th><th>Status <span class="sort-icon" title="Sort">⇅</span></th><th>Applications</th><th>Budget</th><th>Application Period <span class="sort-icon" title="Sort">⇅</span></th><th></th></tr></thead>
+      <tbody>
+        <tr data-dept="Culture" data-status="Open" data-year="2026"><td class="link-cell" onclick="navigate('grant-details')">Arts Innovation Grant</td><td>Culture</td><td><span class="badge badge-success">Open</span></td><td>18</td><td>$100,000</td><td>Apr 1 – Jun 1</td><td><button class="btn btn-sm" onclick="navigate('grant-details')">View</button></td></tr>
+        <tr data-dept="Recreation" data-status="Under Review" data-year="2026"><td class="link-cell" onclick="navigate('grant-details')">Community Events Grant</td><td>Recreation</td><td><span class="badge badge-neutral">Under Review</span></td><td>42</td><td>$250,000</td><td>Mar 1 – May 1</td><td><button class="btn btn-sm" onclick="navigate('grant-details')">View</button></td></tr>
+        <tr data-dept="Social Services" data-status="Closed" data-year="2025"><td class="link-cell" onclick="navigate('grant-details')">Youth Development Grant</td><td>Social Services</td><td><span class="badge badge-neutral">Closed</span></td><td>27</td><td>$75,000</td><td>Jan 15 – Mar 15</td><td><button class="btn btn-sm" onclick="navigate('grant-details')">View</button></td></tr>
+        <tr data-dept="Environment" data-status="Draft" data-year="2026"><td class="link-cell" onclick="navigate('grant-details')">Environmental Action Grant</td><td>Environment</td><td><span class="badge badge-warning">Draft</span></td><td>0</td><td>$50,000</td><td>TBD</td><td><button class="btn btn-sm" onclick="navigate('grant-details')">View</button></td></tr>
+        <tr data-dept="Social Services" data-status="Open" data-year="2026"><td class="link-cell" onclick="navigate('grant-details')">Neighbourhood Safety Grant</td><td>Social Services</td><td><span class="badge badge-success">Open</span></td><td>11</td><td>$80,000</td><td>Mar 15 – May 30</td><td><button class="btn btn-sm" onclick="navigate('grant-details')">View</button></td></tr>
+      </tbody>
+    </table></div>
+    <div class="pagination-controls"><button class="btn btn-sm">← Previous</button><button class="btn btn-sm">1</button><button class="btn btn-sm" style="background:var(--sky);color:#fff;border-color:var(--sky)">2</button><button class="btn btn-sm">3</button><button class="btn btn-sm">Next →</button></div>
+  </div>
+</div>
+
+<!-- ========== GRANT DETAILS ========== -->
+<div class="page" id="page-grant-details">
+  <div class="breadcrumb"><span onclick="navigate('grants-list')">Grant Programs</span><span class="sep">›</span><span>Community Arts Support Grant</span></div>
+  <div class="page-header-row">
+    <div><div class="page-header"><h1>Community Arts Support Grant</h1><p>Cultural Services · Fiscal Year 2026 · <span class="badge badge-success">Open</span></p></div></div>
+    <div class="btn-group">
+      <button class="btn" onclick="openModal('modal-edit-grant')">✏ Edit grant</button>
+      <button class="btn" onclick="showToast('Review panel management opened')">👥 Manage review panel</button>
+      <button class="btn btn-primary" onclick="navigate('applications-list')">View applications</button>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="card">
+      <div class="card-title">Grant Overview</div>
+      <div class="detail-grid">
+        <div class="detail-row"><div class="detail-label">Description</div><div class="detail-value" style="font-weight:400;font-size:14px;grid-column:span 2">Funding program supporting community arts initiatives across Kingston.</div></div>
+        <div class="detail-row"><div class="detail-label">Program Owner</div><div class="detail-value">Jane Smith</div></div>
+        <div class="detail-row"><div class="detail-label">Owner Email</div><div class="detail-value"><a href="mailto:grants@kingston.ca" style="color:var(--sky)">grants@kingston.ca</a></div></div>
+        <div class="detail-row"><div class="detail-label">Funding Source</div><div class="detail-value">Municipal Budget</div></div>
+        <div class="detail-row"><div class="detail-label">Department</div><div class="detail-value">Cultural Services</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Funding Summary</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px">
+        <div><div class="detail-label">Total Budget</div><div style="font-size:22px;font-weight:700;color:var(--sky)">$100K</div></div>
+        <div><div class="detail-label">Allocated</div><div style="font-size:22px;font-weight:700">$0</div></div>
+        <div><div class="detail-label">Remaining</div><div style="font-size:22px;font-weight:700;color:var(--grass)">$100K</div></div>
+      </div>
+      <button class="btn" onclick="navigate('payments')">Manage funding decisions</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Program Timeline</div>
+    <div class="timeline-item"><div class="timeline-dot dot-done"></div><div><div style="font-weight:600;font-size:14px">Application opens</div><div style="font-size:13px;color:var(--text-hint)">Jan 15, 2026 · <span class="badge badge-success" style="font-size:10px">Completed</span></div></div></div>
+    <div class="timeline-item"><div class="timeline-dot dot-active"></div><div><div style="font-weight:600;font-size:14px">Application deadline</div><div style="font-size:13px;color:var(--text-hint)">Mar 30, 2026 · <span class="badge badge-info" style="font-size:10px">In Progress</span></div></div></div>
+    <div class="timeline-item"><div class="timeline-dot dot-upcoming"></div><div><div style="font-weight:600;font-size:14px">Review period</div><div style="font-size:13px;color:var(--text-hint)">Apr 1 – Apr 30 · <span class="badge badge-neutral" style="font-size:10px">Upcoming</span></div></div></div>
+    <div class="timeline-item"><div class="timeline-dot dot-upcoming"></div><div><div style="font-weight:600;font-size:14px">Funding decision</div><div style="font-size:13px;color:var(--text-hint)">May 15, 2026 · <span class="badge badge-neutral" style="font-size:10px">Upcoming</span></div></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Application Activity</div>
+    <div class="metrics-row" style="margin-bottom:0">
+      <div class="metric-card"><div class="metric-label">Total</div><div class="metric-value">42</div></div>
+      <div class="metric-card"><div class="metric-label">Eligible</div><div class="metric-value">36</div></div>
+      <div class="metric-card"><div class="metric-label">Under Review</div><div class="metric-value">12</div></div>
+      <div class="metric-card"><div class="metric-label">Approved</div><div class="metric-value">0</div></div>
+      <div class="metric-card"><div class="metric-label">Rejected</div><div class="metric-value" style="color:var(--brick)">6</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Recent Applications</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="pill-toggle" id="pill-rejected" onclick="togglePill('rejected')">Show Rejected</button>
+      <button class="pill-toggle pill-toggle-active" id="pill-approved" onclick="togglePill('approved')">Show Approved</button>
+    </div>
+    <div class="table-wrap"><table>
+      <tbody>
+        <tr><td class="link-cell" onclick="navigate('application-details')">A-1023</td><td>Kingston Art Collective</td><td>Feb 10</td><td><span class="badge badge-success">Eligible</span></td><td><span class="badge badge-warning">Pending</span></td><td><button class="btn btn-sm" onclick="navigate('application-details')">View</button></td></tr>
+        <tr><td class="link-cell" onclick="navigate('application-details')">A-1024</td><td>Downtown Theatre Group</td><td>Feb 11</td><td><span class="badge badge-success">Eligible</span></td><td><span class="badge badge-neutral">Assigned</span></td><td><button class="btn btn-sm" onclick="navigate('application-details')">View</button></td></tr>
+        <tr><td class="link-cell" onclick="navigate('application-details')">A-1025</td><td>Community Music Society</td><td>Feb 13</td><td><span class="badge badge-danger">Incomplete</span></td><td><span class="badge badge-neutral">Not Started</span></td><td><button class="btn btn-sm" onclick="navigate('application-details')">View</button></td></tr>
+      </tbody>
+    </table></div>
+    <div style="margin-top:12px"><button class="btn" onclick="navigate('applications-list')">View all applications →</button></div>
+  </div>
+</div>
+
+<!-- ========== APPLICATIONS LIST ========== -->
+<div class="page" id="page-applications-list">
+  <div class="page-header-row">
+    <div class="page-header"><h1>Applications List</h1><p>View and manage all applications submitted to Kingston grant programs.</p></div>
+    <button class="btn" onclick="showToast('Applications exported to CSV')">↓ Export list</button>
+  </div>
+  <div class="metrics-row">
+    <div class="metric-card"><div class="metric-label">Total</div><div class="metric-value">124</div></div>
+    <div class="metric-card"><div class="metric-label">Pending Eligibility</div><div class="metric-value" style="color:var(--brick)">28</div></div>
+    <div class="metric-card"><div class="metric-label">Under Review</div><div class="metric-value">46</div></div>
+    <div class="metric-card"><div class="metric-label">Recommended</div><div class="metric-value" style="color:var(--sky)">18</div></div>
+    <div class="metric-card"><div class="metric-label">Approved</div><div class="metric-value" style="color:var(--grass)">20</div></div>
+    <div class="metric-card"><div class="metric-label">Declined</div><div class="metric-value" style="color:var(--brick)">12</div></div>
+  </div>
+  <div class="card">
+    <div class="filter-row">
+      <input type="text" id="app-org-filter" placeholder="Search applications…" style="width:210px">
+      <select><option>All Grant Programs</option><option>Arts Grant</option><option>Community Development</option><option>Heritage Preservation</option></select>
+      <select><option>All Statuses</option><option>Submitted</option><option>Under Review</option><option>Recommended</option><option>Approved</option><option>Declined</option></select>
+      <select><option>All Eligibility</option><option>Eligible</option><option>Not Reviewed</option><option>Ineligible</option></select>
+      <button class="btn btn-sm" onclick="showToast('Filters applied')">Apply filters</button>
+      <button class="btn btn-sm" onclick="document.getElementById('app-org-filter').value='';filterApplicationsByOrg()">Clear</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="table-wrap"><table>
+      <thead><tr><th>App ID</th><th>Grant Program</th><th>Applicant</th><th>Submitted</th><th>Eligibility</th><th>Review Status</th><th>Reviewers</th><th>Decision</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="link-cell" onclick="navigate('application-details')">APP-001</td><td>Arts Grant</td><td>Kingston Arts Collective</td><td>2026-02-11</td><td><span class="badge badge-success">Eligible</span></td><td><span class="badge badge-neutral">Under Review</span></td><td>3</td><td><span class="badge badge-warning">Pending</span></td><td><button class="btn btn-sm" onclick="navigate('application-details')">View</button></td></tr>
+        <tr><td class="link-cell" onclick="navigate('application-details')">APP-002</td><td>Community Dev.</td><td>Downtown Youth Initiative</td><td>2026-02-15</td><td><span class="badge badge-warning">Not Reviewed</span></td><td><span class="badge badge-info">Intake Review</span></td><td>—</td><td><span class="badge badge-warning">Pending</span></td><td><button class="btn btn-sm" onclick="navigate('application-details')">View</button></td></tr>
+        <tr><td class="link-cell" onclick="navigate('application-details')">APP-003</td><td>Heritage Preservation</td><td>Friends of Kingston Heritage</td><td>2026-02-18</td><td><span class="badge badge-success">Eligible</span></td><td><span class="badge badge-neutral">Panel Review</span></td><td>4</td><td><span class="badge badge-info">Recommended</span></td><td><button class="btn btn-sm" onclick="navigate('application-details')">View</button></td></tr>
+        <tr><td class="link-cell" onclick="navigate('application-details')">APP-004</td><td>Arts Grant</td><td>Kingston Theatre Group</td><td>2026-02-20</td><td><span class="badge badge-danger">Ineligible</span></td><td><span class="badge badge-neutral">Closed</span></td><td>N/A</td><td><span class="badge badge-danger">Declined</span></td><td><button class="btn btn-sm" onclick="navigate('application-details')">View</button></td></tr>
+      </tbody>
+    </table></div>
+    <div class="pagination"><button class="btn btn-sm">← Previous</button><span>Showing 1–25 of 124 applications</span><button class="btn btn-sm">Next →</button></div>
+  </div>
+</div>
+
+<!-- ========== APPLICATION DETAILS ========== -->
+<div class="page" id="page-application-details">
+  <div class="breadcrumb"><span onclick="navigate('applications-list')">Applications</span><span class="sep">›</span><span>APP-2043</span></div>
+  <div class="page-header-row">
+    <div><div class="page-header"><h1>Application Details — APP-2043</h1><p>Arts Project Grant · <span class="badge badge-neutral">Under Review</span></p></div></div>
+    <div class="btn-group">
+      <button class="btn" onclick="openModal('modal-change-status')">Change status</button>
+      <button class="btn" onclick="openModal('modal-assign-reviewers')">Assign reviewers</button>
+      <button class="btn" onclick="openModal('modal-add-note')">Add note</button>
+      <button class="btn" onclick="showToast('Application exported to PDF')">↓ Export</button>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="card">
+      <div class="card-title">Application Overview</div>
+      <div class="detail-grid">
+        <div class="detail-row"><div class="detail-label">Submission Date</div><div class="detail-value">March 4, 2026</div></div>
+        <div class="detail-row"><div class="detail-label">Requested Funding</div><div class="detail-value">$18,000</div></div>
+        <div class="detail-row"><div class="detail-label">Project Title</div><div class="detail-value">Community Arts Festival</div></div>
+        <div class="detail-row"><div class="detail-label">Applicant</div><div class="detail-value link-cell" onclick="navigate('organizations')">Kingston Arts Collective</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Applicant Information</div>
+      <div class="detail-grid">
+        <div class="detail-row"><div class="detail-label">Contact</div><div class="detail-value">Jane Smith</div></div>
+        <div class="detail-row"><div class="detail-label">Email</div><div class="detail-value">jane@example.com</div></div>
+        <div class="detail-row"><div class="detail-label">Phone</div><div class="detail-value">613-555-1234</div></div>
+        <div class="detail-row"><div class="detail-label">Organization</div><div class="detail-value">Kingston Arts Collective</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Project Information</div>
+    <div class="detail-grid" style="margin-bottom:12px">
+      <div class="detail-row"><div class="detail-label">Project Start</div><div class="detail-value">June 1, 2026</div></div>
+      <div class="detail-row"><div class="detail-label">Project End</div><div class="detail-value">August 15, 2026</div></div>
+      <div class="detail-row"><div class="detail-label">Location</div><div class="detail-value">Kingston Waterfront</div></div>
+    </div>
+    <div style="font-size:11px;color:var(--stone);text-transform:uppercase;letter-spacing:0.5px;font-weight:700;margin-bottom:5px">Project Summary</div>
+    <p style="font-size:14px;line-height:1.65;color:var(--text)">A multi-week outdoor arts festival bringing together local artists, musicians, and performers at the Kingston Waterfront. The event aims to engage over 5,000 community members and provide paid opportunities for 40+ emerging artists.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Eligibility &amp; Completeness</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Requirement</th><th>Status</th><th>Staff Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Applicant Eligible</td><td><span class="badge badge-success">Verified</span></td><td>—</td></tr>
+        <tr><td>Required Documents Submitted</td><td><span class="badge badge-success">Verified</span></td><td>—</td></tr>
+        <tr><td>Budget Provided</td><td><span class="badge badge-danger">Missing</span></td><td>Applicant contacted for update</td></tr>
+        <tr><td>Within Funding Limits</td><td><span class="badge badge-success">Verified</span></td><td>—</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="card">
+      <div class="card-title">Attachments</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>File</th><th>Type</th><th>Uploaded</th><th></th></tr></thead>
+        <tbody>
+          <tr><td><a href="#" class="attachment-link" onclick="event.preventDefault();showToast('Opening File Preview...')">ProjectProposal.pdf</a></td><td>Proposal</td><td>Mar 4</td><td><span class="link-cell" onclick="showToast('Opening file preview…')">View</span></td></tr>
+          <tr><td><a href="#" class="attachment-link" onclick="event.preventDefault();showToast('Opening File Preview...')">Budget.xlsx</a></td><td>Budget</td><td>Mar 4</td><td><span class="link-cell" onclick="showToast('Downloading file…')">Download</span></td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Review Status</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Reviewer</th><th>Role</th><th>Status</th><th>Score</th></tr></thead>
+        <tbody>
+          <tr><td>Mark Lee</td><td>External Jury</td><td><span class="badge badge-success">Completed</span></td><td class="score-cell score-high">8.5</td></tr>
+          <tr><td>Sarah Patel</td><td>Internal Staff</td><td><span class="badge badge-warning">Pending</span></td><td>—</td></tr>
+        </tbody>
+      </table></div>
+      <div style="margin-top:10px"><button class="btn btn-sm" onclick="navigate('review-scoring')">View Review &amp; Scoring →</button></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Internal Staff Notes</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Date</th><th>Staff Member</th><th>Note</th></tr></thead>
+      <tbody id="notes-list">
+        <tr><td>Mar 6, 2026</td><td>Admin</td><td>Applicant contacted regarding missing budget file.</td></tr>
+      </tbody>
+    </table></div>
+    <div style="margin-top:10px"><button class="btn btn-sm" onclick="openModal('modal-add-note')">+ Add note</button></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Activity History</div>
+    <div class="timeline-item"><div class="timeline-dot dot-done"></div><div><div style="font-weight:600;font-size:14px">Application submitted</div><div style="font-size:13px;color:var(--text-hint)">Mar 4, 2026 · System</div></div></div>
+    <div class="timeline-item"><div class="timeline-dot dot-done"></div><div><div style="font-weight:600;font-size:14px">Status changed to Eligibility Review</div><div style="font-size:13px;color:var(--text-hint)">Mar 5, 2026 · Admin</div></div></div>
+    <div class="timeline-item"><div class="timeline-dot dot-active"></div><div><div style="font-weight:600;font-size:14px">Reviewer assigned</div><div style="font-size:13px;color:var(--text-hint)">Mar 6, 2026 · Admin</div></div></div>
+  </div>
+</div>
+
+<!-- ========== REVIEW & SCORING ========== -->
+<div class="page" id="page-review-scoring">
+  <div class="page-header-row">
+    <div class="page-header"><h1>Review &amp; Scoring</h1><p>Community Arts Grant 2025 · Review Period: March 15 – April 5</p></div>
+    <div class="btn-group">
+      <button class="btn" onclick="openModal('modal-assign-reviewers')">Assign reviewers</button>
+      <button class="btn" onclick="showToast('Reminder emails sent to 5 reviewers')">Send reminder</button>
+      <button class="btn" onclick="showToast('Scores exported to CSV')">↓ Export scores</button>
+    </div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric-card"><div class="metric-label">Total Applications</div><div class="metric-value">42</div></div>
+    <div class="metric-card"><div class="metric-label">Fully Scored</div><div class="metric-value">28</div></div>
+    <div class="metric-card"><div class="metric-label">Reviews Completed</div><div class="metric-value">96</div></div>
+    <div class="metric-card"><div class="metric-label">Pending Reviews</div><div class="metric-value" style="color:var(--brick)">30</div></div>
+  </div>
+  <div class="card">
+    <div class="filter-row">
+      <input type="text" placeholder="Search applications…" style="width:210px">
+      <select><option>All Statuses</option><option>Completed</option><option>Pending Review</option><option>In Progress</option></select>
+      <select><option>All Reviewers</option><option>Reviewer A</option><option>Reviewer B</option><option>Reviewer C</option></select>
+      <select><option>Any Score Range</option><option>8.0 – 10.0</option><option>6.0 – 7.9</option><option>Below 6.0</option></select>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Applications Under Review</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Application</th><th>Organization</th><th>Assigned</th><th>Completed</th><th>Avg Score</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="link-cell" onclick="showScoreDetail('Youth Theatre Project','Kingston Youth Arts',8.4)">Youth Theatre Project</td><td>Kingston Youth Arts</td><td>3</td><td>3 / 3</td><td class="score-cell score-high">8.4</td><td><span class="badge badge-success">Completed</span></td><td><button class="btn btn-sm" onclick="showScoreDetail('Youth Theatre Project','Kingston Youth Arts',8.4)">View scores</button></td></tr>
+        <tr><td class="link-cell" onclick="showScoreDetail('Community Music Festival','Kingston Music Collective',7.1)">Community Music Festival</td><td>Kingston Music Collective</td><td>3</td><td>2 / 3</td><td class="score-cell score-mid">7.1</td><td><span class="badge badge-warning">Pending Review</span></td><td><button class="btn btn-sm" onclick="showToast('Reminder sent to pending reviewer')">Send reminder</button></td></tr>
+        <tr><td class="link-cell" onclick="showScoreDetail('Public Art Installation','Art Forward Kingston',0)">Public Art Installation</td><td>Art Forward Kingston</td><td>3</td><td>1 / 3</td><td>—</td><td><span class="badge badge-neutral">In Progress</span></td><td><button class="btn btn-sm" onclick="navigate('application-details')">View</button></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" id="score-detail-section">
+    <div class="card">
+      <div class="card-title">Score Breakdown — <span id="score-app-name">Youth Theatre Project</span></div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Reviewer</th><th>Eligibility</th><th>Impact</th><th>Feasibility</th><th>Budget</th><th>Total</th></tr></thead>
+        <tbody>
+          <tr><td>Reviewer A</td><td>8</td><td>9</td><td>8</td><td>8</td><td class="score-cell score-high">33</td></tr>
+          <tr><td>Reviewer B</td><td>7</td><td>8</td><td>8</td><td>9</td><td class="score-cell score-high">32</td></tr>
+          <tr><td>Reviewer C</td><td>9</td><td>8</td><td>8</td><td>8</td><td class="score-cell score-high">33</td></tr>
+        </tbody>
+      </table></div>
+      <div style="margin-top:10px;font-size:14px;font-weight:700">Average: 32.7 / 40</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Reviewer Comments</div>
+      <div style="margin-bottom:12px"><strong style="font-size:13px;font-weight:700">Reviewer A:</strong><p style="font-size:14px;margin-top:3px;color:var(--text-muted)">Strong community engagement potential.</p></div>
+      <div style="margin-bottom:12px"><strong style="font-size:13px;font-weight:700">Reviewer B:</strong><p style="font-size:14px;margin-top:3px;color:var(--text-muted)">Well-organized proposal and realistic budget.</p></div>
+      <div><strong style="font-size:13px;font-weight:700">Reviewer C:</strong><p style="font-size:14px;margin-top:3px;color:var(--text-muted)">Clear project goals and strong community partnerships.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== ORGANIZATIONS ========== -->
+<div class="page" id="page-organizations">
+  <div class="page-header-row">
+    <div class="page-header"><h1>Organizations &amp; Applicants</h1><p>Manage applicant organizations and their application histories.</p></div>
+    <button class="btn btn-primary" onclick="showToast('Add organization form opened')">+ Add organization</button>
+  </div>
+  <div class="card">
+    <div class="filter-row">
+      <input type="text" placeholder="Search by name or contact…" style="width:230px">
+      <select><option>All Types</option><option>Non-Profit</option><option>Charity</option><option>Arts Organization</option></select>
+      <button class="btn btn-sm">Search</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Organization</th><th>Type</th><th>Contact</th><th>Applications</th><th>Last Active</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="link-cell">Kingston Arts Collective</td><td>Arts Org.</td><td>Jane Smith</td><td><span class="org-app-count" onclick="viewOrgApplications('Kingston Arts Collective')">3</span></td><td>Mar 4, 2026</td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm">View</button></td></tr>
+        <tr><td class="link-cell">Youth Outreach Centre</td><td>Non-Profit</td><td>Marcus Thompson</td><td><span class="org-app-count" onclick="viewOrgApplications('Youth Outreach Centre')">2</span></td><td>Feb 28, 2026</td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm">View</button></td></tr>
+        <tr><td class="link-cell">Friends of Kingston Heritage</td><td>Charity</td><td>Eleanor Marsh</td><td><span class="org-app-count" onclick="viewOrgApplications('Friends of Kingston Heritage')">5</span></td><td>Feb 18, 2026</td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm">View</button></td></tr>
+        <tr><td class="link-cell">Green Kingston</td><td>Non-Profit</td><td>Priya Nair</td><td><span class="org-app-count" onclick="viewOrgApplications('Green Kingston')">1</span></td><td>Mar 6, 2026</td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm">View</button></td></tr>
+        <tr><td class="link-cell">Kingston Theatre Group</td><td>Arts Org.</td><td>David Chen</td><td><span class="org-app-count" onclick="viewOrgApplications('Kingston Theatre Group')">2</span></td><td>Feb 20, 2026</td><td><span class="badge badge-neutral">Inactive</span></td><td><button class="btn btn-sm">View</button></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ========== REPORTING ========== -->
+<div class="page" id="page-reporting">
+  <div class="page-header-row">
+    <div class="page-header"><h1>Reporting &amp; Outcomes</h1><p>Track post-funding reports and measure grant outcomes.</p></div>
+    <button class="btn btn-primary" onclick="showToast('Add report record form opened')">+ Add report record</button>
+  </div>
+  <div class="metrics-row">
+    <div class="metric-card"><div class="metric-label">Projects Funded</div><div class="metric-value">24</div></div>
+    <div class="metric-card"><div class="metric-label">Reports Submitted</div><div class="metric-value" style="color:var(--grass)">16</div></div>
+    <div class="metric-card"><div class="metric-label">Reports Outstanding</div><div class="metric-value" style="color:var(--brick)">8</div></div>
+    <div class="metric-card"><div class="metric-label">Overdue</div><div class="metric-value" style="color:var(--brick)">3</div></div>
+  </div>
+  <div class="card">
+    <div class="filter-row">
+      <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--stone-dk);display:flex;flex-direction:column;gap:4px">Filter by Grant Program<select><option>All Grant Programs</option><option>Arts Grant</option><option>Community Development</option></select></label>
+      <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--stone-dk);display:flex;flex-direction:column;gap:4px">Filter by Report Status<select><option>All Report Statuses</option><option>Submitted</option><option>Pending</option><option>Overdue</option></select></label>
+      <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--stone-dk);display:flex;flex-direction:column;gap:4px">Date From<input type="date"></label>
+      <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--stone-dk);display:flex;flex-direction:column;gap:4px">Date To<input type="date"></label>
+      <button class="btn btn-sm" style="align-self:flex-end">Apply filters</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Reports</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Organization</th><th>Grant Program</th><th>Amount Funded</th><th>Report Due</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <tr><td>Kingston Arts Collective</td><td>Arts Innovation Grant</td><td>$18,000</td><td>Sep 15, 2026</td><td><span class="badge badge-success">Submitted</span></td><td><button class="btn btn-sm">View</button></td></tr>
+        <tr><td>Youth Outreach Centre</td><td>Youth Development Grant</td><td>$12,500</td><td>Oct 1, 2026</td><td><span class="badge badge-warning">Pending</span></td><td><button class="btn btn-sm">View</button></td></tr>
+        <tr><td>Green Kingston</td><td>Environmental Action Grant</td><td>$9,000</td><td>Mar 1, 2026</td><td><span class="badge badge-danger">Overdue</span></td><td><button class="btn btn-sm">View</button></td></tr>
+        <tr><td>Friends of Kingston Heritage</td><td>Heritage Preservation</td><td>$22,000</td><td>Aug 30, 2026</td><td><span class="badge badge-warning">Pending</span></td><td><button class="btn btn-sm">View</button></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ========== PAYMENTS ========== -->
+<div class="page" id="page-payments">
+  <div class="page-header-row">
+    <div class="page-header"><h1>Payments &amp; Funding Decisions</h1></div>
+    <select style="min-width:230px"><option>Community Arts Grant 2026</option><option>Youth Development Grant</option><option>Environmental Action Grant</option></select>
+  </div>
+  <div class="metrics-row">
+    <div class="metric-card"><div class="metric-label">Total Budget</div><div class="metric-value">$100K</div></div>
+    <div class="metric-card"><div class="metric-label">Allocated</div><div class="metric-value" style="color:var(--sky)">$75K</div></div>
+    <div class="metric-card"><div class="metric-label">Remaining</div><div class="metric-value" style="color:var(--grass)">$25K</div></div>
+    <div class="metric-card"><div class="metric-label">Paid Out</div><div class="metric-value">$50K</div></div>
+  </div>
+  <div class="split-layout">
+    <div class="split-main">
+      <div class="card">
+        <div class="filter-row" style="margin-bottom:14px">
+          <input type="text" placeholder="Search…" style="width:160px">
+          <select><option>All Funding Statuses</option><option>Approved</option><option>Declined</option><option>Pending</option></select>
+          <select><option>All Payment Statuses</option><option>Scheduled</option><option>Paid</option><option>On Hold</option></select>
+          <button class="btn btn-sm">Apply</button>
+        </div>
+        <div class="card-title">Funding Decisions</div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>App ID</th><th>Organization</th><th>Requested</th><th>Approved</th><th>Decision</th><th>Type</th><th>Status</th><th>Next Payment</th><th></th></tr></thead>
+          <tbody>
+            <tr onclick="selectPayment('APP-001','Community Org A','$8,000')" style="cursor:pointer"><td>APP-001</td><td>Community Org A</td><td>$10,000</td><td>$8,000</td><td><span class="badge badge-success">Approved</span></td><td>Installments</td><td><span class="badge badge-info">Scheduled</span></td><td>2026-05-01</td><td><button class="btn btn-sm">View</button></td></tr>
+            <tr onclick="selectPayment('APP-002','Arts Group B','$0')" style="cursor:pointer"><td>APP-002</td><td>Arts Group B</td><td>$5,000</td><td>$0</td><td><span class="badge badge-danger">Declined</span></td><td>—</td><td>—</td><td>—</td><td><button class="btn btn-sm">View</button></td></tr>
+            <tr onclick="selectPayment('APP-003','Nonprofit C','$12,000')" style="cursor:pointer"><td>APP-003</td><td>Nonprofit C</td><td>$12,000</td><td>$12,000</td><td><span class="badge badge-success">Approved</span></td><td>One-time</td><td><span class="badge badge-success">Paid</span></td><td>—</td><td><button class="btn btn-sm">View</button></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+    <div class="split-side">
+      <div class="card" id="payment-detail-panel">
+        <div class="card-title">Selected Application</div>
+        <div class="detail-grid" style="margin-bottom:14px">
+          <div class="detail-row"><div class="detail-label">App ID</div><div class="detail-value" id="pd-id">APP-001</div></div>
+          <div class="detail-row"><div class="detail-label">Organization</div><div class="detail-value" id="pd-org">Community Org A</div></div>
+          <div class="detail-row"><div class="detail-label">Approved</div><div class="detail-value" id="pd-amount">$8,000</div></div>
+        </div>
+        <div class="card-title" style="margin-top:14px">Payment Schedule</div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>#</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>$4,000</td><td>2026-05-01</td><td><span class="badge badge-info">Scheduled</span></td></tr>
+            <tr><td>2</td><td>$4,000</td><td>2026-08-01</td><td><span class="badge badge-warning">Pending</span></td></tr>
+          </tbody>
+        </table></div>
+        <div class="alert alert-warning" style="margin-top:12px">Final outcome report is missing</div>
+        <div class="alert alert-danger">Next payment is on hold</div>
+        <div class="btn-group" style="margin-top:12px">
+          <button class="btn btn-sm" onclick="showToast('Decision updated')">Edit decision</button>
+          <button class="btn btn-sm" onclick="showToast('Payment scheduled')">Schedule payment</button>
+          <button class="btn btn-sm btn-primary" onclick="showToast('Marked as paid')">Mark as paid</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== USER MANAGEMENT ========== -->
+<div class="page" id="page-user-management">
+  <div class="page-header-row">
+    <div class="page-header"><h1>User Management</h1><p>Manage system users, roles, and access permissions.</p></div>
+    <button class="btn btn-primary" onclick="openModal('modal-invite-user')">+ Invite new user</button>
+  </div>
+  <div class="metrics-row">
+    <div class="metric-card"><div class="metric-label">Total Users</div><div class="metric-value">42</div></div>
+    <div class="metric-card"><div class="metric-label">Active</div><div class="metric-value" style="color:var(--grass)">35</div></div>
+    <div class="metric-card"><div class="metric-label">Pending Invites</div><div class="metric-value" style="color:var(--sunset)">5</div></div>
+    <div class="metric-card"><div class="metric-label">External Reviewers</div><div class="metric-value">12</div></div>
+  </div>
+  <div class="card">
+    <div class="filter-row">
+      <input type="text" placeholder="Name or email…" style="width:210px">
+      <select><option>All Roles</option><option>Admin</option><option>Program Manager</option><option>Reviewer</option><option>Finance</option></select>
+      <select><option>All Statuses</option><option>Active</option><option>Inactive</option><option>Pending</option></select>
+      <select><option>All Types</option><option>Internal</option><option>External</option></select>
+      <button class="btn btn-sm" onclick="showToast('Filters applied')">Apply filters</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">User List</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th><input type="checkbox" onclick="toggleAllCheckboxes(this)"></th><th>Name</th><th>Email</th><th>Role</th><th>Department</th><th>Type</th><th>Grants</th><th>Status</th><th>Last Login</th><th></th></tr></thead>
+      <tbody>
+        <tr><td><input type="checkbox" class="user-check"></td><td>Jane Smith</td><td>jane.smith@city.ca</td><td><span class="badge badge-info">Program Manager</span></td><td>Arts &amp; Culture</td><td>Internal</td><td>3</td><td><span class="badge badge-success">Active</span></td><td>2026-03-15</td><td><button class="btn btn-sm" onclick="showToast('Edit user form opened')">Edit</button></td></tr>
+        <tr><td><input type="checkbox" class="user-check"></td><td>John Doe</td><td>john.doe@email.com</td><td><span class="badge badge-neutral">Reviewer</span></td><td>External Org</td><td>External</td><td>2</td><td><span class="badge badge-warning">Pending</span></td><td>—</td><td><button class="btn btn-sm" onclick="showToast('Invite resent to john.doe@email.com')">Resend invite</button></td></tr>
+        <tr><td><input type="checkbox" class="user-check"></td><td>Sarah Lee</td><td>sarah.lee@city.ca</td><td><span class="badge badge-neutral">Finance</span></td><td>Finance Dept</td><td>Internal</td><td>5</td><td><span class="badge badge-danger">Inactive</span></td><td>2025-12-10</td><td><button class="btn btn-sm" onclick="showToast('Sarah Lee account activated')">Activate</button></td></tr>
+      </tbody>
+    </table></div>
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <button class="btn btn-sm" onclick="showToast('Selected users activated')">Activate selected</button>
+      <button class="btn btn-sm" onclick="showToast('Selected users deactivated')">Deactivate selected</button>
+      <button class="btn btn-sm" onclick="showToast('Role assignment dialog opened')">Assign role</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- end #main -->
+
+<!-- ========== MODALS ========== -->
+
+<div class="modal-overlay" id="modal-change-status">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Change Application Status</div><span class="modal-close" onclick="closeModal('modal-change-status')">×</span></div>
+    <div class="form-row"><label>Current Status</label><input type="text" value="Under Review" disabled style="opacity:0.6"></div>
+    <div class="form-row"><label>New Status</label><select style="width:100%"><option>Submitted</option><option>Eligibility Review</option><option>Under Review</option><option>Recommended</option><option>Approved</option><option>Declined</option></select></div>
+    <div class="form-row"><label>Reason / Notes</label><textarea placeholder="Optional notes about this status change…"></textarea></div>
+    <div class="modal-footer"><button class="btn" onclick="closeModal('modal-change-status')">Cancel</button><button class="btn btn-primary" onclick="closeModal('modal-change-status');showToast('Status updated successfully')">Update status</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-assign-reviewers">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Assign Reviewers</div><span class="modal-close" onclick="closeModal('modal-assign-reviewers')">×</span></div>
+    <div class="form-row"><label>Application</label><input type="text" value="APP-2043 · Community Arts Festival" disabled style="opacity:0.6"></div>
+    <div class="form-row"><label>Select Reviewers</label>
+      <div style="border:1.5px solid var(--border-strong);border-radius:var(--radius);padding:10px">
+        <label style="display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:14px;font-weight:400;text-transform:none;letter-spacing:0"><input type="checkbox" checked> Mark Lee — External Jury</label>
+        <label style="display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:14px;font-weight:400;text-transform:none;letter-spacing:0"><input type="checkbox" checked> Sarah Patel — Internal Staff</label>
+        <label style="display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:14px;font-weight:400;text-transform:none;letter-spacing:0"><input type="checkbox"> Michael Huang — External Jury</label>
+        <label style="display:flex;gap:8px;align-items:center;font-size:14px;font-weight:400;text-transform:none;letter-spacing:0"><input type="checkbox"> Anna Kowalski — Internal Staff</label>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn" onclick="closeModal('modal-assign-reviewers')">Cancel</button><button class="btn btn-primary" onclick="closeModal('modal-assign-reviewers');showToast('Reviewers assigned successfully')">Assign reviewers</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-note">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Add Internal Note</div><span class="modal-close" onclick="closeModal('modal-add-note')">×</span></div>
+    <div class="form-row"><label>Note</label><textarea id="new-note-text" placeholder="Enter your internal staff note…" style="width:100%"></textarea></div>
+    <div class="modal-footer"><button class="btn" onclick="closeModal('modal-add-note')">Cancel</button><button class="btn btn-primary" onclick="addNote()">Save note</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-create-grant">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Create Grant Program</div><span class="modal-close" onclick="closeModal('modal-create-grant')">×</span></div>
+    <div class="form-row"><label>Grant Name</label><input type="text" placeholder="e.g. Community Arts Grant 2026" style="width:100%"></div>
+    <div class="form-row"><label>Department</label><select style="width:100%"><option>Culture</option><option>Recreation</option><option>Social Services</option><option>Environment</option></select></div>
+    <div class="form-row"><label>Budget</label><input type="text" placeholder="$100,000" style="width:100%"></div>
+    <div class="form-row"><label>Application Opens</label><input type="date" style="width:100%"></div>
+    <div class="form-row"><label>Application Deadline</label><input type="date" style="width:100%"></div>
+    <div class="form-row"><label>Description</label><textarea placeholder="Describe the grant program purpose and eligibility criteria…" style="width:100%"></textarea></div>
+    <div class="modal-footer"><button class="btn" onclick="closeModal('modal-create-grant')">Cancel</button><button class="btn btn-primary" onclick="closeModal('modal-create-grant');showToast('Grant program created as Draft')">Create draft</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-edit-grant">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Edit Grant Program</div><span class="modal-close" onclick="closeModal('modal-edit-grant')">×</span></div>
+    <div class="form-row"><label>Grant Name</label><input type="text" value="Community Arts Support Grant" style="width:100%"></div>
+    <div class="form-row"><label>Status</label><select style="width:100%"><option selected>Open</option><option>Draft</option><option>Under Review</option><option>Closed</option></select></div>
+    <div class="form-row"><label>Program Owner</label><input type="text" value="Jane Smith" style="width:100%"></div>
+    <div class="form-row"><label>Total Budget</label><input type="text" value="$100,000" style="width:100%"></div>
+    <div class="modal-footer"><button class="btn" onclick="closeModal('modal-edit-grant')">Cancel</button><button class="btn btn-primary" onclick="closeModal('modal-edit-grant');showToast('Grant program saved')">Save changes</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-invite-user">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Invite New User</div><span class="modal-close" onclick="closeModal('modal-invite-user')">×</span></div>
+    <div class="form-row"><label>Full Name</label><input type="text" placeholder="First Last" style="width:100%"></div>
+    <div class="form-row"><label>Email Address</label><input type="email" placeholder="user@cityofkingston.ca" style="width:100%"></div>
+    <div class="form-row"><label>Role</label><select style="width:100%"><option>Admin</option><option>Program Manager</option><option selected>Reviewer</option><option>Finance</option></select></div>
+    <div class="form-row"><label>User Type</label><select style="width:100%"><option>Internal</option><option>External</option></select></div>
+    <div class="form-row"><label>Department / Organization</label><input type="text" placeholder="e.g. Arts &amp; Culture" style="width:100%"></div>
+    <div class="modal-footer"><button class="btn" onclick="closeModal('modal-invite-user')">Cancel</button><button class="btn btn-primary" onclick="closeModal('modal-invite-user');showToast('Invitation sent successfully')">Send invitation</button></div>
+  </div>
+</div>
+
+<!-- TOAST NOTIFICATION -->
+<div id="toast"></div>
+
+<script>
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const pageEl = document.getElementById('page-' + page);
+  if (pageEl) pageEl.classList.add('active');
+  const navEl = document.querySelector('[data-page="' + page + '"]');
+  if (navEl) { navEl.classList.add('active'); navEl.scrollIntoView({ block: 'nearest' }); }
+  window.scrollTo(0, 0);
+  closeSidebar(); // close drawer on mobile after navigation
+}
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const isOpen = sidebar.classList.toggle('open');
+  overlay.classList.toggle('open', isOpen);
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+}
+
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => navigate(item.dataset.page));
+});
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+});
+
+let toastTimeout;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function filterGrants() {
+  const search = document.getElementById('grant-search').value.toLowerCase();
+  const dept   = document.getElementById('grant-dept-filter').value;
+  const status = document.getElementById('grant-status-filter').value;
+  const year   = document.getElementById('grant-year-filter').value;
+  const rows   = document.querySelectorAll('#grants-table tbody tr');
+  let visible  = 0;
+  rows.forEach(row => {
+    const name = row.cells[0].textContent.toLowerCase();
+    const show = (!search || name.includes(search))
+      && (!dept   || row.dataset.dept   === dept)
+      && (!status || row.dataset.status === status)
+      && (!year   || row.dataset.year   === year);
+    row.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  document.getElementById('grant-count').textContent = `Showing ${visible} grant${visible !== 1 ? 's' : ''}`;
+}
+
+function resetGrantFilters() {
+  ['grant-search','grant-dept-filter','grant-status-filter','grant-year-filter'].forEach(id => {
+    const el = document.getElementById(id);
+    el.tagName === 'INPUT' ? (el.value = '') : (el.selectedIndex = 0);
+  });
+  filterGrants();
+}
+
+function showScoreDetail(appName) {
+  const section = document.getElementById('score-detail-section');
+  section.style.display = 'grid';
+  document.getElementById('score-app-name').textContent = appName;
+  section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function addNote() {
+  const text = document.getElementById('new-note-text').value.trim();
+  if (!text) return;
+  const tbody = document.getElementById('notes-list');
+  const today = new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' });
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${today}</td><td>Admin</td><td>${text}</td>`;
+  tbody.appendChild(tr);
+  document.getElementById('new-note-text').value = '';
+  closeModal('modal-add-note');
+  showToast('Note added successfully');
+}
+
+function selectPayment(id, org, amount) {
+  // Remove selection from any previously selected row
+  document.querySelectorAll('#page-payments tbody tr').forEach(r => r.classList.remove('row-selected'));
+  // Find and highlight the clicked row
+  const rows = document.querySelectorAll('#page-payments tbody tr');
+  rows.forEach(row => {
+    if (row.cells[0] && row.cells[0].textContent.trim() === id) {
+      row.classList.add('row-selected');
+    }
+  });
+  document.getElementById('pd-id').textContent     = id;
+  document.getElementById('pd-org').textContent    = org;
+  document.getElementById('pd-amount').textContent = amount;
+  showToast('Payment details loaded for ' + id);
+}
+
+function toggleAllCheckboxes(master) {
+  document.querySelectorAll('.user-check').forEach(cb => cb.checked = master.checked);
+}
+
+function viewOrgApplications(orgName) {
+  // Navigate to the Applications List page
+  navigate('applications-list');
+  // Populate the search filter with the org name
+  const filterInput = document.getElementById('app-org-filter');
+  if (filterInput) {
+    filterInput.value = orgName;
+    filterApplicationsByOrg();
+  }
+  showToast('Showing applications for ' + orgName);
+}
+
+function filterApplicationsByOrg() {
+  const search = (document.getElementById('app-org-filter').value || '').toLowerCase();
+  const rows = document.querySelectorAll('#page-applications-list .card table tbody tr');
+  rows.forEach(row => {
+    // Applicant name is in the 3rd cell (index 2)
+    const applicant = row.cells[2] ? row.cells[2].textContent.toLowerCase() : '';
+    row.style.display = (!search || applicant.includes(search)) ? '' : 'none';
+  });
+}
+
+function togglePill(type) {
+  const btn = document.getElementById('pill-' + type);
+  btn.classList.toggle('pill-toggle-active');
+  showToast((btn.classList.contains('pill-toggle-active') ? 'Showing' : 'Hiding') + ' ' + type + ' applications');
+}
+
+document.getElementById('score-detail-section').style.display = 'grid';
+</script>
+</body>
+</html>

@@ -6,87 +6,521 @@
   <title>Joel Varghese, Portfolio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700;800;900&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Pinyon+Script&family=Inter:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet" />
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,600,700,800,900&f[]=satoshi@300,400,500,700,900&display=swap" rel="stylesheet" />
 
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 
   <style>
+    /* ─────────────────────────────────────────────────────────
+       EDITORIAL RESTRAINT
+       Tokens, motion, hover system — synthesizing the three skills
+       ───────────────────────────────────────────────────────── */
+    :root {
+      /* 8px spacing scale */
+      --s-1: 8px;   --s-2: 16px;  --s-3: 24px;  --s-4: 32px;
+      --s-5: 40px;  --s-6: 56px;  --s-7: 64px;  --s-8: 80px;
+      --s-9: 96px;  --s-10: 120px; --s-11: 160px; --s-12: 200px;
+
+      /* Cream + chocolate brown + caramel — zero black, zero pure white */
+      --c-bg: oklch(96.5% 0.012 75);
+      --c-bg-warm: oklch(95% 0.018 70);
+      --c-surface: oklch(92.5% 0.022 75);
+      --c-card: oklch(98% 0.008 75);
+      --c-ink: oklch(30% 0.06 50);          /* deep chocolate, was near-black */
+      --c-ink-soft: oklch(42% 0.06 52);     /* medium chocolate */
+      --c-ink-muted: oklch(58% 0.05 55);    /* light chocolate */
+      --c-line: oklch(85% 0.025 70);
+      --c-line-soft: oklch(89% 0.020 75);
+      --c-accent: oklch(58% 0.13 50);       /* caramel — your signature */
+      --c-accent-soft: oklch(72% 0.10 55);
+      --c-accent-deep: oklch(45% 0.13 48);  /* darker caramel for hover */
+      --c-dark: oklch(24% 0.07 48);         /* darkest chocolate, was near-black */
+      --c-dark-2: oklch(30% 0.07 50);
+      --c-on-dark: oklch(96% 0.015 75);     /* cream on dark */
+      --c-on-dark-soft: oklch(78% 0.022 70);
+
+      /* Motion — Emil's curves */
+      --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+      --ease-soft: cubic-bezier(0.32, 0.72, 0, 1);
+      --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+      /* Shadows — tinted toward the warm hue */
+      --shadow-sm: 0 1px 2px oklch(20% 0.015 70 / 0.04), 0 2px 4px oklch(20% 0.015 70 / 0.04);
+      --shadow-md: 0 4px 12px oklch(20% 0.015 70 / 0.06), 0 10px 24px oklch(20% 0.015 70 / 0.08);
+      --shadow-lg: 0 14px 32px oklch(20% 0.015 70 / 0.10), 0 28px 56px oklch(20% 0.015 70 / 0.13);
+
+      /* Fonts */
+      --font-display: 'Cabinet Grotesk', 'Inter', system-ui, sans-serif;
+      --font-body: 'Satoshi', system-ui, sans-serif;
+      --font-script: 'Pinyon Script', cursive;
+      --font-mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, monospace;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body { background: #fdf9f5; color: #1a1a1a; font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: #f5f0eb; }
-    ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 3px; }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: translateY(0); } }
-    .reveal { opacity: 0; transform: translateY(36px); transition: opacity 0.75s ease, transform 0.75s ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 24px; }
-    .modal-box { background: #fff; border-radius: 10px; max-width: 720px; width: 100%; max-height: 80vh; overflow-y: auto; padding: 56px; }
-    .modal-box h2 { font-family: 'Work Sans', sans-serif; font-weight: 800; font-size: 32px; margin-bottom: 8px; }
-    .modal-box h3 { font-family: 'Work Sans', sans-serif; font-weight: 700; font-size: 18px; margin: 32px 0 10px; }
-    .modal-box p { font-family: 'Montserrat', sans-serif; font-size: 14px; line-height: 1.8; color: #444; margin-bottom: 12px; }
-    .modal-box a { color: #1a1a1a; }
-    .scroll-top-btn { position: fixed; bottom: 36px; right: 36px; z-index: 200; width: 48px; height: 48px; border-radius: 50%; background: #1a1a1a; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0,0,0,0.18); transition: opacity 0.3s ease, transform 0.2s ease; color: #fff; }
+    body {
+      background: var(--c-bg);
+      color: var(--c-ink);
+      font-family: var(--font-body);
+      font-weight: 400;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      font-feature-settings: 'ss01', 'kern';
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--c-surface); }
+    ::-webkit-scrollbar-thumb { background: var(--c-ink); border-radius: 3px; }
+    ::selection { background: var(--c-accent); color: oklch(98% 0.008 80); }
+
+    /* ── Reveals: blur-fade entrance per Emil ─────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(40px); filter: blur(8px); }
+      to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      filter: blur(6px);
+      transition:
+        opacity 1.1s var(--ease-out),
+        transform 1.1s var(--ease-out),
+        filter 1.1s var(--ease-out);
+      will-change: opacity, transform, filter;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal, .reveal.visible { opacity: 1 !important; transform: none !important; filter: none !important; transition: none !important; }
+    }
+
+    /* ── Modal ───────────────────────────────────────────── */
+    .modal-overlay { position: fixed; inset: 0; background: oklch(15% 0.015 65 / 0.6); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 24px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+    .modal-box { background: var(--c-card); border-radius: 10px; max-width: 720px; width: 100%; max-height: 80vh; overflow-y: auto; padding: 56px; border: 1px solid var(--c-line); }
+    .modal-box h2 { font-family: var(--font-display); font-weight: 800; font-size: 32px; margin-bottom: 8px; letter-spacing: -0.02em; }
+    .modal-box h3 { font-family: var(--font-display); font-weight: 700; font-size: 18px; margin: 32px 0 10px; }
+    .modal-box p { font-family: var(--font-body); font-size: 14px; line-height: 1.75; color: var(--c-ink-soft); margin-bottom: 12px; }
+    .modal-box a { color: var(--c-accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    /* ── Scroll-to-top ───────────────────────────────────── */
+    .scroll-top-btn { position: fixed; bottom: 36px; right: 36px; z-index: 200; width: 48px; height: 48px; border-radius: 50%; background: var(--c-ink); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-md); transition: opacity 0.3s var(--ease-out), transform 0.2s var(--ease-out); color: var(--c-on-dark); }
     .scroll-top-btn:hover { transform: translateY(-3px); }
+    .scroll-top-btn:active { transform: scale(0.95); }
     .scroll-top-btn.hidden { opacity: 0; pointer-events: none; }
-    .copyable { cursor: pointer; transition: color 0.2s; user-select: none; -webkit-user-select: none; }
-    .copy-toast { position: fixed; bottom: 90px; right: 36px; background: #1a1a1a; color: #fff; padding: 12px 22px; border-radius: 30px; font-family: 'Montserrat', sans-serif; font-size: 13px; z-index: 600; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+
+    /* ── Copyable + toast ────────────────────────────────── */
+    .copyable { cursor: pointer; transition: color 0.2s var(--ease-out); user-select: none; -webkit-user-select: none; }
+    .copy-toast { position: fixed; bottom: 90px; right: 36px; background: var(--c-ink); color: var(--c-on-dark); padding: 12px 22px; border-radius: 30px; font-family: var(--font-body); font-size: 13px; font-weight: 600; z-index: 600; opacity: 0; transition: opacity 0.3s var(--ease-out); pointer-events: none; }
     .copy-toast.show { opacity: 1; }
 
-    /* Hamburger button — hidden by default (desktop & tablet) */
-    .hamburger-btn {
-      display: none;
-      width: 40px; height: 40px;
-      background: none; border: none; cursor: pointer;
-      padding: 0; position: relative;
-      flex-direction: column; justify-content: center; align-items: center; gap: 6px;
-    }
-    .hamburger-btn span {
-      display: block; width: 26px; height: 2.5px;
-      background: var(--hb-color, #1a1a1a); border-radius: 2px;
-      transition: transform 0.35s ease, opacity 0.25s ease, background 0.3s ease;
-      transform-origin: center;
-    }
+    /* ── Hamburger ───────────────────────────────────────── */
+    .hamburger-btn { display: none; width: 40px; height: 40px; background: none; border: none; cursor: pointer; padding: 0; position: relative; flex-direction: column; justify-content: center; align-items: center; gap: 6px; }
+    .hamburger-btn span { display: block; width: 26px; height: 2.5px; background: var(--hb-color, var(--c-ink)); border-radius: 2px; transition: transform 0.35s var(--ease-out), opacity 0.25s var(--ease-out), background 0.3s var(--ease-out); transform-origin: center; }
     .hamburger-btn.open span:nth-child(1) { transform: translateY(8.5px) rotate(45deg); }
     .hamburger-btn.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
     .hamburger-btn.open span:nth-child(3) { transform: translateY(-8.5px) rotate(-45deg); }
 
-    /* Mobile menu drawer — hidden by default */
-    .mobile-menu {
-      position: fixed; top: 70px; left: 0; right: 0; bottom: 0;
-      background: rgba(26,26,26,0.98); backdrop-filter: blur(14px);
-      z-index: 99;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.3s ease;
-      display: none;
-    }
+    /* ── Mobile menu drawer ──────────────────────────────── */
+    .mobile-menu { position: fixed; top: 70px; left: 0; right: 0; bottom: 0; background: oklch(18% 0.013 70 / 0.98); backdrop-filter: blur(14px); z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s var(--ease-out); display: none; }
     .mobile-menu.open { opacity: 1; pointer-events: auto; }
-    .mobile-menu-inner {
-      display: flex; flex-direction: column;
-      padding: 48px 32px;
-      gap: 4px;
+    .mobile-menu-inner { display: flex; flex-direction: column; padding: 48px 32px; gap: 4px; }
+    .mobile-menu-inner a { font-family: var(--font-display); font-weight: 700; font-size: 32px; letter-spacing: -0.02em; text-decoration: none; color: var(--c-on-dark); text-transform: uppercase; padding: 18px 0; border-bottom: 1px solid oklch(100% 0 0 / 0.08); opacity: 0; transform: translateY(-12px); transition: opacity 0.4s var(--ease-out), transform 0.4s var(--ease-out), color 0.2s var(--ease-out); transition-delay: calc(var(--i) * 60ms + 100ms); }
+    .mobile-menu.open .mobile-menu-inner a { opacity: 1; transform: translateY(0); }
+    .mobile-menu-inner a:active { color: var(--c-accent-soft); }
+
+    /* ── Nav link underline (grows from left) ────────────── */
+    .nav-link-fx { position: relative; display: inline-block; }
+    .nav-link-fx::after { content: ''; position: absolute; left: 0; bottom: -6px; width: 100%; height: 1.5px; background: currentColor; transform: scaleX(0); transform-origin: left center; transition: transform 0.45s var(--ease-out); }
+    .nav-link-fx:hover::after { transform: scaleX(1); }
+
+    /* ── Magnetic CTA ────────────────────────────────────── */
+    .magnetic-wrap {
+      display: inline-block;
+      padding: 14px;
+      cursor: pointer;
     }
-    .mobile-menu-inner a {
-      font-family: 'Work Sans', sans-serif;
-      font-weight: 800; font-size: 32px;
-      letter-spacing: 1px; text-decoration: none;
-      color: #fff; text-transform: uppercase;
-      padding: 18px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      opacity: 0; transform: translateY(-12px);
-      transition: opacity 0.35s ease, transform 0.35s ease, color 0.2s ease;
-      transition-delay: calc(var(--i) * 60ms + 100ms);
+    .magnetic-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 36px;
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.5s var(--ease-out), background 0.3s var(--ease-out), color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+      will-change: transform;
     }
-    .mobile-menu.open .mobile-menu-inner a {
-      opacity: 1; transform: translateY(0);
+    .magnetic-btn.is-primary { background: var(--c-ink); color: var(--c-on-dark); }
+    .magnetic-btn.is-primary:hover { box-shadow: var(--shadow-md); }
+    .magnetic-btn.is-ghost { background: transparent; color: var(--c-ink); border: 1.5px solid var(--c-ink); }
+    .magnetic-btn.is-ghost:hover { background: var(--c-ink); color: var(--c-on-dark); }
+    .magnetic-btn:active { transform: scale(0.97) !important; transition-duration: 0.15s !important; }
+
+    /* ── Hero (editorial, asymmetric) ─────────────────────── */
+    section#hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 140px var(--s-8) var(--s-8);
+      background: var(--c-bg);
     }
-    .mobile-menu-inner a:active { color: #c5b8a0; }
-    /* Tablet */
+    .hero-mesh {
+      position: absolute; inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 55% at 75% 40%, oklch(85% 0.10 55 / 0.32) 0%, oklch(85% 0.10 55 / 0) 70%),
+        radial-gradient(ellipse 50% 50% at 20% 80%, oklch(80% 0.06 70 / 0.35) 0%, oklch(80% 0.06 70 / 0) 70%);
+      animation: meshShift 24s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+    @keyframes meshShift {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-3%, 2%) scale(1.06); }
+    }
+    .hero-grain {
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.45 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      background-size: 240px 240px;
+      opacity: 0.07;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .hero-grid {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+      max-width: 1440px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: var(--s-8);
+      align-items: end;
+    }
+    .hero-left { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-3); }
+    .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--c-ink-muted);
+      animation: fadeUp 0.9s var(--ease-out) both;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hero-eyebrow .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--c-accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.45; transform: scale(0.82); }
+    }
+    .hero-display {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: clamp(56px, 13vw, 220px);
+      line-height: 0.86;
+      letter-spacing: -0.045em;
+      color: var(--c-ink);
+      text-transform: uppercase;
+      animation: fadeUp 1s var(--ease-out) 0.1s both;
+    }
+    .hero-display .accent { color: var(--c-accent); }
+    .hero-script {
+      font-family: var(--font-script);
+      font-size: clamp(56px, 9vw, 132px);
+      line-height: 1;
+      color: var(--c-accent);
+      margin-top: var(--s-2);
+      margin-bottom: var(--s-5);
+      animation: fadeUp 1s var(--ease-out) 0.3s both;
+    }
+    .hero-cta-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      animation: fadeUp 1s var(--ease-out) 0.45s both;
+      margin-left: -14px; /* offset magnetic wrap padding */
+    }
+    .hero-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: var(--s-3);
+      padding-bottom: var(--s-3);
+      animation: fadeUp 1s var(--ease-out) 0.5s both;
+    }
+    .hero-right-rule {
+      width: 56px;
+      height: 1.5px;
+      background: var(--c-ink);
+    }
+    .hero-intro {
+      font-family: var(--font-body);
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--c-ink-soft);
+      max-width: 28ch;
+      text-align: right;
+    }
+    .hero-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--c-ink-muted);
+      display: flex;
+      gap: 24px;
+    }
+
     @media (max-width: 1024px) {
-      .skills-grid, .contact-grid { grid-template-columns: 1fr !important; gap: 56px !important; }
+      .hero-grid { grid-template-columns: 1fr; gap: var(--s-5); align-items: start; }
+      .hero-right { align-items: flex-start; padding-bottom: 0; }
+      .hero-intro { text-align: left; max-width: 100%; }
+    }
+    @media (max-width: 900px) {
+      section#hero { padding-top: 110px; }
+    }
+    @media (max-width: 640px) {
+      section#hero { padding: 100px 20px 56px; min-height: auto; }
+    }
+
+    /* ── Scroll progress bar ─────────────────────────────── */
+    .scroll-progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      width: 0%;
+      background: var(--c-accent);
+      z-index: 1200;
+      transition: width 0.05s linear;
+      box-shadow: 0 0 12px oklch(58% 0.13 50 / 0.5);
+    }
+
+    /* cursor: normal system cursor */
+
+    /* ── Word stagger reveal ─────────────────────────────── */
+    .word-reveal { display: inline; }
+    .word-reveal .word-inner {
+      display: inline-block;
+      overflow: hidden;
+      vertical-align: bottom;
+      padding-right: 0.06em;
+      padding-bottom: 0.06em;
+      margin-bottom: -0.06em;
+    }
+    .word-reveal .word-piece {
+      display: inline-block;
+      transform: translateY(115%);
+      transition: transform 0.95s var(--ease-out);
+      transition-delay: calc(var(--i, 0) * 70ms);
+      will-change: transform;
+    }
+    .word-reveal.visible .word-piece { transform: translateY(0); }
+    @media (prefers-reduced-motion: reduce) {
+      .word-reveal .word-piece { transform: none !important; transition: none !important; }
+    }
+
+    /* ── Clip-path reveal ─────────────────────────────────── */
+    .clip-reveal {
+      clip-path: inset(0 0 100% 0);
+      transition: clip-path 1.3s var(--ease-out);
+      will-change: clip-path;
+    }
+    .clip-reveal.visible { clip-path: inset(0 0 0 0); }
+
+    /* ── Section heading underline draw ───────────────────── */
+    .head-underline {
+      display: block;
+      margin-top: 14px;
+      height: 2px;
+      width: 64px;
+      background: var(--c-accent);
+      transform-origin: left center;
+      transform: scaleX(0);
+      transition: transform 1.1s var(--ease-out) 0.35s;
+    }
+    .reveal.visible .head-underline { transform: scaleX(1); }
+
+    /* ── Tag pill hover shimmer ───────────────────────────── */
+    .tag-shimmer {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .tag-shimmer::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(115deg, transparent 30%, oklch(98% 0.008 80 / 0.5) 50%, transparent 70%);
+      transform: translateX(-150%);
+      transition: transform 0.7s var(--ease-out);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .tag-shimmer:hover::before { transform: translateX(150%); }
+
+    /* ── Hero mesh parallax / cursor follow ───────────────── */
+    .hero-mesh, .hero-grain {
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
+    }
+
+    /* ── Page load splash — JV signature ──────────────────── */
+    .page-splash {
+      position: fixed; inset: 0;
+      background: var(--c-bg);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 1.1s var(--ease-out) 0.1s, visibility 1.1s 1.2s;
+    }
+    .page-splash.gone { opacity: 0; visibility: hidden; }
+    .page-splash .mark {
+      font-family: var(--font-script);
+      font-size: clamp(72px, 14vw, 190px);
+      color: var(--c-ink);
+      letter-spacing: 4px;
+      animation: splashMark 8s ease both;
+      transform-origin: center center;
+      display: inline-block;
+    }
+    @keyframes splashMark {
+      0%   { opacity: 0; transform: rotate(-180deg) scale(0.08); filter: blur(24px); }
+      18%  { opacity: 1; transform: rotate(9deg)   scale(1.07);  filter: blur(0); }
+      27%  { opacity: 1; transform: rotate(-3deg)  scale(0.97); }
+      34%  { opacity: 1; transform: rotate(1.5deg) scale(1.01); }
+      42%  { opacity: 1; transform: rotate(0deg)   scale(1); }
+      78%  { opacity: 1; transform: rotate(0deg)   scale(1); }
+      100% { opacity: 0; transform: rotate(0deg)   scale(0.9) translateY(-60px); filter: blur(10px); }
+    }
+    /* Website arrives from below as splash exits */
+    @keyframes bodyArrive {
+      0%   { opacity: 0; transform: translateY(60px); filter: blur(4px); }
+      100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+    [data-splash-active] #root {
+      animation: bodyArrive 1s var(--ease-out) 5.5s both;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .page-splash { display: none !important; }
+      [data-splash-active] #root { animation: none !important; }
+    }
+
+    /* ── Tools marquee ───────────────────────────────────── */
+    .tools-marquee-wrap {
+      overflow: hidden;
+      mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+    }
+    .tools-marquee-track {
+      display: flex;
+      gap: 0;
+      animation: toolsScroll 32s linear infinite;
+      width: max-content;
+      will-change: transform;
+    }
+    .tools-marquee-wrap:hover .tools-marquee-track {
+      animation-play-state: paused;
+    }
+    @keyframes toolsScroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    .tool-pill {
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+      padding: 28px 40px; min-width: 160px;
+      background: var(--c-card); border-radius: 18px; margin: 0 12px;
+      border: 1px solid var(--c-line-soft); flex-shrink: 0;
+      transition: transform 0.3s cubic-bezier(0.23,1,0.32,1), box-shadow 0.3s cubic-bezier(0.23,1,0.32,1);
+    }
+    .tool-pill:hover { transform: translateY(-4px); box-shadow: 0 12px 32px oklch(30% 0.06 50 / 0.10); }
+    .tool-pill img { width: 72px; height: 72px; object-fit: contain; }
+
+    /* ── Section dressing ─────────────────────────────────── */
+    .section-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--c-ink-muted);
+    }
+    .section-display {
+      font-family: var(--font-display);
+      font-weight: 900;
+      letter-spacing: -0.035em;
+      line-height: 0.9;
+      text-transform: uppercase;
+    }
+    .section-display .accent { color: var(--c-accent); }
+
+    /* ── Metric counters ─────────────────────────────────── */
+    .metric-num {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+
+    /* ── Project blocks (no rectangular cards) ───────────── */
+    .project-block { background: transparent; }
+    .project-block + .project-block { border-top: 1px solid var(--c-line-soft); }
+    .project-image-block { position: relative; }
+    .project-image-frame.is-link:hover { transform: translateY(-8px); box-shadow: 0 32px 80px oklch(20% 0.08 50 / 0.20), 0 8px 20px oklch(20% 0.08 50 / 0.10) !important; }
+    .project-image-frame.is-link:active { transform: translateY(-4px) scale(0.99); }
+    /* Stagger image entrance behind text */
+    .project-image-block.reveal { transform: translateY(40px); }
+    .project-image-block.reveal.visible { transform: translateY(0); }
+
+    /* ── Folder cards ────────────────────────────────────── */
+    .folder-fx { transition: transform 0.4s var(--ease-out) !important; }
+    .folder-fx:hover { transform: translateY(-8px) !important; }
+    .folder-fx svg { transition: filter 0.4s var(--ease-out); }
+    .folder-fx:hover svg { filter: drop-shadow(0 8px 16px oklch(20% 0.015 70 / 0.14)); }
+
+    /* ── Tool / Cert cards ───────────────────────────────── */
+    .tool-fx, .cert-fx { transition: transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out), border-color 0.4s var(--ease-out) !important; }
+    .tool-fx:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--c-accent-soft) !important; }
+    .cert-fx:hover { padding-left: 10px !important; }
+
+    /* ── Social icons ────────────────────────────────────── */
+    .social-fx { transition: background 0.35s var(--ease-out), transform 0.35s var(--ease-out) !important; }
+    .social-fx:hover { transform: translateY(-4px) !important; }
+
+    /* ── Inputs ──────────────────────────────────────────── */
+    .field-fx { transition: border-color 0.3s var(--ease-out), background 0.3s var(--ease-out) !important; }
+    .field-fx:focus { border-color: var(--c-ink) !important; outline: none; background: var(--c-card) !important; }
+
+    /* ── Responsive ───────────────────────────────────────── */
+
+    /* ── Tablet: 768px – 1024px ──────────────────────────── */
+    @media (max-width: 1024px) {
       .about-grid { grid-template-columns: 1fr 1fr !important; gap: 48px !important; }
+      .skills-grid, .contact-grid { grid-template-columns: 1fr !important; gap: 56px !important; }
       .tools-grid { grid-template-columns: repeat(3, 1fr) !important; }
       .folders-grid { grid-template-columns: repeat(3, 1fr) !important; }
       .project-inner { flex-direction: column !important; align-items: stretch !important; gap: 48px !important; }
@@ -94,42 +528,152 @@
       .project-logo-box { height: 280px !important; }
       nav, section, footer { padding-left: 32px !important; padding-right: 32px !important; }
     }
-    /* Phone */
-    @media (max-width: 640px) {
-      .about-grid {
-        grid-template-columns: 1fr !important;
-        gap: 32px !important;
-      }
-      /* Reorder About section on phone: heading → text-block (which contains greeting/paragraphs/connect) → photo+socials */
+
+    /* ── Small tablet: ≤900px — hamburger nav ────────────── */
+    @media (max-width: 900px) {
+      .nav-links { display: none !important; }
+      .nav-hire-btn { display: none !important; }
+      .hamburger-btn { display: flex !important; }
+      .mobile-menu { display: block !important; }
+    }
+
+    /* ── Tablet portrait: ≤768px ─────────────────────────── */
+    @media (max-width: 768px) {
+      .about-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
       .about-text-block { order: 1; }
-      .about-photo-block {
-        order: 2;
-        align-items: center !important;
-        min-height: auto !important;
-      }
-      /* Round photo on phone only */
-      .about-photo {
-        max-width: 240px !important;
-        width: 240px !important;
-        height: 240px !important;
-        aspect-ratio: 1 / 1 !important;
-        border-radius: 50% !important;
-      }
-      .about-photo img {
-        object-position: center 20% !important;
-      }
+      .about-photo-block { order: 2; align-items: center !important; min-height: auto !important; }
+      .cert-grid { grid-template-columns: 1fr !important; gap: 0 !important; }
+      #contact { padding-top: 80px !important; padding-bottom: 80px !important; }
+      #skills  { padding-top: 80px !important; padding-bottom: 80px !important; }
+    }
+
+    /* ── Mobile: ≤640px ──────────────────────────────────── */
+    @media (max-width: 640px) {
+      .about-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+      .about-text-block { order: 1; }
+      .about-photo-block { order: 2; align-items: center !important; min-height: auto !important; }
+      .about-photo { max-width: 240px !important; width: 240px !important; height: 240px !important; aspect-ratio: 1 / 1 !important; border-radius: 50% !important; }
+      .about-photo img { object-position: center 20% !important; }
       .tools-grid { grid-template-columns: repeat(2, 1fr) !important; }
       .folders-grid { grid-template-columns: repeat(2, 1fr) !important; }
       section, footer { padding-left: 20px !important; padding-right: 20px !important; }
       .modal-box { padding: 32px 24px !important; }
-      /* Nav on phone: J V initials + hamburger menu */
       nav { padding-left: 20px !important; padding-right: 16px !important; }
       .nav-logo-full { display: none !important; }
       .nav-logo-short { display: inline-block !important; }
-      .nav-links { display: none !important; }
-      .hamburger-btn { display: flex !important; }
-      .mobile-menu { display: block !important; }
       .project-inner { padding: 56px 24px !important; }
+      .cert-grid { grid-template-columns: 1fr !important; gap: 0 !important; }
+      /* Section vertical padding */
+      #hero    { padding-top: 100px !important; padding-bottom: 56px !important; }
+      #services, #about, #projects, #contact { padding-top: 72px !important; padding-bottom: 72px !important; }
+      #skills  { padding-top: 72px !important; padding-bottom: 72px !important; }
+      /* Hero display text — prevents overflow on narrow screens */
+      .hero-display { font-size: clamp(40px, 10vw, 56px) !important; }
+      .hero-script  { font-size: clamp(38px, 10vw, 60px) !important; }
+      /* Marquee pills slightly smaller on phone */
+      .tool-pill { padding: 20px 28px !important; min-width: 130px !important; }
+      .tool-pill img { width: 58px !important; height: 58px !important; }
+      /* Scroll-to-top lower on small screens */
+      .scroll-top-btn { bottom: 20px !important; right: 20px !important; }
+    }
+
+    /* ── Very small: ≤390px ──────────────────────────────── */
+    @media (max-width: 390px) {
+      .hero-display { font-size: clamp(36px, 9.5vw, 48px) !important; }
+    }
+
+    /* ── Project grid cards (Framer-style) ──────────────────── */
+    .proj-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    @media (max-width: 860px) { .proj-grid { grid-template-columns: 1fr; gap: 16px; } }
+    .proj-item {
+      display: flex; flex-direction: column; cursor: pointer;
+      text-decoration: none; color: inherit;
+      outline: none;
+    }
+    .proj-card-media {
+      border-radius: 18px; overflow: hidden; aspect-ratio: 4/3;
+      position: relative;
+      transition: transform 0.55s cubic-bezier(0.23,1,0.32,1), box-shadow 0.55s cubic-bezier(0.23,1,0.32,1);
+    }
+    .proj-item:hover .proj-card-media {
+      transform: translateY(-10px);
+      box-shadow: 0 36px 80px oklch(20% 0.08 50 / 0.22), 0 8px 20px oklch(20% 0.08 50 / 0.10);
+    }
+    .proj-item:active .proj-card-media { transform: translateY(-4px) scale(0.99); }
+    .proj-card-media-inner {
+      position: absolute; inset: 0;
+      background-size: 250% 250%;
+      animation: gradientDrift 14s ease-in-out infinite alternate;
+    }
+    @keyframes gradientDrift {
+      0%   { background-position: 0% 0%;   filter: brightness(1) contrast(1); }
+      33%  { background-position: 60% 40%; filter: brightness(1.07) contrast(1.03); }
+      66%  { background-position: 100% 70%; filter: brightness(0.95) contrast(1.02); }
+      100% { background-position: 20% 100%; filter: brightness(1.04) contrast(1); }
+    }
+    .proj-card-mark {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .proj-card-mark img {
+      max-width: 50%; max-height: 50%;
+      object-fit: contain; display: block;
+    }
+    .proj-card-label {
+      padding: 14px 2px 8px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--c-line-soft);
+    }
+    .proj-card-name {
+      font-family: var(--font-display); font-weight: 700; font-size: 17px;
+      color: var(--c-ink); letter-spacing: -0.01em;
+    }
+    .proj-card-cat {
+      font-family: var(--font-mono); font-size: 11px;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--c-ink-muted);
+    }
+
+    /* ── Services section ────────────────────────────────────── */
+    .services-cards {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+    }
+    @media (max-width: 900px) { .services-cards { grid-template-columns: 1fr; } }
+    .svc-card {
+      background: var(--c-card); border-radius: 22px;
+      padding: 44px 36px; border: 1px solid var(--c-line-soft);
+      display: flex; flex-direction: column; gap: 20px;
+      transition: transform 0.45s var(--ease-out), box-shadow 0.45s var(--ease-out), border-color 0.4s var(--ease-out);
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .svc-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); border-color: var(--c-accent-soft); }
+    }
+    .svc-icon-wrap {
+      width: 100px; height: 100px; border-radius: 24px;
+      background: var(--c-bg); border: 1px solid var(--c-line);
+      display: flex; align-items: center; justify-content: center;
+      animation: iconFloat 5.5s ease-in-out infinite;
+    }
+    @keyframes iconFloat {
+      0%,100% { transform: translateY(0) rotateX(-8deg) rotateY(-8deg); }
+      33%      { transform: translateY(-5px) rotateX(4deg) rotateY(7deg); }
+      66%      { transform: translateY(-3px) rotateX(-3deg) rotateY(-5deg); }
+    }
+    .svc-card:nth-child(2) .svc-icon-wrap { animation-delay: -1.9s; }
+    .svc-card:nth-child(3) .svc-icon-wrap { animation-delay: -3.6s; }
+    .svc-title {
+      font-family: var(--font-display); font-weight: 800; font-size: 23px;
+      letter-spacing: -0.025em; color: var(--c-ink); line-height: 1.15;
+    }
+    .svc-desc { font-family: var(--font-body); font-size: 15px; line-height: 1.78; color: var(--c-ink-soft); }
+    .svc-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
+    .svc-tag {
+      font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 5px 13px; border-radius: 40px;
+      background: var(--c-bg); border: 1px solid var(--c-line); color: var(--c-ink-soft);
     }
   </style>
 </head>
@@ -160,7 +704,7 @@ function TweaksPanel({ children }) {
   return (
     <div style={{ position: 'fixed', bottom: 32, left: 32, zIndex: 400 }}>
       <button onClick={() => setOpen(o => !o)} title="Tweaks"
-        style={{ width: 44, height: 44, borderRadius: '50%', background: '#1a1a1a', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.2)', transition: 'transform 0.2s' }}
+        style={{ width: 44, height: 44, borderRadius: '50%', background: 'oklch(30% 0.06 50)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px oklch(20% 0.08 50 / 0.18)', transition: 'transform 0.2s' }}
         onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.08)'}
         onMouseLeave={e => e.currentTarget.style.transform = ''}
       >⚙</button>
@@ -174,15 +718,15 @@ function TweaksPanel({ children }) {
 }
 
 function TweakSection({ label }) {
-  return <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#999', marginBottom: 14, marginTop: 4 }}>{label}</p>;
+  return <p style={{ fontFamily: "'Satoshi', sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#999', marginBottom: 14, marginTop: 4 }}>{label}</p>;
 }
 
 function TweakToggle({ label, value, onChange }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-      <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 13, color: '#333' }}>{label}</span>
+      <span style={{ fontFamily: "'Satoshi', sans-serif", fontSize: 13, color: '#333' }}>{label}</span>
       <button onClick={() => onChange(!value)}
-        style={{ width: 44, height: 24, borderRadius: 12, background: value ? '#1a1a1a' : '#ddd', border: 'none', cursor: 'pointer', position: 'relative', flexShrink: 0, transition: 'background 0.2s' }}
+        style={{ width: 44, height: 24, borderRadius: 12, background: value ? 'oklch(30% 0.06 50)' : '#ddd', border: 'none', cursor: 'pointer', position: 'relative', flexShrink: 0, transition: 'background 0.2s' }}
       >
         <span style={{ position: 'absolute', top: 3, left: value ? 23 : 3, width: 18, height: 18, borderRadius: '50%', background: '#fff', transition: 'left 0.2s', display: 'block' }} />
       </button>
@@ -246,11 +790,300 @@ function useReveal() {
   React.useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { el.classList.add('visible'); obs.unobserve(el); } }, { threshold: 0.1 });
+    // Fire slightly before the element enters viewport for a smoother feel
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { el.classList.add('visible'); obs.unobserve(el); } },
+      { threshold: 0, rootMargin: '0px 0px -80px 0px' }
+    );
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
   return ref;
+}
+
+/* ── Custom cursor blob ─────────────────────────────────── */
+function CustomCursor() {
+  React.useEffect(() => {
+    if (matchMedia('(hover: none), (pointer: coarse)').matches) return;
+    const dot = document.createElement('div');
+    dot.className = 'cursor-dot';
+    document.body.appendChild(dot);
+    let tx = 0, ty = 0, x = 0, y = 0;
+    let raf = 0;
+    const move = (e) => { tx = e.clientX; ty = e.clientY; };
+    const press = () => dot.classList.add('is-press');
+    const release = () => dot.classList.remove('is-press');
+    const over = (e) => {
+      const t = e.target;
+      if (!t || !t.closest) return;
+      if (t.closest('input, textarea')) dot.classList.add('is-text');
+      else if (t.closest('a, button, .copyable, .magnetic-wrap, [data-cursor="hover"]')) dot.classList.add('is-hover');
+    };
+    const out = (e) => {
+      dot.classList.remove('is-hover', 'is-text');
+    };
+    const loop = () => {
+      x += (tx - x) * 0.22;
+      y += (ty - y) * 0.22;
+      dot.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+      raf = requestAnimationFrame(loop);
+    };
+    document.addEventListener('mousemove', move);
+    document.addEventListener('mousedown', press);
+    document.addEventListener('mouseup', release);
+    document.addEventListener('mouseover', over);
+    document.addEventListener('mouseout', out);
+    raf = requestAnimationFrame(loop);
+    return () => {
+      document.removeEventListener('mousemove', move);
+      document.removeEventListener('mousedown', press);
+      document.removeEventListener('mouseup', release);
+      document.removeEventListener('mouseover', over);
+      document.removeEventListener('mouseout', out);
+      cancelAnimationFrame(raf);
+      dot.remove();
+    };
+  }, []);
+  return null;
+}
+
+/* ── Word stagger reveal helper ────────────────────────── */
+function WordReveal({ children, className, style }) {
+  const ref = useReveal();
+  const words = String(children).split(' ');
+  return (
+    <span ref={ref} className={`word-reveal reveal ${className || ''}`} style={style}>
+      {words.map((w, i) => (
+        <span key={i} className="word-inner">
+          <span className="word-piece" style={{ '--i': i }}>{w}</span>
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/* ── Hero scroll parallax ──────────────────────────────── */
+function HeroParallax() {
+  React.useEffect(() => {
+    const mesh = document.querySelector('.hero-mesh');
+    const grain = document.querySelector('.hero-grain');
+    if (!mesh) return;
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const meshY = Math.min(y * 0.35, 400);
+        const grainY = Math.min(y * 0.08, 60);
+        mesh.style.transform = `translate3d(0, ${meshY}px, 0) scale(${1 + y * 0.0002})`;
+        if (grain) grain.style.transform = `translate3d(0, ${grainY}px, 0)`;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+  return null;
+}
+
+/* ── SERVICES section ──────────────────────────────────── */
+function SvcIconSocial() {
+  return (
+    <svg width="54" height="54" viewBox="0 0 38 38" fill="none">
+      {/* Instagram-style phone with animated like/heart */}
+      <rect x="10" y="4" width="18" height="30" rx="3.5" stroke="oklch(30% 0.06 50)" strokeWidth="1.8"/>
+      <rect x="13" y="8" width="12" height="10" rx="1.5" fill="oklch(58% 0.13 50)" opacity="0.18"/>
+      <circle cx="19" cy="13" r="3.5" fill="oklch(58% 0.13 50)" opacity="0.35"/>
+      {/* Animated heart */}
+      <path d="M14.5 24c0-1.4 1.1-2.5 2.5-2.5.7 0 1.3.3 1.7.8.4-.5 1-.8 1.7-.8 1.4 0 2.5 1.1 2.5 2.5 0 2-2.5 3.8-4.2 4.5C17 28 14.5 26 14.5 24z" fill="oklch(58% 0.13 50)">
+        <animate attributeName="opacity" values="0.4;1;0.4" dur="1.8s" repeatCount="indefinite"/>
+        <animate attributeName="d" values="M14.5 24c0-1.4 1.1-2.5 2.5-2.5.7 0 1.3.3 1.7.8.4-.5 1-.8 1.7-.8 1.4 0 2.5 1.1 2.5 2.5 0 2-2.5 3.8-4.2 4.5C17 28 14.5 26 14.5 24z;M13.5 23.5c0-1.7 1.3-3 3-3 .8 0 1.6.3 2.1 1 .5-.6 1.3-1 2.1-1 1.7 0 3 1.3 3 3 0 2.5-3 4.5-5.1 5.5C16.5 29 13.5 26 13.5 23.5z;M14.5 24c0-1.4 1.1-2.5 2.5-2.5.7 0 1.3.3 1.7.8.4-.5 1-.8 1.7-.8 1.4 0 2.5 1.1 2.5 2.5 0 2-2.5 3.8-4.2 4.5C17 28 14.5 26 14.5 24z" dur="1.8s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1"/>
+      </path>
+      {/* Floating notification dots */}
+      <circle cx="29" cy="8" r="3" fill="oklch(58% 0.13 50)">
+        <animate attributeName="opacity" values="0;1;1;0" dur="2.5s" repeatCount="indefinite" keyTimes="0;0.2;0.8;1"/>
+        <animate attributeName="r" values="0;3;3;0" dur="2.5s" repeatCount="indefinite" keyTimes="0;0.2;0.8;1"/>
+      </circle>
+      <text x="29" y="11.5" textAnchor="middle" fontSize="4" fill="#fff" fontWeight="bold">2</text>
+    </svg>
+  );
+}
+function SvcIconInfluencer() {
+  return (
+    <svg width="54" height="54" viewBox="0 0 38 38" fill="none">
+      {/* Mic / star rising */}
+      <ellipse cx="19" cy="13" rx="5" ry="7" stroke="oklch(30% 0.06 50)" strokeWidth="1.8"/>
+      <path d="M13 16c0 3.3 2.7 6 6 6s6-2.7 6-6" stroke="oklch(30% 0.06 50)" strokeWidth="1.8" strokeLinecap="round"/>
+      <line x1="19" y1="22" x2="19" y2="28" stroke="oklch(30% 0.06 50)" strokeWidth="1.8" strokeLinecap="round"/>
+      <line x1="14" y1="28" x2="24" y2="28" stroke="oklch(30% 0.06 50)" strokeWidth="1.8" strokeLinecap="round"/>
+      {/* animated stars */}
+      <text x="27" y="10" fontSize="6" fill="oklch(58% 0.13 50)">✦
+        <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="0s"/>
+        <animateTransform attributeName="transform" type="translate" values="0,0;2,-4;0,0" dur="2s" repeatCount="indefinite" begin="0s"/>
+      </text>
+      <text x="8" y="12" fontSize="4" fill="oklch(58% 0.13 50)">✧
+        <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="0.6s"/>
+        <animateTransform attributeName="transform" type="translate" values="0,0;-2,-3;0,0" dur="2s" repeatCount="indefinite" begin="0.6s"/>
+      </text>
+      <text x="26" y="20" fontSize="5" fill="oklch(72% 0.10 55)">★
+        <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="1.1s"/>
+        <animateTransform attributeName="transform" type="translate" values="0,0;3,-2;0,0" dur="2s" repeatCount="indefinite" begin="1.1s"/>
+      </text>
+    </svg>
+  );
+}
+function SvcIconUX() {
+  return (
+    <svg width="54" height="54" viewBox="0 0 38 38" fill="none">
+      <rect x="10" y="4" width="18" height="30" rx="3.5" stroke="oklch(30% 0.06 50)" strokeWidth="2"/>
+      <rect x="13" y="9" width="12" height="2.5" rx="1.2" fill="oklch(58% 0.13 50)">
+        <animate attributeName="opacity" values="1;0.25;1" dur="2s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="13" y="14.5" width="8" height="2" rx="1" fill="oklch(42% 0.06 52)" opacity="0.45"/>
+      <rect x="13" y="19" width="10" height="2" rx="1" fill="oklch(42% 0.06 52)" opacity="0.3"/>
+      <circle cx="19" cy="28" r="2.2" fill="oklch(58% 0.13 50)">
+        <animate attributeName="r" values="2.2;3;2.2" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite"/>
+      </circle>
+    </svg>
+  );
+}
+function SvcIconBrand() {
+  return (
+    <svg width="54" height="54" viewBox="0 0 38 38" fill="none">
+      <polygon points="19,4 33,15 19,34 5,15" stroke="oklch(30% 0.06 50)" strokeWidth="2" strokeLinejoin="round" fill="none"/>
+      <polygon points="19,4 33,15 19,19 5,15" fill="oklch(58% 0.13 50)" opacity="0.22"/>
+      <polygon points="19,19 33,15 19,34" fill="oklch(58% 0.13 50)" opacity="0.10"/>
+      <line x1="5" y1="15" x2="33" y2="15" stroke="oklch(42% 0.06 52)" strokeWidth="1.2" opacity="0.4"/>
+      <line x1="19" y1="4" x2="19" y2="34" stroke="oklch(42% 0.06 52)" strokeWidth="1" opacity="0.18"/>
+      <circle cx="19" cy="4" r="2" fill="oklch(58% 0.13 50)">
+        <animate attributeName="opacity" values="1;0.25;1" dur="2.2s" repeatCount="indefinite"/>
+        <animate attributeName="r" values="2;3;2" dur="2.2s" repeatCount="indefinite"/>
+      </circle>
+    </svg>
+  );
+}
+
+const SERVICES = [
+  {
+    Icon: SvcIconSocial,
+    title: 'Social Media Marketing',
+    desc: 'Platform-native content strategies that build real communities. From scroll-stopping posts to full content calendars, I grow audiences on Instagram, TikTok, and Facebook with authentic storytelling.',
+    tags: ['Content Strategy', 'Instagram', 'TikTok', 'Facebook'],
+  },
+  {
+    Icon: SvcIconInfluencer,
+    title: 'Influencer Marketing',
+    desc: 'Identifying the right voices for your brand, managing collaborations, and tracking impact. I connect brands with creators who actually resonate with their target audience.',
+    tags: ['Creator Outreach', 'Campaign Planning', 'Partnership Management'],
+  },
+  {
+    Icon: SvcIconBrand,
+    title: 'Brand Strategy',
+    desc: 'Visual identity systems, brand playbooks, and cohesive storytelling across every touchpoint — from social media to print and everything in between.',
+    tags: ['Identity Systems', 'Brand Playbook', 'Art Direction', 'Canva'],
+  },
+];
+
+function Services() {
+  const headRef = useReveal();
+  const cardsRef = useReveal();
+  return (
+    <section id="services" style={{ padding: '120px 60px', background: 'var(--c-bg-warm)' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div ref={headRef} className="reveal" style={{ marginBottom: 64, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 20 }}>
+          <div>
+            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--c-ink-muted)', marginBottom: 14 }}>What I Do</p>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(44px, 6vw, 76px)', lineHeight: 0.95, letterSpacing: '-0.04em', textTransform: 'uppercase', color: 'var(--c-ink)' }}>
+              SERVICES<span style={{ color: 'var(--c-accent)' }}>.</span>
+            </h2>
+            <span className="head-underline" aria-hidden="true"></span>
+          </div>
+          <p style={{ fontFamily: 'var(--font-script)', fontSize: 'clamp(22px, 2.5vw, 34px)', color: 'var(--c-ink-soft)', lineHeight: 1.1, maxWidth: '32ch', textAlign: 'right' }}>
+            Ideas built where strategy and craft meet
+          </p>
+        </div>
+        <div ref={cardsRef} className="reveal services-cards" style={{ transitionDelay: '0.15s' }}>
+          {SERVICES.map((s, i) => (
+            <div key={i} className="svc-card">
+              <div className="svc-icon-wrap"><s.Icon /></div>
+              <h3 className="svc-title">{s.title}</h3>
+              <p className="svc-desc">{s.desc}</p>
+              <div className="svc-tags">
+                {s.tags.map(t => <span key={t} className="svc-tag">{t}</span>)}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Page load splash — JV signature ──────────────────── */
+function PageSplash() {
+  const [gone, setGone] = React.useState(false);
+  React.useEffect(() => {
+    try {
+      if (sessionStorage.getItem('jv-splash-seen')) { setGone(true); return; }
+      sessionStorage.setItem('jv-splash-seen', '1');
+    } catch (e) {}
+    document.documentElement.setAttribute('data-splash-active', '');
+    const t = setTimeout(() => {
+      setGone(true);
+      setTimeout(() => document.documentElement.removeAttribute('data-splash-active'), 1800);
+    }, 7500);
+    return () => clearTimeout(t);
+  }, []);
+  return (
+    <div className={`page-splash${gone ? ' gone' : ''}`} aria-hidden="true">
+      <span className="mark">JV</span>
+    </div>
+  );
+}
+
+/* ── Magnetic CTA (vanilla pointermove) ──────────────────── */
+function MagneticCTA({ href, primary, children, onClick }) {
+  const wrapRef = React.useRef(null);
+  const btnRef = React.useRef(null);
+  React.useEffect(() => {
+    const wrap = wrapRef.current;
+    const btn = btnRef.current;
+    if (!wrap || !btn) return;
+    if (matchMedia('(hover: none)').matches) return; // skip on touch
+    let raf = 0;
+    const onMove = (e) => {
+      const r = wrap.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const dx = (e.clientX - cx) * 0.22;
+      const dy = (e.clientY - cy) * 0.35;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        btn.style.transform = `translate(${dx}px, ${dy}px)`;
+      });
+    };
+    const onLeave = () => {
+      cancelAnimationFrame(raf);
+      btn.style.transform = '';
+    };
+    wrap.addEventListener('pointermove', onMove);
+    wrap.addEventListener('pointerleave', onLeave);
+    return () => {
+      wrap.removeEventListener('pointermove', onMove);
+      wrap.removeEventListener('pointerleave', onLeave);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+  return (
+    <span ref={wrapRef} className="magnetic-wrap">
+      <a ref={btnRef} href={href} className={`magnetic-btn ${primary ? 'is-primary' : 'is-ghost'}`} onClick={onClick}>
+        {children}
+      </a>
+    </span>
+  );
 }
 
 function useCopy() {
@@ -259,6 +1092,59 @@ function useCopy() {
     navigator.clipboard.writeText(text).then(() => { setToast(`${label} copied!`); setTimeout(() => setToast(''), 1800); });
   };
   return [toast, copy];
+}
+
+/* ── Scroll progress bar (top of viewport) ───────────────── */
+function ScrollProgress() {
+  const [w, setW] = React.useState(0);
+  React.useEffect(() => {
+    const h = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = max > 0 ? (window.scrollY / max) * 100 : 0;
+      setW(pct);
+    };
+    window.addEventListener('scroll', h, { passive: true });
+    window.addEventListener('resize', h);
+    h();
+    return () => { window.removeEventListener('scroll', h); window.removeEventListener('resize', h); };
+  }, []);
+  return <div className="scroll-progress" style={{ width: `${w}%` }} />;
+}
+
+/* ── Animated metric counter ─────────────────────────────── */
+function CountUp({ value }) {
+  const ref = React.useRef(null);
+  const [display, setDisplay] = React.useState(value);
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    // Parse: e.g. "88K+", "1.7K+", "150+", "$10K", "25%", "11.7K+"
+    const m = value.match(/([^\d.]*)([\d.]+)(.*)/);
+    if (!m) { setDisplay(value); return; }
+    const prefix = m[1];
+    const num = parseFloat(m[2]);
+    const suffix = m[3];
+    const decimals = (m[2].split('.')[1] || '').length;
+    setDisplay(`${prefix}0${decimals ? '.' + '0'.repeat(decimals) : ''}${suffix}`);
+    const obs = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      obs.unobserve(el);
+      const dur = 1400;
+      const start = performance.now();
+      const step = (t) => {
+        const p = Math.min(1, (t - start) / dur);
+        const eased = 1 - Math.pow(1 - p, 3); // ease-out cubic
+        const v = num * eased;
+        const s = decimals ? v.toFixed(decimals) : Math.round(v).toString();
+        setDisplay(`${prefix}${s}${suffix}`);
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }, { threshold: 0.4 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [value]);
+  return <span ref={ref} className="metric-num">{display}</span>;
 }
 
 function ScrollTopBtn() {
@@ -273,58 +1159,74 @@ function ScrollTopBtn() {
   );
 }
 
-/* ── NAV ───────────────────────────────────────────────────── */
-function Nav({ tweaks }) {
+/* ── NAV — transparent with blur-only on scroll ──────── */
+function Nav() {
   const [scrolled, setScrolled] = React.useState(false);
   const [active, setActive] = React.useState('');
   const [menuOpen, setMenuOpen] = React.useState(false);
   React.useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', h);
+    const h = () => setScrolled(window.scrollY > 60);
+    window.addEventListener('scroll', h, { passive: true });
+    h();
     return () => window.removeEventListener('scroll', h);
   }, []);
   React.useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
-  const links = ['About', 'Skills', 'Projects', 'Contact'];
-  const bg = scrolled || menuOpen ? (tweaks.darkNav ? 'rgba(26,26,26,0.96)' : 'rgba(253,249,245,0.96)') : 'transparent';
-  const tc = scrolled || menuOpen ? (tweaks.darkNav ? '#fff' : '#1a1a1a') : '#1a1a1a';
+  const links = ['About', 'Services', 'Projects', 'Contact'];
   const handleNavClick = () => setMenuOpen(false);
   return (
     <>
-      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 60px', height: 70, background: bg, backdropFilter: (scrolled || menuOpen) ? 'blur(14px)' : 'none', transition: 'background 0.4s ease', boxShadow: scrolled ? '0 1px 0 rgba(0,0,0,0.07)' : 'none' }}>
-        <a href="#hero" onClick={handleNavClick} style={{ textDecoration: 'none', opacity: scrolled && !menuOpen ? 0 : 1, pointerEvents: scrolled && !menuOpen ? 'none' : 'auto', transition: 'opacity 0.3s ease', flexShrink: 0 }}>
-          <span className="nav-logo-full" style={{ fontFamily: "'Pinyon Script', cursive", fontSize: 32, color: tc, transition: 'color 0.3s', lineHeight: 1 }}>Joel Varghese</span>
-          <span className="nav-logo-short" style={{ display: 'none', fontFamily: "'Pinyon Script', cursive", fontSize: 32, color: tc, transition: 'color 0.3s', lineHeight: 1, letterSpacing: '4px' }}>JV</span>
-        </a>
-        <div className="nav-links" style={{ display: 'flex', gap: 44, alignItems: 'center' }}>
-          {links.map(l => (
-            <a key={l} href={`#${l.toLowerCase()}`}
-              style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: '1.2px', textDecoration: 'none', color: tc, textTransform: 'uppercase', opacity: active === l ? 1 : 0.65, transition: 'opacity 0.2s' }}
-              onMouseEnter={() => setActive(l)} onMouseLeave={() => setActive('')}
-            >{l}</a>
-          ))}
+      <nav style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+        height: 68,
+        background: 'transparent',
+        backdropFilter: scrolled ? 'blur(18px) saturate(150%)' : 'none',
+        WebkitBackdropFilter: scrolled ? 'blur(18px) saturate(150%)' : 'none',
+        transition: 'backdrop-filter 0.5s var(--ease-out)',
+      }}>
+        <div style={{
+          maxWidth: 1200, margin: '0 auto', height: '100%',
+          padding: '0 48px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          position: 'relative',
+        }}>
+          <a href="#hero" onClick={handleNavClick} style={{ textDecoration: 'none', flexShrink: 0 }}>
+            <span className="nav-logo-full" style={{ fontFamily: "'Pinyon Script', cursive", fontSize: 30, color: 'var(--c-ink)', lineHeight: 1 }}>Joel Varghese</span>
+            <span className="nav-logo-short" style={{ display: 'none', fontFamily: "'Pinyon Script', cursive", fontSize: 30, color: 'var(--c-ink)', lineHeight: 1 }}>JV</span>
+          </a>
+          <div className="nav-links" style={{ display: 'flex', gap: 40, alignItems: 'center', position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
+            {links.map(l => (
+              <a key={l} href={`#${l.toLowerCase()}`} className="nav-link-fx"
+                style={{ fontFamily: "'Cabinet Grotesk', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: '1.2px', textDecoration: 'none', color: 'var(--c-ink)', textTransform: 'uppercase', opacity: active === l ? 1 : 0.55, transition: 'opacity 0.3s var(--ease-out)' }}
+                onMouseEnter={() => setActive(l)} onMouseLeave={() => setActive('')}
+              >{l}</a>
+            ))}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0 }}>
+            <a href="#contact" onClick={handleNavClick}
+              style={{ fontFamily: "'Cabinet Grotesk', sans-serif", fontWeight: 700, fontSize: 13, textDecoration: 'none', color: 'var(--c-on-dark)', background: 'var(--c-ink)', padding: '9px 20px', borderRadius: '999px', letterSpacing: '0.4px', transition: 'background 0.3s var(--ease-out), transform 0.25s var(--ease-out)', display: 'inline-block' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--c-accent)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--c-ink)'; e.currentTarget.style.transform = ''; }}
+            >Hire Me</a>
+            <button
+              className={`hamburger-btn${menuOpen ? ' open' : ''}`}
+              onClick={() => setMenuOpen(o => !o)}
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={menuOpen}
+            >
+              <span></span><span></span><span></span>
+            </button>
+          </div>
         </div>
-        <button
-          className={`hamburger-btn${menuOpen ? ' open' : ''}`}
-          onClick={() => setMenuOpen(o => !o)}
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-          aria-expanded={menuOpen}
-          style={{ '--hb-color': tc }}
-        >
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
       </nav>
       <div className={`mobile-menu${menuOpen ? ' open' : ''}`} aria-hidden={!menuOpen}>
         <div className="mobile-menu-inner">
           {links.map((l, i) => (
-            <a key={l} href={`#${l.toLowerCase()}`} onClick={handleNavClick}
-              style={{ '--i': i }}
-            >{l}</a>
+            <a key={l} href={`#${l.toLowerCase()}`} onClick={handleNavClick} style={{ '--i': i }}>{l}</a>
           ))}
+          <a href="#contact" onClick={handleNavClick} style={{ '--i': links.length, background: 'var(--c-accent)', borderRadius: 12, padding: '18px 24px', marginTop: 8 }}>Hire Me</a>
         </div>
       </div>
     </>
@@ -333,20 +1235,31 @@ function Nav({ tweaks }) {
 
 /* ── HERO ──────────────────────────────────────────────────── */
 function Hero() {
+  const year = 2026;
   return (
-    <section id="hero" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '120px 60px 80px', background: '#fdf9f5', position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
-      <div style={{ width: '100%', maxWidth: 1400, margin: '0 auto', position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <h1 style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 900, fontSize: 'clamp(72px, 14vw, 220px)', lineHeight: 0.9, letterSpacing: '-6px', color: '#1a1a1a', textTransform: 'uppercase', animation: 'fadeUp 0.8s ease both', animationDelay: '0.1s' }}>PORTFOLIO</h1>
-        <p style={{ fontFamily: "'Pinyon Script', cursive", fontSize: 'clamp(60px, 10vw, 150px)', color: '#1a1a1a', animation: 'fadeUp 0.8s ease both', animationDelay: '0.25s', marginTop: 28, marginBottom: 56, lineHeight: 1.1 }}>Joel Varghese</p>
-        <div style={{ display: 'flex', gap: 18, animation: 'fadeUp 0.8s ease both', animationDelay: '0.4s', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <a href="#projects" style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 15, letterSpacing: '0.5px', textDecoration: 'none', padding: '17px 38px', borderRadius: 40, background: '#1a1a1a', color: '#fff', display: 'flex', alignItems: 'center', gap: 10, transition: 'transform 0.2s ease, box-shadow 0.2s ease' }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(0,0,0,0.2)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; }}
-          >View My Work <IconArrow /></a>
-          <a href="#contact" style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 15, letterSpacing: '0.5px', textDecoration: 'none', padding: '17px 38px', borderRadius: 40, border: '2px solid #1a1a1a', color: '#1a1a1a', background: 'transparent', transition: 'background 0.2s ease, color 0.2s ease' }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#1a1a1a'; e.currentTarget.style.color = '#fff'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#1a1a1a'; }}
-          >Get In Touch</a>
+    <section id="hero">
+      <div className="hero-mesh" aria-hidden="true"></div>
+      <div className="hero-grain" aria-hidden="true"></div>
+      <div className="hero-grid">
+        <div className="hero-left">
+          <span className="hero-eyebrow"><span className="dot" aria-hidden="true"></span>Available for work, {year}</span>
+          <h1 className="hero-display">
+            Portfolio<span className="accent">.</span>
+          </h1>
+          <p className="hero-script">Joel Varghese</p>
+          <div className="hero-cta-row">
+            <MagneticCTA href="#projects" primary>
+              View Work <IconArrow />
+            </MagneticCTA>
+            <MagneticCTA href="#contact">
+              Get In Touch
+            </MagneticCTA>
+          </div>
+        </div>
+        <div className="hero-right">
+          <p className="hero-intro">
+            MBA-qualified marketer and UX designer building campaigns, identities, and digital experiences for clients across government, music, and non-profit.
+          </p>
         </div>
       </div>
     </section>
@@ -359,36 +1272,41 @@ function About() {
   const bodyRef = useReveal();
   const [toast, copy] = useCopy();
   return (
-    <section id="about" style={{ padding: '100px 60px 120px', background: '#1a1a1a', color: '#fff' }}>
+    <section id="about" style={{ padding: '100px 60px 120px', background: 'var(--c-surface)', color: 'var(--c-ink)' }}>
       <div style={{ maxWidth: 1400, margin: '0 auto' }}>
         <div ref={headRef} className="reveal" style={{ marginBottom: 56 }}>
-          <h2 style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 800, fontSize: 'clamp(44px, 5vw, 76px)', lineHeight: 1, letterSpacing: '-2px', textTransform: 'uppercase' }}>ABOUT ME</h2>
+          <h2 style={{ fontFamily: "'Cabinet Grotesk', sans-serif", fontWeight: 900, fontSize: 'clamp(44px, 5vw, 76px)', lineHeight: 1, letterSpacing: '-0.035em', textTransform: 'uppercase' }}>ABOUT ME</h2>
+          <span className="head-underline" aria-hidden="true"></span>
         </div>
         <div ref={bodyRef} className="reveal about-grid" style={{ transitionDelay: '0.18s', display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 80, alignItems: 'start' }}>
           <div className="about-text-block">
-            <p style={{ fontFamily: "'Pinyon Script', cursive", fontSize: 56, color: '#fff', lineHeight: 1.1, marginBottom: 24 }}>Hi, I'm Joel Varghese</p>
-            <p style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 500, fontSize: 18, lineHeight: 1.85, color: 'rgba(255,255,255,0.72)', marginBottom: 24 }}>
-              A digital marketer and UX designer with a background in business development and influencer marketing. I have an MBA in Marketing and hands-on experience in branding, social media, and user experience.
+            <p style={{ fontFamily: "'Pinyon Script', cursive", fontSize: 56, color: 'var(--c-ink)', lineHeight: 1.1, marginBottom: 24 }}>Hi, I'm Joel Varghese</p>
+            <p style={{ fontFamily: "'Satoshi', sans-serif", fontWeight: 500, fontSize: 18, lineHeight: 1.85, color: 'var(--c-ink-soft)', marginBottom: 24 }}>
+              A social media strategist and influencer marketing professional with an MBA in Marketing. I specialise in building authentic brand presence and connecting brands with the right creators to drive real results.
             </p>
-            <p style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 500, fontSize: 18, lineHeight: 1.85, color: 'rgba(255,255,255,0.72)', marginBottom: 40 }}>
-              I focus on creating ideas that are simple, clear, and actually connect with people. I enjoy working in the space where storytelling and design come together, building things that not only look good but also make sense and get results.
+            <p style={{ fontFamily: "'Satoshi', sans-serif", fontWeight: 500, fontSize: 18, lineHeight: 1.85, color: 'var(--c-ink-soft)', marginBottom: 40 }}>
+              I focus on creating ideas that are simple, clear, and actually connect with people. I enjoy working in the space where storytelling and design come together — building things that not only look good but also make sense and get results.
             </p>
-            <p style={{ fontFamily: "'Pinyon Script', cursive", fontSize: 42, color: '#fff', lineHeight: 1, marginBottom: 20 }}>Let's connect</p>
+            <p style={{ fontFamily: "'Pinyon Script', cursive", fontSize: 42, color: 'var(--c-ink)', lineHeight: 1, marginBottom: 20 }}>Let's connect</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <span className="copyable" onClick={() => copy('joelvoffcial101@gmail.com', 'Email')}
-                style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 600, fontSize: 16, color: 'rgba(255,255,255,0.85)', display: 'flex', alignItems: 'center', gap: 12 }}
-                onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.85)'}
+                style={{ fontFamily: "'Satoshi', sans-serif", fontWeight: 600, fontSize: 16, color: 'var(--c-ink-soft)', display: 'flex', alignItems: 'center', gap: 12 }}
+                onMouseEnter={e => e.currentTarget.style.color = 'var(--c-ink)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--c-ink-soft)'}
               ><IconMail /> joelvoffcial101@gmail.com</span>
               <span className="copyable" onClick={() => copy('647 669 8325', 'Phone')}
-                style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 600, fontSize: 16, color: 'rgba(255,255,255,0.85)', display: 'flex', alignItems: 'center', gap: 12 }}
-                onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.85)'}
+                style={{ fontFamily: "'Satoshi', sans-serif", fontWeight: 600, fontSize: 16, color: 'var(--c-ink-soft)', display: 'flex', alignItems: 'center', gap: 12 }}
+                onMouseEnter={e => e.currentTarget.style.color = 'var(--c-ink)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--c-ink-soft)'}
               ><IconPhone /> 647 669 8325</span>
             </div>
           </div>
-          <div className="about-photo-block" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-end', minHeight: 480, gap: 32 }}>
-            <div className="about-photo" style={{ width: '100%', maxWidth: 440, aspectRatio: '4/5', borderRadius: 8, overflow: 'hidden', background: '#2a2218', boxShadow: '0 20px 60px rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="about-photo-block" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 480, gap: 32 }}>
+            <div ref={useReveal()} className="about-photo clip-reveal reveal"
+              style={{ width: '100%', maxWidth: 380, aspectRatio: '4/5', borderRadius: 12, overflow: 'hidden', background: 'var(--c-card)', boxShadow: '0 24px 64px oklch(20% 0.08 50 / 0.16)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'transform 0.55s var(--ease-out), box-shadow 0.55s var(--ease-out)' }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03) translateY(-6px)'; e.currentTarget.style.boxShadow = '0 36px 80px oklch(20% 0.08 50 / 0.24)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 24px 64px oklch(20% 0.08 50 / 0.16)'; }}
+            >
               <img src="assets/joel-about.png" alt="Joel Varghese"
-                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block', transition: 'transform 0.55s var(--ease-out)' }}
               />
             </div>
             <div style={{ display: 'flex', gap: 16 }}>
@@ -397,10 +1315,10 @@ function About() {
                 { href: 'https://www.instagram.com/joelvarghese007/?hl=en', icon: <IconInstagram />, hoverBg: '#E4405F' },
                 { href: 'https://www.linkedin.com/in/joel-varghese-604a51184/', icon: <IconLinkedIn />, hoverBg: '#0A66C2' },
               ].map(({ href, icon, hoverBg }, i) => (
-                <a key={i} href={href} target="_blank" rel="noopener noreferrer"
-                  style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(255,255,255,0.1)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', transition: 'background 0.2s, transform 0.2s' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = hoverBg; e.currentTarget.style.transform = 'translateY(-3px)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.transform = ''; }}
+                <a key={i} href={href} target="_blank" rel="noopener noreferrer" className="social-fx"
+                  style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--c-line)', color: 'var(--c-ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = hoverBg; e.currentTarget.style.color = '#fff'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--c-line)'; e.currentTarget.style.color = 'var(--c-ink)'; }}
                 >{icon}</a>
               ))}
             </div>
@@ -422,6 +1340,8 @@ const TOOLS = [
   { name: 'Meta Business Suite', src: 'assets/logo-meta.png' },
   { name: 'Claude AI', src: 'assets/logo-claude.png' },
   { name: 'Microsoft Suite', src: 'assets/logo-office.png' },
+  { name: 'HypeAuditor', src: 'assets/logo-hypeauditor.png' },
+  { name: 'TikTok', src: 'assets/logo-tiktok.png' },
 ];
 const CERTS = [
   { name: 'Five Digital Marketing Strategies to Drive Conversions', url: 'assets/cert-five-digital.pdf' },
@@ -435,38 +1355,40 @@ function Skills() {
   const certsRef = useReveal();
   const toolsRef = useReveal();
   return (
-    <section id="skills" style={{ padding: '120px 60px', background: '#fdf9f5' }}>
-      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
-        <div ref={headRef} className="reveal" style={{ marginBottom: 80 }}>
-          <h2 style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 800, fontSize: 'clamp(40px, 5vw, 72px)', lineHeight: 1, letterSpacing: '-2px', color: '#1a1a1a', textTransform: 'uppercase' }}>SKILLS &amp;<br />CERTIFICATES</h2>
+    <section id="skills" style={{ padding: '120px 0', background: 'oklch(96.5% 0.012 75)', overflow: 'hidden' }}>
+      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 60px' }}>
+        <div ref={headRef} className="reveal" style={{ marginBottom: 64 }}>
+          <h2 style={{ fontFamily: "'Cabinet Grotesk', sans-serif", fontWeight: 900, fontSize: 'clamp(40px, 5vw, 72px)', lineHeight: 1, letterSpacing: '-0.035em', color: 'oklch(30% 0.06 50)', textTransform: 'uppercase' }}>TOOLS &amp;<br />EXPERTISE</h2>
+          <span className="head-underline" aria-hidden="true"></span>
         </div>
-        <div className="skills-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'start' }}>
-          <div ref={certsRef} className="reveal" style={{ transitionDelay: '0.1s' }}>
-            <h3 style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 20, letterSpacing: '0.5px', marginBottom: 32, color: '#1a1a1a', textTransform: 'uppercase' }}>CERTIFICATES</h3>
+        {/* CERTIFICATES — top, 2-col grid */}
+        <div ref={certsRef} className="reveal" style={{ transitionDelay: '0.1s', marginBottom: 72 }}>
+          <h3 style={{ fontFamily: "'Cabinet Grotesk', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: '2px', marginBottom: 28, color: 'var(--c-ink-muted)', textTransform: 'uppercase' }}>Certificates</h3>
+          <div className="cert-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0 48px' }}>
             {CERTS.map((c, i) => (
-              <a key={i} href={c.url} target="_blank" rel="noopener noreferrer"
-                style={{ display: 'flex', alignItems: 'center', gap: 18, padding: '22px 0', borderBottom: '1px solid #ede8e2', textDecoration: 'none', color: 'inherit', transition: 'padding-left 0.2s' }}
-                onMouseEnter={e => e.currentTarget.style.paddingLeft = '8px'}
-                onMouseLeave={e => e.currentTarget.style.paddingLeft = '0px'}
+              <a key={i} href={c.url} target="_blank" rel="noopener noreferrer" className="cert-fx"
+                style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '20px 0', borderBottom: '1px solid #ede8e2', textDecoration: 'none', color: 'inherit', transition: 'padding-left 0.3s var(--ease-out)' }}
               >
-                <div style={{ width: 48, height: 48, borderRadius: 6, background: '#f5f0eb', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><IconCert /></div>
-                <p style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 700, fontSize: 15, color: '#1a1a1a', lineHeight: 1.4 }}>{c.name}</p>
+                <div style={{ width: 44, height: 44, borderRadius: 8, background: '#f5f0eb', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><IconCert /></div>
+                <p style={{ fontFamily: "'Satoshi', sans-serif", fontWeight: 700, fontSize: 14, color: 'oklch(30% 0.06 50)', lineHeight: 1.4 }}>{c.name}</p>
               </a>
             ))}
           </div>
-          <div ref={toolsRef} className="reveal" style={{ transitionDelay: '0.22s' }}>
-            <h3 style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 20, letterSpacing: '0.5px', marginBottom: 32, color: '#1a1a1a', textTransform: 'uppercase' }}>TOOLS &amp; SOFTWARE</h3>
-            <div className="tools-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
-              {TOOLS.map(({ name, src }) => (
-                <div key={name} style={{ background: '#fff', borderRadius: 8, padding: '20px 12px', border: '1px solid #ede8e2', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, transition: 'transform 0.2s ease, box-shadow 0.2s ease', cursor: 'default', minHeight: 130 }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.09)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; }}
-                >
-                  <ToolLogo src={src} name={name} />
-                  <span style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 600, fontSize: 12, color: '#444', textAlign: 'center', lineHeight: 1.3 }}>{name}</span>
-                </div>
-              ))}
-            </div>
+        </div>
+      </div>
+      {/* TOOLS MARQUEE — full-bleed below certs */}
+      <div ref={toolsRef} className="reveal" style={{ transitionDelay: '0.2s' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 60px', marginBottom: 20 }}>
+          <h3 style={{ fontFamily: "'Cabinet Grotesk', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: '2px', color: 'var(--c-ink-muted)', textTransform: 'uppercase' }}>Tools &amp; Platforms</h3>
+        </div>
+        <div className="tools-marquee-wrap" style={{ padding: '10px 0' }}>
+          <div className="tools-marquee-track">
+            {[...TOOLS, ...TOOLS].map(({ name, src }, i) => (
+              <div key={`${name}-${i}`} className="tool-pill">
+                <img src={src} alt={name} style={{ width: 72, height: 72, objectFit: 'contain' }} />
+                <span style={{ fontFamily: "'Satoshi', sans-serif", fontWeight: 600, fontSize: 12, color: 'var(--c-ink-soft)', textAlign: 'center', lineHeight: 1.3, whiteSpace: 'nowrap' }}>{name}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -474,160 +1396,122 @@ function Skills() {
   );
 }
 
-/* ── PROJECTS ──────────────────────────────────────────────── */
-const PROJECTS = [
+/* ── PROJECTS — Framer-style card grid ─────────────────────── */
+const PROJECT_CARDS = [
   {
     id: 'kingston',
     title: 'City of Kingston',
-    category: 'UX Research / Information Architecture',
-    description: 'Conducted UX research and designed a centralised grants management portal for the City of Kingston, replacing a fragmented system of email, Excel, Dropbox, and Google Drive. Led research across three phases including a focus group with City staff and a partner organisation interview.',
-    tags: ['UX Research', 'Focus Groups', 'Figma', 'Government'],
-    metrics: [{ val: '6', label: 'Municipalities Benchmarked' }, { val: '5', label: 'Staff Interviewed' }, { val: '70%', label: 'Reduction Target' }],
-    logo: 'assets/projects/kingston-logo.png',
+    category: 'UX Research',
     page: 'kingston.html',
-    color: '#f5f0eb', accent: '#1a1a1a',
+    logo: 'assets/projects/kingston-logo.png',
+    gradient: 'linear-gradient(145deg, #091522 0%, #122438 40%, #1e3a5a 65%, #0d1e30 100%)',
+    logoFilter: 'brightness(0) invert(1)',
+    logoOpacity: 0.88,
+    isLight: false,
   },
   {
     id: 'kasador',
     title: 'Kasador',
-    category: 'Digital Marketing Plan',
-    description: 'Created a full digital marketing plan for Kasador, an emerging indie rock band from Kingston Ontario, under the Nova Solutions student agency. Designed TikTok retargeting, segmented email campaigns, local partnerships, and SEO improvements to convert TikTok momentum into Spotify and Instagram growth.',
-    tags: ['Meta Ads', 'Mailchimp', 'SEO', 'Influencer Marketing'],
-    metrics: [{ val: '15%', label: 'Spotify Listeners' }, { val: '25%', label: 'IG Engagement' }, { val: '30%', label: 'Organic Traffic' }],
-    logo: 'assets/projects/kasador-logo.png',
+    category: 'Digital Marketing',
     page: 'kasador.html',
-    color: '#2a2218', accent: '#fff',
+    logo: 'assets/projects/kasador-logo.png',
+    gradient: 'linear-gradient(145deg, #14051f 0%, #22094a 45%, #330e62 70%, #100420 100%)',
+    logoFilter: 'brightness(0) invert(1)',
+    logoOpacity: 0.9,
+    isLight: false,
   },
   {
     id: 'spwc',
     title: 'SPWC',
-    category: 'Social Media Marketing Plan',
-    description: 'Developed a comprehensive social media marketing plan for Sandy Pines Wildlife Centre, a non-profit wildlife rehabilitation organisation in Kingston Ontario. Designed the Spring Into Action campaign with five content pillars and platform-specific strategies across Facebook, Instagram, and TikTok.',
-    tags: ['Social Media', 'Content Strategy', 'Canva', 'Meta Insights'],
-    metrics: [{ val: '$10K', label: 'Fundraising Goal' }, { val: '25%', label: 'IG Engagement Lift' }, { val: '15%', label: 'FB Follower Growth' }],
-    logo: 'assets/projects/spwc-logo.jpg',
+    category: 'Social Media Marketing',
     page: 'spwc.html',
-    color: '#f5f0eb', accent: '#1a1a1a',
+    logo: 'assets/projects/spwc-logo.jpg',
+    gradient: 'linear-gradient(145deg, #0b1e0e 0%, #153323 40%, #1c4228 65%, #091609 100%)',
+    logoFilter: 'none',
+    logoOpacity: 0.9,
+    isLight: false,
   },
   {
     id: 'aurafilms',
     title: 'Aura Films',
     category: 'Branding / Social Media',
-    description: 'Built the brand identity and social media presence for Aura Films, including a brand playbook, visual system, and content calendar to grow membership and engagement.',
-    tags: ['Brand Identity', 'Brand Playbook', 'Social Media', 'Content Design'],
-    metrics: [],
-    logo: 'assets/projects/aura-films-logo.png',
     externalUrl: 'https://joelvarghese-hack.github.io/aura-films-website/',
-    color: '#2a2218', accent: '#fff',
+    logo: 'assets/projects/aura-films-logo.png',
+    gradient: 'linear-gradient(145deg, #180c05 0%, #2c1808 40%, #3e230e 65%, #140a03 100%)',
+    logoFilter: 'brightness(0) invert(1)',
+    logoOpacity: 0.85,
+    isLight: false,
   },
   {
     id: 'designwork',
     title: 'Design Work',
-    category: 'Visual Design / Illustration',
-    description: 'A curated collection of design work spanning visual identity, illustration, social content, and marketing collateral across multiple clients and personal projects.',
-    tags: ['Visual Design', 'Illustration', 'Branding', 'Print'],
-    metrics: [],
-    logo: 'assets/projects/design-work-logo.png',
+    category: 'Visual Design',
     page: 'designwork.html',
-    color: '#f5f0eb', accent: '#1a1a1a',
+    logo: 'assets/projects/joel-logo.png',
+    gradient: 'linear-gradient(145deg, oklch(92.5% 0.022 75) 0%, oklch(87% 0.032 72) 50%, oklch(84% 0.038 68) 100%)',
+    logoFilter: 'none',
+    logoOpacity: 1,
+    isLight: true,
   },
 ];
 
 function Projects() {
   const headRef = useReveal();
-  const foldersRef = useReveal();
-  const scrollTo = id => { const el = document.getElementById(`project-${id}`); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+  const gridRef = useReveal();
   return (
-    <section id="projects" style={{ background: '#fff' }}>
-      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '120px 60px 60px', textAlign: 'center' }}>
-        <div ref={headRef} className="reveal" style={{ marginBottom: 56 }}>
-          <h2 style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 800, fontSize: 'clamp(40px, 5vw, 72px)', lineHeight: 1, letterSpacing: '-2px', color: '#1a1a1a', textTransform: 'uppercase', marginBottom: 18 }}>PROJECTS</h2>
-          <p style={{ fontFamily: "'Pinyon Script', cursive", fontSize: 'clamp(28px, 3.4vw, 42px)', color: '#5a3e2b', lineHeight: 1.1, marginTop: 12 }}>Click any logo to explore the case study</p>
+    <section id="projects" style={{ padding: '120px 60px', background: '#fff' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div ref={headRef} className="reveal" style={{ marginBottom: 64 }}>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--c-ink-muted)', marginBottom: 14 }}>Case Studies</p>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(40px, 5.5vw, 76px)', lineHeight: 0.95, letterSpacing: '-0.04em', textTransform: 'uppercase', color: 'var(--c-ink)', marginBottom: 18 }}>
+            MY BEST<br /><span style={{ color: 'var(--c-accent)' }}>WORK</span>
+          </h2>
+          <span className="head-underline" aria-hidden="true"></span>
+          <p style={{ fontFamily: 'var(--font-script)', fontSize: 'clamp(24px, 2.8vw, 36px)', color: 'var(--c-ink-soft)', lineHeight: 1.1, marginTop: 18 }}>
+            Click any card to explore the case study
+          </p>
         </div>
-        <div ref={foldersRef} className="reveal folders-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 28, justifyItems: 'center', marginBottom: 40 }}>
-          {PROJECTS.map(p => (
-            <button key={p.id} onClick={() => scrollTo(p.id)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, transition: 'transform 0.25s ease', padding: 8 }}
-              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-6px)'}
-              onMouseLeave={e => e.currentTarget.style.transform = ''}
-            >
-              <IconFolder />
-              <span style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 700, fontSize: 14, color: '#1a1a1a', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{p.title}</span>
-            </button>
-          ))}
+        <div ref={gridRef} className="reveal proj-grid" style={{ transitionDelay: '0.12s' }}>
+          {PROJECT_CARDS.map(p => <ProjectCard key={p.id} project={p} />)}
         </div>
       </div>
-      {PROJECTS.map((p, i) => <ProjectCard key={p.id} project={p} index={i} />)}
     </section>
   );
 }
 
-function ProjectCard({ project: p, index }) {
-  const ref = useReveal();
-  const [hov, setHov] = React.useState(false);
-  const isEven = index % 2 === 0;
-  const goToPage = p.page ? () => { window.location.href = p.page; } : null;
-  const goToExternal = p.externalUrl ? () => { window.open(p.externalUrl, '_blank', 'noopener,noreferrer'); } : null;
-  const onLogoClick = goToPage || goToExternal;
-  const logoClickable = !!onLogoClick;
-
-  const logoBox = (
-    <div className="project-logo-box" style={{
-      height: 300, borderRadius: 8,
-      background: '#ffffff',
-      border: '1px solid rgba(0,0,0,0.08)',
-      boxShadow: p.color === '#2a2218' || p.color === '#1a1a1a' ? '0 12px 40px rgba(0,0,0,0.35)' : '0 8px 28px rgba(0,0,0,0.08)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      transform: hov && logoClickable ? 'scale(1.025) rotate(0.4deg)' : 'scale(1)',
-      transition: 'transform 0.4s ease', overflow: 'hidden', padding: 36,
-      cursor: logoClickable ? 'pointer' : 'default',
-      width: '100%',
-    }}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
-      onClick={logoClickable ? onLogoClick : undefined}
-    >
-      {p.logo ? (
-        <img src={p.logo} alt={p.title} style={{ maxWidth: '85%', maxHeight: '85%', objectFit: 'contain', display: 'block' }} />
-      ) : (
-        <p style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 800, fontSize: 72, color: 'rgba(0,0,0,0.07)', letterSpacing: '-4px', lineHeight: 1 }}>
-          {p.title.split(' ').map(w => w[0]).join('').slice(0,3)}
-        </p>
-      )}
-    </div>
-  );
-
+function ProjectCard({ project: p }) {
+  const go = () => {
+    if (p.page) window.location.href = p.page;
+    else if (p.externalUrl) window.open(p.externalUrl, '_blank', 'noopener,noreferrer');
+  };
   return (
-    <div id={`project-${p.id}`} ref={ref} className="reveal" style={{ transitionDelay: `${index * 0.06}s`, scrollMarginTop: '80px' }}>
-      <div
-        className="project-inner"
-        style={{
-          padding: '80px 60px', background: p.color,
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          gap: 80, flexDirection: isEven ? 'row' : 'row-reverse',
-        }}
-      >
-        <div style={{ flex: '1 1 0', maxWidth: 560, minWidth: 0 }}>
-          <p style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: '2px', textTransform: 'uppercase', color: p.accent === '#fff' ? 'rgba(255,255,255,0.5)' : '#999', marginBottom: 14 }}>{p.category}</p>
-          <h3 style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 800, fontSize: 'clamp(32px, 3.6vw, 56px)', lineHeight: 1.06, letterSpacing: '-1px', color: p.accent, marginBottom: 20, textTransform: 'uppercase' }}>{p.title}</h3>
-          <p style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 500, fontSize: 16, lineHeight: 1.8, color: p.accent === '#fff' ? 'rgba(255,255,255,0.7)' : '#555', marginBottom: 28 }}>{p.description}</p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: p.metrics.length ? 36 : 0 }}>
-            {p.tags.map(t => <span key={t} style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 600, fontSize: 12, padding: '6px 15px', borderRadius: 40, border: `1.5px solid ${p.accent === '#fff' ? 'rgba(255,255,255,0.22)' : '#ddd'}`, color: p.accent === '#fff' ? 'rgba(255,255,255,0.78)' : '#555' }}>{t}</span>)}
-          </div>
-          {p.metrics.length > 0 && (
-            <div style={{ display: 'flex', gap: 44, flexWrap: 'wrap' }}>
-              {p.metrics.map(m => (
-                <div key={m.label}>
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontWeight: 900, fontSize: 34, color: p.accent, lineHeight: 1 }}>{m.val}</p>
-                  <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 11, letterSpacing: '1.5px', textTransform: 'uppercase', color: p.accent === '#fff' ? 'rgba(255,255,255,0.5)' : '#999', marginTop: 6 }}>{m.label}</p>
-                </div>
-              ))}
-            </div>
+    <div className="proj-item" onClick={go} role="button" tabIndex={0}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') go(); }}
+    >
+      <div className="proj-card-media">
+        {/* Animated gradient background — simulates looping video */}
+        <div className="proj-card-media-inner" style={{ background: p.gradient }} />
+        {/* Film-grain texture overlay */}
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
+          backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.3 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")",
+          backgroundSize: '160px 160px', opacity: 0.055, mixBlendMode: 'overlay',
+        }} />
+        <div className="proj-card-mark" style={{ zIndex: 2 }}>
+          {p.logo ? (
+            <img src={p.logo} alt={p.title}
+              style={{ maxWidth: '50%', maxHeight: '50%', objectFit: 'contain', filter: p.logoFilter, opacity: p.logoOpacity }} />
+          ) : (
+            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 76,
+              color: p.isLight ? 'oklch(30% 0.06 50)' : '#fff', opacity: 0.16, letterSpacing: '-0.04em' }}>
+              {p.title.split(' ').map(w => w[0]).join('').slice(0,3)}
+            </span>
           )}
         </div>
-        <div style={{ flex: '0 1 420px', minWidth: 0, width: '100%', maxWidth: 420 }}>
-          {logoBox}
-        </div>
+      </div>
+      <div className="proj-card-label">
+        <span className="proj-card-name">{p.title}</span>
+        <span className="proj-card-cat">{p.category}</span>
       </div>
     </div>
   );
@@ -649,27 +1533,27 @@ function Contact() {
     return e;
   };
   const handleSubmit = ev => { ev.preventDefault(); const errs = validate(); if (Object.keys(errs).length) { setErrors(errs); return; } setSent(true); };
-  const inputBase = field => ({ width: '100%', padding: '15px 18px', borderRadius: 6, border: `1.5px solid ${errors[field] ? '#c0392b' : '#ddd'}`, fontFamily: "'Montserrat', sans-serif", fontSize: 15, color: '#1a1a1a', background: '#fff', outline: 'none', transition: 'border-color 0.2s' });
+  const inputBase = field => ({ width: '100%', padding: '15px 18px', borderRadius: 6, border: `1.5px solid ${errors[field] ? '#c0392b' : '#ddd'}`, fontFamily: "'Satoshi', sans-serif", fontSize: 15, color: 'oklch(30% 0.06 50)', background: '#fff', outline: 'none', transition: 'border-color 0.2s' });
   return (
-    <section id="contact" style={{ padding: '120px 60px', background: '#f5f0eb', color: '#1a1a1a' }}>
+    <section id="contact" style={{ padding: '120px 60px', background: '#f5f0eb', color: 'oklch(30% 0.06 50)' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 100, alignItems: 'start' }} className="contact-grid">
         <div ref={headRef} className="reveal">
-          <h2 style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 'clamp(44px, 5vw, 76px)', lineHeight: 0.95, letterSpacing: '-2px', marginBottom: 44, textTransform: 'uppercase' }}>GET IN<br />TOUCH!</h2>
-          <div style={{ width: 56, height: 3, background: '#1a1a1a', borderRadius: 2, marginBottom: 52 }} />
+          <h2 style={{ fontFamily: "'Cabinet Grotesk', sans-serif", fontWeight: 900, fontSize: 'clamp(44px, 5vw, 76px)', lineHeight: 0.95, letterSpacing: '-0.035em', marginBottom: 20, textTransform: 'uppercase' }}>GET IN<br />TOUCH!</h2>
+          <span className="head-underline" aria-hidden="true" style={{ marginBottom: 52 }}></span>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-            <span className="copyable" onClick={() => copy('joelvoffcial101@gmail.com', 'Email')} style={{ display: 'flex', alignItems: 'center', gap: 16, color: '#444', fontFamily: "'Montserrat', sans-serif", fontWeight: 600, fontSize: 16 }}>
-              <span style={{ width: 44, height: 44, borderRadius: 6, background: 'rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><IconMail /></span>
+            <span className="copyable" onClick={() => copy('joelvoffcial101@gmail.com', 'Email')} style={{ display: 'flex', alignItems: 'center', gap: 16, color: '#444', fontFamily: "'Satoshi', sans-serif", fontWeight: 600, fontSize: 16 }}>
+              <span style={{ width: 44, height: 44, borderRadius: 6, background: 'oklch(20% 0.08 50 / 0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><IconMail /></span>
               joelvoffcial101@gmail.com
             </span>
-            <span className="copyable" onClick={() => copy('647 669 8325', 'Phone')} style={{ display: 'flex', alignItems: 'center', gap: 16, color: '#444', fontFamily: "'Montserrat', sans-serif", fontWeight: 600, fontSize: 16 }}>
-              <span style={{ width: 44, height: 44, borderRadius: 6, background: 'rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><IconPhone /></span>
+            <span className="copyable" onClick={() => copy('647 669 8325', 'Phone')} style={{ display: 'flex', alignItems: 'center', gap: 16, color: '#444', fontFamily: "'Satoshi', sans-serif", fontWeight: 600, fontSize: 16 }}>
+              <span style={{ width: 44, height: 44, borderRadius: 6, background: 'oklch(20% 0.08 50 / 0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><IconPhone /></span>
               647 669 8325
             </span>
             <a href="https://www.linkedin.com/in/joel-varghese-604a51184/" target="_blank" rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: 16, textDecoration: 'none', color: '#444', fontFamily: "'Montserrat', sans-serif", fontWeight: 600, fontSize: 16, transition: 'color 0.2s' }}
-              onMouseEnter={e => e.currentTarget.style.color = '#1a1a1a'} onMouseLeave={e => e.currentTarget.style.color = '#444'}
+              style={{ display: 'flex', alignItems: 'center', gap: 16, textDecoration: 'none', color: '#444', fontFamily: "'Satoshi', sans-serif", fontWeight: 600, fontSize: 16, transition: 'color 0.2s' }}
+              onMouseEnter={e => e.currentTarget.style.color = 'oklch(30% 0.06 50)'} onMouseLeave={e => e.currentTarget.style.color = '#444'}
             >
-              <span style={{ width: 44, height: 44, borderRadius: 6, background: 'rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><IconLinkedIn /></span>
+              <span style={{ width: 44, height: 44, borderRadius: 6, background: 'oklch(20% 0.08 50 / 0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><IconLinkedIn /></span>
               LinkedIn
             </a>
           </div>
@@ -678,8 +1562,8 @@ function Contact() {
           {sent ? (
             <div style={{ padding: '60px 0', textAlign: 'center' }}>
               <p style={{ fontSize: 52, marginBottom: 20 }}>✓</p>
-              <h3 style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 30, marginBottom: 14 }}>Message Sent!</h3>
-              <p style={{ fontFamily: "'Montserrat', sans-serif", color: '#666', fontSize: 16 }}>I will get back to you shortly.</p>
+              <h3 style={{ fontFamily: "'Cabinet Grotesk', sans-serif", fontWeight: 700, fontSize: 30, marginBottom: 14 }}>Message Sent!</h3>
+              <p style={{ fontFamily: "'Satoshi', sans-serif", color: '#666', fontSize: 16 }}>I will get back to you shortly.</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
@@ -688,24 +1572,22 @@ function Contact() {
                   <input placeholder={placeholder} type={type} value={form[field]}
                     onChange={e => { setForm({ ...form, [field]: e.target.value }); setErrors({ ...errors, [field]: '' }); }}
                     style={inputBase(field)}
-                    onFocus={e => e.target.style.borderColor = '#1a1a1a'}
+                    onFocus={e => e.target.style.borderColor = 'oklch(30% 0.06 50)'}
                     onBlur={e => e.target.style.borderColor = errors[field] ? '#c0392b' : '#ddd'}
                   />
-                  {errors[field] && <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 12, color: '#c0392b', marginTop: 5 }}>{errors[field]}</p>}
+                  {errors[field] && <p style={{ fontFamily: "'Satoshi', sans-serif", fontSize: 12, color: '#c0392b', marginTop: 5 }}>{errors[field]}</p>}
                 </div>
               ))}
               <div>
                 <textarea placeholder="Your message..." rows={5} value={form.message}
                   onChange={e => { setForm({ ...form, message: e.target.value }); setErrors({ ...errors, message: '' }); }}
                   style={{ ...inputBase('message'), resize: 'vertical', minHeight: 130 }}
-                  onFocus={e => e.target.style.borderColor = '#1a1a1a'}
+                  onFocus={e => e.target.style.borderColor = 'oklch(30% 0.06 50)'}
                   onBlur={e => e.target.style.borderColor = errors.message ? '#c0392b' : '#ddd'}
                 />
-                {errors.message && <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 12, color: '#c0392b', marginTop: 5 }}>{errors.message}</p>}
+                {errors.message && <p style={{ fontFamily: "'Satoshi', sans-serif", fontSize: 12, color: '#c0392b', marginTop: 5 }}>{errors.message}</p>}
               </div>
-              <button type="submit" style={{ padding: '17px 38px', borderRadius: 40, border: 'none', background: '#1a1a1a', color: '#fff', fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 15, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, alignSelf: 'flex-start', transition: 'opacity 0.2s, transform 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = ''; }}
+              <button type="submit" className="btn-fx" style={{ padding: '17px 38px', borderRadius: 40, border: 'none', background: '#14110d', color: '#fff', fontFamily: "'Cabinet Grotesk', sans-serif", fontWeight: 700, fontSize: 15, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 10, alignSelf: 'flex-start' }}
               >Send Message <IconArrow /></button>
             </form>
           )}
@@ -765,13 +1647,13 @@ function TermsModal({ onClose }) {
 
 /* ── FOOTER ────────────────────────────────────────────────── */
 function Footer({ onPrivacy, onTerms }) {
-  const ls = { background: 'none', border: 'none', cursor: 'pointer', color: '#888', fontFamily: "'Montserrat', sans-serif", fontSize: 12, letterSpacing: '0.3px', transition: 'color 0.2s' };
+  const ls = { background: 'none', border: 'none', cursor: 'pointer', color: '#888', fontFamily: "'Satoshi', sans-serif", fontSize: 12, letterSpacing: '0.3px', transition: 'color 0.2s' };
   return (
-    <footer style={{ padding: '26px 60px', background: '#fdf9f5', color: '#888', borderTop: '1px solid #ede8e2', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontFamily: "'Montserrat', sans-serif", fontSize: 12, letterSpacing: '0.3px', flexWrap: 'wrap', gap: 14 }}>
+    <footer style={{ padding: '26px 60px', background: 'oklch(96.5% 0.012 75)', color: '#888', borderTop: '1px solid #ede8e2', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontFamily: "'Satoshi', sans-serif", fontSize: 12, letterSpacing: '0.3px', flexWrap: 'wrap', gap: 14 }}>
       <p>© 2026 Joel Varghese. All rights reserved.</p>
       <div style={{ display: 'flex', gap: 28 }}>
-        <button onClick={onTerms} style={ls} onMouseEnter={e => e.currentTarget.style.color = '#1a1a1a'} onMouseLeave={e => e.currentTarget.style.color = '#888'}>Terms &amp; Conditions</button>
-        <button onClick={onPrivacy} style={ls} onMouseEnter={e => e.currentTarget.style.color = '#1a1a1a'} onMouseLeave={e => e.currentTarget.style.color = '#888'}>Privacy Policy</button>
+        <button onClick={onTerms} style={ls} onMouseEnter={e => e.currentTarget.style.color = 'oklch(30% 0.06 50)'} onMouseLeave={e => e.currentTarget.style.color = '#888'}>Terms &amp; Conditions</button>
+        <button onClick={onPrivacy} style={ls} onMouseEnter={e => e.currentTarget.style.color = 'oklch(30% 0.06 50)'} onMouseLeave={e => e.currentTarget.style.color = '#888'}>Privacy Policy</button>
       </div>
     </footer>
   );
@@ -779,14 +1661,16 @@ function Footer({ onPrivacy, onTerms }) {
 
 /* ── APP ───────────────────────────────────────────────────── */
 function App() {
-  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const [privacyOpen, setPrivacyOpen] = React.useState(false);
   const [termsOpen, setTermsOpen] = React.useState(false);
-  const safe = tweaks || TWEAK_DEFAULTS;
   return (
     <>
-      <Nav tweaks={safe} />
-      <Hero tweaks={safe} />
+      <PageSplash />
+      <HeroParallax />
+      <ScrollProgress />
+      <Nav />
+      <Hero />
+      <Services />
       <About />
       <Skills />
       <Projects />
