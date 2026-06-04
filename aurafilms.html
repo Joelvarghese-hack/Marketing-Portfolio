@@ -67,6 +67,7 @@
     /* Kingston blue accent for all section elements */
     .cs-section-eyebrow { color: #c89456; }
     .cs-section-eyebrow { display: none !important; }
+    .cs-phase-tag { display: none !important; }
     .cs-section-eyebrow::after { background: #c89456; }
     .cs-phase-num { background: #122438; }
     .cs-phase-tag { color: #c89456; }
@@ -419,6 +420,9 @@
       .dw-socials { justify-content: center; }
       .dw-footer-bottom { justify-content: center; text-align: center; }
     }
+      .cs-tool { display: inline-flex; align-items: center; gap: 11px; padding: 11px 22px 11px 14px; border-radius: 40px; border: 1px solid var(--line); background: #fff; }
+    .cs-tool img { width: 26px; height: 26px; object-fit: contain; display: block; }
+    .cs-tool span { font-family: 'Cabinet Grotesk', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.02em; color: var(--ink-soft); }
   </style>
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="icon" href="favicon.ico" sizes="any" />
@@ -685,12 +689,11 @@
     <!-- Tools -->
     <section class="cs-section">
       <div class="cs-pills reveal">
-        <span class="cs-pill">Figma</span>
-        <span class="cs-pill">Framer</span>
-        <span class="cs-pill">Brand Strategy</span>
-        <span class="cs-pill">Logo Design</span>
-        <span class="cs-pill">Web Design</span>
-        <span class="cs-pill">Responsive Build</span>
+        <span class="cs-tool"><img src="assets/logo-figma.png" alt="Figma" /><span>Figma</span></span>
+        <span class="cs-tool"><img src="assets/logo-framer.svg" alt="Framer" /><span>Framer</span></span>
+        <span class="cs-tool"><img src="assets/logo-canva.png" alt="Canva" /><span>Canva</span></span>
+        <span class="cs-tool"><img src="assets/logo-adobe.png" alt="Adobe" /><span>Adobe</span></span>
+        <span class="cs-tool"><img src="assets/logo-claude.png" alt="Claude Code" /><span>Claude Code</span></span>
       </div>
     </section>
 
