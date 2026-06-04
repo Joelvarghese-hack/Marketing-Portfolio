@@ -287,18 +287,29 @@
     }
     .hero-meta {
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: 0.16em;
       text-transform: uppercase;
       color: var(--c-ink-muted);
       display: flex;
-      gap: 24px;
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-end;
+      text-align: right;
+    }
+    .hero-meta .core {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(18px, 1.6vw, 22px);
+      letter-spacing: 0.01em;
+      color: var(--c-ink);
     }
 
     @media (max-width: 1024px) {
       .hero-grid { grid-template-columns: 1fr; gap: var(--s-5); align-items: start; }
       .hero-right { align-items: flex-start; padding-bottom: 0; }
       .hero-intro { text-align: left; max-width: 100%; }
+      .hero-meta { align-items: flex-start; text-align: left; }
     }
     @media (max-width: 900px) {
       section#hero { padding-top: 110px; }
@@ -405,26 +416,24 @@
       font-size: clamp(72px, 14vw, 190px);
       color: var(--c-ink);
       letter-spacing: 4px;
-      animation: splashMark 8s ease both;
+      animation: splashMark 1.9s var(--ease-out) both;
       transform-origin: center center;
       display: inline-block;
     }
     @keyframes splashMark {
-      0%   { opacity: 0; transform: rotate(-180deg) scale(0.08); filter: blur(24px); }
-      18%  { opacity: 1; transform: rotate(9deg)   scale(1.07);  filter: blur(0); }
-      27%  { opacity: 1; transform: rotate(-3deg)  scale(0.97); }
-      34%  { opacity: 1; transform: rotate(1.5deg) scale(1.01); }
-      42%  { opacity: 1; transform: rotate(0deg)   scale(1); }
+      0%   { opacity: 0; transform: rotate(-16deg) scale(0.55); filter: blur(14px); }
+      40%  { opacity: 1; transform: rotate(0deg)   scale(1.04); filter: blur(0); }
+      58%  { opacity: 1; transform: rotate(0deg)   scale(0.99); }
       78%  { opacity: 1; transform: rotate(0deg)   scale(1); }
-      100% { opacity: 0; transform: rotate(0deg)   scale(0.9) translateY(-60px); filter: blur(10px); }
+      100% { opacity: 0; transform: rotate(0deg)   scale(0.94) translateY(-34px); filter: blur(7px); }
     }
     /* Website arrives from below as splash exits */
     @keyframes bodyArrive {
-      0%   { opacity: 0; transform: translateY(60px); filter: blur(4px); }
+      0%   { opacity: 0; transform: translateY(40px); filter: blur(4px); }
       100% { opacity: 1; transform: translateY(0); filter: blur(0); }
     }
     [data-splash-active] #root {
-      animation: bodyArrive 1s var(--ease-out) 5.5s both;
+      animation: bodyArrive 0.9s var(--ease-out) 1.5s both;
     }
     @media (prefers-reduced-motion: reduce) {
       .page-splash { display: none !important; }
@@ -443,9 +452,6 @@
       animation: toolsScroll 32s linear infinite;
       width: max-content;
       will-change: transform;
-    }
-    .tools-marquee-wrap:hover .tools-marquee-track {
-      animation-play-state: paused;
     }
     @keyframes toolsScroll {
       from { transform: translateX(0); }
@@ -1029,15 +1035,11 @@ function Services() {
 function PageSplash() {
   const [gone, setGone] = React.useState(false);
   React.useEffect(() => {
-    try {
-      if (sessionStorage.getItem('jv-splash-seen')) { setGone(true); return; }
-      sessionStorage.setItem('jv-splash-seen', '1');
-    } catch (e) {}
     document.documentElement.setAttribute('data-splash-active', '');
     const t = setTimeout(() => {
       setGone(true);
-      setTimeout(() => document.documentElement.removeAttribute('data-splash-active'), 1800);
-    }, 7500);
+      setTimeout(() => document.documentElement.removeAttribute('data-splash-active'), 700);
+    }, 1700);
     return () => clearTimeout(t);
   }, []);
   return (
@@ -1195,9 +1197,8 @@ function Nav() {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           position: 'relative',
         }}>
-          <a href="#hero" onClick={handleNavClick} style={{ textDecoration: 'none', flexShrink: 0 }}>
-            <span className="nav-logo-full" style={{ fontFamily: "'Pinyon Script', cursive", fontSize: 30, color: 'var(--c-ink)', lineHeight: 1 }}>Joel Varghese</span>
-            <span className="nav-logo-short" style={{ display: 'none', fontFamily: "'Pinyon Script', cursive", fontSize: 30, color: 'var(--c-ink)', lineHeight: 1 }}>JV</span>
+          <a href="#hero" onClick={handleNavClick} aria-label="Joel Varghese, back to top" style={{ textDecoration: 'none', flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+            <img className="nav-logo-img" src="assets/design-work/logos/joel-varghese-personal-logo.png" alt="Joel Varghese" style={{ height: 30, width: 'auto', display: 'block' }} />
           </a>
           <div className="nav-links" style={{ display: 'flex', gap: 40, alignItems: 'center', position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
             {links.map(l => (
@@ -1260,9 +1261,12 @@ function Hero() {
           </div>
         </div>
         <div className="hero-right">
-          <p className="hero-intro">
-            MBA-qualified marketer and UX designer building campaigns, identities, and digital experiences for clients across government, music, and non-profit.
-          </p>
+          <span className="hero-right-rule" aria-hidden="true"></span>
+          <div className="hero-meta">
+            <span className="core">Social Media Marketing</span>
+            <span>Brand Strategy</span>
+            <span>Copywriting</span>
+          </div>
         </div>
       </div>
     </section>
