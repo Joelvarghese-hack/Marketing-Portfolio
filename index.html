@@ -17,7 +17,7 @@
   <style>
     /* ─────────────────────────────────────────────────────────
        EDITORIAL RESTRAINT
-       Tokens, motion, hover system — synthesizing the three skills
+       Tokens, motion, hover system, synthesizing the three skills
        ───────────────────────────────────────────────────────── */
     :root {
       /* 8px spacing scale */
@@ -25,7 +25,7 @@
       --s-5: 40px;  --s-6: 56px;  --s-7: 64px;  --s-8: 80px;
       --s-9: 96px;  --s-10: 120px; --s-11: 160px; --s-12: 200px;
 
-      /* Cream + chocolate brown + caramel — zero black, zero pure white */
+      /* Cream + chocolate brown + caramel, zero black, zero pure white */
       --c-bg: oklch(96.5% 0.012 75);
       --c-bg-warm: oklch(95% 0.018 70);
       --c-surface: oklch(92.5% 0.022 75);
@@ -35,7 +35,7 @@
       --c-ink-muted: oklch(58% 0.05 55);    /* light chocolate */
       --c-line: oklch(85% 0.025 70);
       --c-line-soft: oklch(89% 0.020 75);
-      --c-accent: oklch(58% 0.13 50);       /* caramel — your signature */
+      --c-accent: oklch(58% 0.13 50);       /* caramel, your signature */
       --c-accent-soft: oklch(72% 0.10 55);
       --c-accent-deep: oklch(45% 0.13 48);  /* darker caramel for hover */
       --c-dark: oklch(24% 0.07 48);         /* darkest chocolate, was near-black */
@@ -43,12 +43,12 @@
       --c-on-dark: oklch(96% 0.015 75);     /* cream on dark */
       --c-on-dark-soft: oklch(78% 0.022 70);
 
-      /* Motion — Emil's curves */
+      /* Motion, Emil's curves */
       --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
       --ease-soft: cubic-bezier(0.32, 0.72, 0, 1);
       --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
 
-      /* Shadows — tinted toward the warm hue */
+      /* Shadows, tinted toward the warm hue */
       --shadow-sm: 0 1px 2px oklch(20% 0.015 70 / 0.04), 0 2px 4px oklch(20% 0.015 70 / 0.04);
       --shadow-md: 0 4px 12px oklch(20% 0.015 70 / 0.06), 0 10px 24px oklch(20% 0.015 70 / 0.08);
       --shadow-lg: 0 14px 32px oklch(20% 0.015 70 / 0.10), 0 28px 56px oklch(20% 0.015 70 / 0.13);
@@ -387,7 +387,7 @@
       will-change: transform;
     }
 
-    /* ── Page load splash — JV signature ──────────────────── */
+    /* ── Page load splash, JV signature ──────────────────── */
     .page-splash {
       position: fixed; inset: 0;
       background: var(--c-bg);
@@ -529,7 +529,7 @@
       nav, section, footer { padding-left: 32px !important; padding-right: 32px !important; }
     }
 
-    /* ── Small tablet: ≤900px — hamburger nav ────────────── */
+    /* ── Small tablet: ≤900px, hamburger nav ────────────── */
     @media (max-width: 900px) {
       .nav-links { display: none !important; }
       .nav-hire-btn { display: none !important; }
@@ -567,7 +567,7 @@
       #hero    { padding-top: 100px !important; padding-bottom: 56px !important; }
       #services, #about, #projects, #contact { padding-top: 72px !important; padding-bottom: 72px !important; }
       #skills  { padding-top: 72px !important; padding-bottom: 72px !important; }
-      /* Hero display text — prevents overflow on narrow screens */
+      /* Hero display text, prevents overflow on narrow screens */
       .hero-display { font-size: clamp(40px, 10vw, 56px) !important; }
       .hero-script  { font-size: clamp(38px, 10vw, 60px) !important; }
       /* Marquee pills slightly smaller on phone */
@@ -676,6 +676,9 @@
       background: var(--c-bg); border: 1px solid var(--c-line); color: var(--c-ink-soft);
     }
   </style>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 </head>
 <body>
   <div id="root"></div>
@@ -982,7 +985,7 @@ const SERVICES = [
   {
     Icon: SvcIconBrand,
     title: 'Brand Strategy',
-    desc: 'Visual identity systems, brand playbooks, and cohesive storytelling across every touchpoint — from social media to print and everything in between.',
+    desc: 'Visual identity systems, brand playbooks, and cohesive storytelling across every touchpoint, from social media to print and everything in between.',
     tags: ['Identity Systems', 'Brand Playbook', 'Art Direction', 'Canva'],
   },
 ];
@@ -1022,7 +1025,7 @@ function Services() {
   );
 }
 
-/* ── Page load splash — JV signature ──────────────────── */
+/* ── Page load splash, JV signature ──────────────────── */
 function PageSplash() {
   const [gone, setGone] = React.useState(false);
   React.useEffect(() => {
@@ -1159,7 +1162,7 @@ function ScrollTopBtn() {
   );
 }
 
-/* ── NAV — transparent with blur-only on scroll ──────── */
+/* ── NAV, transparent with blur-only on scroll ──────── */
 function Nav() {
   const [scrolled, setScrolled] = React.useState(false);
   const [active, setActive] = React.useState('');
@@ -1285,7 +1288,7 @@ function About() {
               A social media strategist and influencer marketing professional with an MBA in Marketing. I specialise in building authentic brand presence and connecting brands with the right creators to drive real results.
             </p>
             <p style={{ fontFamily: "'Satoshi', sans-serif", fontWeight: 500, fontSize: 18, lineHeight: 1.85, color: 'var(--c-ink-soft)', marginBottom: 40 }}>
-              I focus on creating ideas that are simple, clear, and actually connect with people. I enjoy working in the space where storytelling and design come together — building things that not only look good but also make sense and get results.
+              I focus on creating ideas that are simple, clear, and actually connect with people. I enjoy working in the space where storytelling and design come together, building things that not only look good but also make sense and get results.
             </p>
             <p style={{ fontFamily: "'Pinyon Script', cursive", fontSize: 42, color: 'var(--c-ink)', lineHeight: 1, marginBottom: 20 }}>Let's connect</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -1361,7 +1364,7 @@ function Skills() {
           <h2 style={{ fontFamily: "'Cabinet Grotesk', sans-serif", fontWeight: 900, fontSize: 'clamp(40px, 5vw, 72px)', lineHeight: 1, letterSpacing: '-0.035em', color: 'oklch(30% 0.06 50)', textTransform: 'uppercase' }}>TOOLS &amp;<br />EXPERTISE</h2>
           <span className="head-underline" aria-hidden="true"></span>
         </div>
-        {/* CERTIFICATES — top, 2-col grid */}
+        {/* CERTIFICATES, top, 2-col grid */}
         <div ref={certsRef} className="reveal" style={{ transitionDelay: '0.1s', marginBottom: 72 }}>
           <h3 style={{ fontFamily: "'Cabinet Grotesk', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: '2px', marginBottom: 28, color: 'var(--c-ink-muted)', textTransform: 'uppercase' }}>Certificates</h3>
           <div className="cert-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0 48px' }}>
@@ -1376,7 +1379,7 @@ function Skills() {
           </div>
         </div>
       </div>
-      {/* TOOLS MARQUEE — full-bleed below certs */}
+      {/* TOOLS MARQUEE, full-bleed below certs */}
       <div ref={toolsRef} className="reveal" style={{ transitionDelay: '0.2s' }}>
         <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 60px', marginBottom: 20 }}>
           <h3 style={{ fontFamily: "'Cabinet Grotesk', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: '2px', color: 'var(--c-ink-muted)', textTransform: 'uppercase' }}>Tools &amp; Platforms</h3>
@@ -1396,7 +1399,7 @@ function Skills() {
   );
 }
 
-/* ── PROJECTS — Framer-style card grid ─────────────────────── */
+/* ── PROJECTS, Framer-style card grid ─────────────────────── */
 const PROJECT_CARDS = [
   {
     id: 'kingston',
@@ -1448,10 +1451,10 @@ const PROJECT_CARDS = [
     category: 'Visual Design',
     page: 'designwork.html',
     logo: 'assets/projects/joel-logo.png',
-    gradient: 'linear-gradient(145deg, oklch(92.5% 0.022 75) 0%, oklch(87% 0.032 72) 50%, oklch(84% 0.038 68) 100%)',
-    logoFilter: 'none',
-    logoOpacity: 1,
-    isLight: true,
+    gradient: 'linear-gradient(145deg, #042220 0%, #08443d 40%, #0e6155 65%, #03201c 100%)',
+    logoFilter: 'brightness(0) invert(1)',
+    logoOpacity: 0.85,
+    isLight: false,
   },
 ];
 
@@ -1489,7 +1492,7 @@ function ProjectCard({ project: p }) {
       onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') go(); }}
     >
       <div className="proj-card-media">
-        {/* Animated gradient background — simulates looping video */}
+        {/* Animated gradient background, simulates looping video */}
         <div className="proj-card-media-inner" style={{ background: p.gradient }} />
         {/* Film-grain texture overlay */}
         <div style={{
@@ -1532,7 +1535,7 @@ function Contact() {
     if (!form.message.trim()) e.message = 'Message required';
     return e;
   };
-  const handleSubmit = ev => { ev.preventDefault(); const errs = validate(); if (Object.keys(errs).length) { setErrors(errs); return; } setSent(true); };
+  const handleSubmit = ev => { ev.preventDefault(); const errs = validate(); if (Object.keys(errs).length) { setErrors(errs); return; } const subject = encodeURIComponent('Portfolio inquiry from ' + form.name); const body = encodeURIComponent('Name: ' + form.name + '\nEmail: ' + form.email + '\n\n' + form.message); window.location.href = 'mailto:joelvoffcial101@gmail.com?subject=' + subject + '&body=' + body; setSent(true); };
   const inputBase = field => ({ width: '100%', padding: '15px 18px', borderRadius: 6, border: `1.5px solid ${errors[field] ? '#c0392b' : '#ddd'}`, fontFamily: "'Satoshi', sans-serif", fontSize: 15, color: 'oklch(30% 0.06 50)', background: '#fff', outline: 'none', transition: 'border-color 0.2s' });
   return (
     <section id="contact" style={{ padding: '120px 60px', background: '#f5f0eb', color: 'oklch(30% 0.06 50)' }}>
@@ -1685,5 +1688,6 @@ function App() {
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
+  <script>document.addEventListener('contextmenu',function(e){e.preventDefault();});document.addEventListener('dragstart',function(e){if(e.target&&(e.target.tagName==='IMG'||e.target.tagName==='VIDEO'))e.preventDefault();});document.addEventListener('keydown',function(e){var k=(e.key||'').toLowerCase();if((e.ctrlKey||e.metaKey)&&['s','u','p'].indexOf(k)!==-1)e.preventDefault();});</script>
 </body>
 </html>

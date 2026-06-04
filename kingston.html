@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -419,6 +419,9 @@
       .dw-footer-bottom { justify-content: center; text-align: center; }
     }
   </style>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 </head>
 <body>
 
@@ -478,7 +481,7 @@
     <section class="cs-section">
       <p class="cs-section-eyebrow reveal">Overview</p>
       <h2 class="cs-h2 reveal">The Problem</h2>
-      <p class="cs-p reveal">The City of Kingston was managing multiple grant programs using a fragmented set of tools — email, Excel, Dropbox, and Google Drive. This created systemic inefficiencies for staff and applicant organisations alike.</p>
+      <p class="cs-p reveal">The City of Kingston was managing multiple grant programs using a fragmented set of tools, email, Excel, Dropbox, and Google Drive. This created systemic inefficiencies for staff and applicant organisations alike.</p>
 
       <div class="cs-problem-grid">
         <div class="cs-problem-card reveal">
@@ -516,7 +519,7 @@
     <section class="cs-section">
       <p class="cs-section-eyebrow reveal">Methodology</p>
       <h2 class="cs-h2 reveal">Three-Phase Research</h2>
-      <p class="cs-p reveal">A rigorous multi-phase approach was used to uncover pain points from multiple perspectives — external benchmarking, internal staff experience, and partner organisations.</p>
+      <p class="cs-p reveal">A rigorous multi-phase approach was used to uncover pain points from multiple perspectives, external benchmarking, internal staff experience, and partner organisations.</p>
 
       <div class="cs-phases">
         <div class="cs-phase reveal">
@@ -549,7 +552,7 @@
           <div class="cs-phase-content">
             <p class="cs-phase-tag">Stakeholder Interview</p>
             <h3 class="cs-phase-title">Partner Perspective: Kingston Arts Council</h3>
-            <p class="cs-phase-desc">Conducted an in-depth interview with Nicole Daniels at Kingston Arts Council to understand the partner organisation experience — how they submit, track, and report on grants from outside the City's internal systems.</p>
+            <p class="cs-phase-desc">Conducted an in-depth interview with Nicole Daniels at Kingston Arts Council to understand the partner organisation experience, how they submit, track, and report on grants from outside the City's internal systems.</p>
           </div>
         </div>
       </div>
@@ -571,7 +574,7 @@
         </div>
         <div class="cs-finding reveal">
           <span class="cs-finding-num">03</span>
-          <p class="cs-finding-text">The jury review process relies entirely on Dropbox and paper forms — no digital audit trail.</p>
+          <p class="cs-finding-text">The jury review process relies entirely on Dropbox and paper forms, no digital audit trail.</p>
         </div>
         <div class="cs-finding reveal">
           <span class="cs-finding-num">04</span>
@@ -649,7 +652,7 @@
         <div class="cs-prototype-content">
           <p class="cs-prototype-eyebrow">Interactive Prototype</p>
           <h3 class="cs-prototype-title">Grants Management Portal Dashboard</h3>
-          <p class="cs-prototype-desc">Explore the high-fidelity portal built from this research — a unified dashboard for City staff to track applications, manage reviewers, and monitor grant cycles in real time.</p>
+          <p class="cs-prototype-desc">Explore the high-fidelity portal built from this research, a unified dashboard for City staff to track applications, manage reviewers, and monitor grant cycles in real time.</p>
         </div>
         <a href="kingston-grants-portal.html" target="_blank" rel="noopener noreferrer" class="cs-prototype-cta">
           View Dashboard
@@ -776,5 +779,10 @@
       });
     })();
   </script>
+<script>
+document.addEventListener('contextmenu',function(e){e.preventDefault();});
+document.addEventListener('dragstart',function(e){if(e.target&&(e.target.tagName==='IMG'||e.target.tagName==='VIDEO'))e.preventDefault();});
+document.addEventListener('keydown',function(e){var k=(e.key||'').toLowerCase();if((e.ctrlKey||e.metaKey)&&['s','u','p'].indexOf(k)!==-1)e.preventDefault();});
+</script>
 </body>
 </html>
