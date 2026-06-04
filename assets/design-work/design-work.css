@@ -527,3 +527,7 @@ h1 {
   .item-frame.video-frame video { object-fit: contain; background: #fff; }
   .item-frame.pdf iframe { background: #fff; }
 }
+
+/* REMOVED SUBHEADINGS, per request */
+.eyebrow, .tagline { display: none !important; }
+

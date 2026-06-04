@@ -457,15 +457,16 @@
       from { transform: translateX(0); }
       to   { transform: translateX(-50%); }
     }
-    .tool-pill {
-      display: flex; flex-direction: column; align-items: center; gap: 14px;
-      padding: 28px 40px; min-width: 160px;
-      background: var(--c-card); border-radius: 18px; margin: 0 12px;
-      border: 1px solid var(--c-line-soft); flex-shrink: 0;
-      transition: transform 0.3s cubic-bezier(0.23,1,0.32,1), box-shadow 0.3s cubic-bezier(0.23,1,0.32,1);
+    .tool-box {
+      aspect-ratio: 1 / 1;
+      background: var(--c-card); border-radius: 14px;
+      border: 1px solid var(--c-line-soft);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
     }
-    .tool-pill:hover { transform: translateY(-4px); box-shadow: 0 12px 32px oklch(30% 0.06 50 / 0.10); }
-    .tool-pill img { width: 72px; height: 72px; object-fit: contain; }
+    .tool-box:hover { transform: translateY(-4px); box-shadow: 0 12px 32px oklch(30% 0.06 50 / 0.10); border-color: var(--c-accent-soft); }
+    .tool-box img { width: 100%; height: 100%; max-width: 64px; max-height: 64px; object-fit: contain; }
 
     /* ── Section dressing ─────────────────────────────────── */
     .section-eyebrow {
@@ -1004,7 +1005,6 @@ function Services() {
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <div ref={headRef} className="reveal" style={{ marginBottom: 64, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 20 }}>
           <div>
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--c-ink-muted)', marginBottom: 14 }}>What I Do</p>
             <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(44px, 6vw, 76px)', lineHeight: 0.95, letterSpacing: '-0.04em', textTransform: 'uppercase', color: 'var(--c-ink)' }}>
               SERVICES<span style={{ color: 'var(--c-accent)' }}>.</span>
             </h2>
@@ -1186,10 +1186,12 @@ function Nav() {
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         height: 68,
-        background: 'transparent',
-        backdropFilter: scrolled ? 'blur(18px) saturate(150%)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'blur(18px) saturate(150%)' : 'none',
-        transition: 'backdrop-filter 0.5s var(--ease-out)',
+        background: 'rgba(250,244,236,0.82)',
+        backdropFilter: 'blur(18px) saturate(150%)',
+        WebkitBackdropFilter: 'blur(18px) saturate(150%)',
+        borderBottom: '1px solid rgba(120,90,60,0.14)',
+        boxShadow: scrolled ? '0 2px 24px rgba(60,40,20,0.09)' : 'none',
+        transition: 'box-shadow 0.4s var(--ease-out)',
       }}>
         <div style={{
           maxWidth: 1200, margin: '0 auto', height: '100%',
@@ -1203,7 +1205,7 @@ function Nav() {
           <div className="nav-links" style={{ display: 'flex', gap: 40, alignItems: 'center', position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
             {links.map(l => (
               <a key={l} href={`#${l.toLowerCase()}`} className="nav-link-fx"
-                style={{ fontFamily: "'Cabinet Grotesk', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: '1.2px', textDecoration: 'none', color: 'var(--c-ink)', textTransform: 'uppercase', opacity: active === l ? 1 : 0.55, transition: 'opacity 0.3s var(--ease-out)' }}
+                style={{ fontFamily: "'Cabinet Grotesk', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: '1.2px', textDecoration: 'none', color: 'var(--c-ink)', textTransform: 'uppercase', opacity: active === l ? 1 : 0.72, transition: 'opacity 0.3s var(--ease-out)' }}
                 onMouseEnter={() => setActive(l)} onMouseLeave={() => setActive('')}
               >{l}</a>
             ))}
@@ -1246,7 +1248,6 @@ function Hero() {
       <div className="hero-grain" aria-hidden="true"></div>
       <div className="hero-grid">
         <div className="hero-left">
-          <span className="hero-eyebrow"><span className="dot" aria-hidden="true"></span>Available for work, {year}</span>
           <h1 className="hero-display">
             Portfolio<span className="accent">.</span>
           </h1>
@@ -1339,15 +1340,15 @@ function About() {
 
 /* ── SKILLS ────────────────────────────────────────────────── */
 const TOOLS = [
-  { name: 'Canva', src: 'assets/logo-canva.png' },
-  { name: 'CapCut', src: 'assets/logo-capcut.png' },
   { name: 'Figma', src: 'assets/logo-figma.png' },
+  { name: 'Framer', src: 'assets/logo-framer.svg' },
+  { name: 'Claude Code', src: 'assets/logo-claude.png' },
+  { name: 'Dev Tools', src: 'assets/logo-devtools.svg' },
+  { name: 'Canva', src: 'assets/logo-canva.png' },
   { name: 'Adobe Suite', src: 'assets/logo-adobe.png' },
-  { name: 'Gemini AI', src: 'assets/logo-gemini.png' },
+  { name: 'CapCut', src: 'assets/logo-capcut.png' },
   { name: 'Meta Business Suite', src: 'assets/logo-meta.png' },
-  { name: 'Claude AI', src: 'assets/logo-claude.png' },
-  { name: 'Microsoft Suite', src: 'assets/logo-office.png' },
-  { name: 'HypeAuditor', src: 'assets/logo-hypeauditor.png' },
+  { name: 'Gemini AI', src: 'assets/logo-gemini.png' },
   { name: 'TikTok', src: 'assets/logo-tiktok.png' },
 ];
 const CERTS = [
@@ -1370,7 +1371,6 @@ function Skills() {
         </div>
         {/* CERTIFICATES, top, 2-col grid */}
         <div ref={certsRef} className="reveal" style={{ transitionDelay: '0.1s', marginBottom: 72 }}>
-          <h3 style={{ fontFamily: "'Cabinet Grotesk', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: '2px', marginBottom: 28, color: 'var(--c-ink-muted)', textTransform: 'uppercase' }}>Certificates</h3>
           <div className="cert-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0 48px' }}>
             {CERTS.map((c, i) => (
               <a key={i} href={c.url} target="_blank" rel="noopener noreferrer" className="cert-fx"
@@ -1383,20 +1383,14 @@ function Skills() {
           </div>
         </div>
       </div>
-      {/* TOOLS MARQUEE, full-bleed below certs */}
+      {/* TOOLS, static logo grid */}
       <div ref={toolsRef} className="reveal" style={{ transitionDelay: '0.2s' }}>
-        <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 60px', marginBottom: 20 }}>
-          <h3 style={{ fontFamily: "'Cabinet Grotesk', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: '2px', color: 'var(--c-ink-muted)', textTransform: 'uppercase' }}>Tools &amp; Platforms</h3>
-        </div>
-        <div className="tools-marquee-wrap" style={{ padding: '10px 0' }}>
-          <div className="tools-marquee-track">
-            {[...TOOLS, ...TOOLS].map(({ name, src }, i) => (
-              <div key={`${name}-${i}`} className="tool-pill">
-                <img src={src} alt={name} style={{ width: 72, height: 72, objectFit: 'contain' }} />
-                <span style={{ fontFamily: "'Satoshi', sans-serif", fontWeight: 600, fontSize: 12, color: 'var(--c-ink-soft)', textAlign: 'center', lineHeight: 1.3, whiteSpace: 'nowrap' }}>{name}</span>
-              </div>
-            ))}
-          </div>
+        <div className="tools-grid" style={{ maxWidth: 1400, margin: '0 auto', padding: '0 60px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(132px, 1fr))', gap: 18 }}>
+          {TOOLS.map(({ name, src }) => (
+            <div key={name} className="tool-box" title={name}>
+              <img src={src} alt={name} />
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -1441,8 +1435,8 @@ const PROJECT_CARDS = [
   {
     id: 'aurafilms',
     title: 'Aura Films',
-    category: 'Branding / Social Media',
-    externalUrl: 'https://joelvarghese-hack.github.io/aura-films-website/',
+    category: 'Branding / Website',
+    page: 'aurafilms.html',
     logo: 'assets/projects/aura-films-logo.png',
     gradient: 'linear-gradient(145deg, #180c05 0%, #2c1808 40%, #3e230e 65%, #140a03 100%)',
     logoFilter: 'brightness(0) invert(1)',
@@ -1469,7 +1463,6 @@ function Projects() {
     <section id="projects" style={{ padding: '120px 60px', background: '#fff' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <div ref={headRef} className="reveal" style={{ marginBottom: 64 }}>
-          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--c-ink-muted)', marginBottom: 14 }}>Case Studies</p>
           <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(40px, 5.5vw, 76px)', lineHeight: 0.95, letterSpacing: '-0.04em', textTransform: 'uppercase', color: 'var(--c-ink)', marginBottom: 18 }}>
             MY BEST<br /><span style={{ color: 'var(--c-accent)' }}>WORK</span>
           </h2>
