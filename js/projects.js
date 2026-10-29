@@ -311,7 +311,8 @@ const PROJECTS = [
     discipline: 'Branding · Website design',
     headline: ['Aura Films', 'Brand & Website'],
     lede: 'Aura Films is a photography and videography studio capturing weddings, portraits, maternity and engagement sessions. The studio needed a complete brand identity and a modern website to present its work professionally and turn visitors into booked clients.',
-    live: { href: 'https://joelvarghese-hack.github.io/aura-films-website/', label: 'Visit website' },
+    live: { href: 'https://www.itsaurafilms.com', label: 'Visit website' },
+    social: [{ href: 'https://www.instagram.com/aura.filmsca', label: 'Aura Films on Instagram', icon: 'assets/logo-instagram.svg' }],
     meta: [
       ['Role', 'Brand & Web Designer'],
       ['Scope', 'Identity, Visual System, Website'],

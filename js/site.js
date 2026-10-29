@@ -286,7 +286,8 @@
   function renderCase(p) {
     const i = PROJECTS.indexOf(p);
     const next = PROJECTS[(i + 1) % PROJECTS.length];
-    const live = p.live ? `<a class="btn btn-ink" href="${p.live.href}" target="_blank" rel="noopener noreferrer">${esc(p.live.label)} ${ARROW}</a>` : '';
+    const live = (p.live ? `<a class="btn btn-ink" href="${p.live.href}" target="_blank" rel="noopener noreferrer">${esc(p.live.label)} ${ARROW}</a>` : '')
+      + (p.social || []).map((s) => `<a class="case-social" href="${s.href}" target="_blank" rel="noopener noreferrer" aria-label="${esc(s.label)}" title="${esc(s.label)}"><img src="${s.icon}" alt="" /></a>`).join('');
     const tools = p.tools.length ? `<section class="cs"><div class="wrap"><header class="cs-head"><h3 class="cs-title">Tools used.</h3></header><div class="cs-body"><ul class="cs-tools">${p.tools.map((t) => `<li>${LOGO[t] ? `<img src="${LOGO[t]}" alt="" />` : '<span class="dot"></span>'}${esc(t)}</li>`).join('')}</ul></div></div></section>` : '';
     caseEl.className = 'case' + (p.tone === 'light' ? ' light' : '');
     caseEl.style.setProperty('--c', p.color);
@@ -582,7 +583,9 @@
     d.addEventListener('click', (e) => { if (e.target === d || e.target.closest('.legal-x')) d.close(); });
   });
 
-  /* ── contact form (FormSubmit, same endpoint as before) ───── */
+  /* ── contact form (Web3Forms) ────────────────────────────── */
+  // Public by design: Web3Forms access keys only allow sending to the inbox they were issued for.
+  const WEB3FORMS_KEY = '';
   const form = $('#contact-form');
   const status = $('#form-status');
   const rules = {
@@ -614,15 +617,18 @@
     btn.disabled = true;
     if (form.elements._honey.value) { status.textContent = 'Thanks, your message is on its way.'; btn.disabled = false; return; }
     try {
-      const res = await fetch('https://formsubmit.co/ajax/joelvoffcial101@gmail.com', {
+      if (!WEB3FORMS_KEY) throw new Error('Contact form not configured yet');
+      const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
           name: form.elements.name.value.trim(),
           email: form.elements.email.value.trim(),
           message: form.elements.message.value.trim(),
-          _subject: 'New message from your portfolio',
-          _template: 'table',
+          subject: 'New message from your portfolio',
+          from_name: 'Joel Varghese Portfolio',
+          botcheck: false,
         }),
       });
       const data = await res.json().catch(() => ({}));
