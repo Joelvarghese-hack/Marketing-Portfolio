@@ -54,8 +54,22 @@
     ['CapCut', 'assets/logo-capcut.png'], ['Meta Business Suite', 'assets/logo-meta.png'], ['Gemini AI', 'assets/logo-gemini.png'],
     ['TikTok', 'assets/logo-tiktok.png'],
   ];
-  $('#tools-track').innerHTML = [0, 1].map((k) => TOOLS.map(([n, s]) =>
-    `<li class="tool"${k ? ' aria-hidden="true"' : ''}><img src="${s}" alt="" loading="lazy" /><span>${n}</span></li>`).join('')).join('');
+  // Two identical halves, each at least as wide as the screen, so shifting by
+  // exactly one half loops with no seam and no empty space.
+  const toolsTrack = $('#tools-track');
+  const TOOL_SPEED = 80; // px per second
+  function buildTools() {
+    const chip = (n, s, hidden) => `<li class="tool"${hidden ? ' aria-hidden="true"' : ''}><img src="${s}" alt="" /><span>${n}</span></li>`;
+    toolsTrack.innerHTML = TOOLS.map(([n, s]) => chip(n, s, false)).join('');
+    const setW = toolsTrack.scrollWidth;
+    const reps = Math.max(1, Math.ceil(innerWidth / setW));
+    const half = Array.from({ length: reps }, (_, r) => TOOLS.map(([n, s]) => chip(n, s, r > 0)).join('')).join('');
+    toolsTrack.innerHTML = half + half.replaceAll('<li class="tool">', '<li class="tool" aria-hidden="true">');
+    toolsTrack.style.setProperty('--loop', `${(setW * reps) / TOOL_SPEED}s`);
+  }
+  buildTools();
+  let toolsW = innerWidth;
+  addEventListener('resize', () => { if (Math.abs(innerWidth - toolsW) > 40) { toolsW = innerWidth; buildTools(); } });
 
   /* ── card markup (shared by the arc and the case header) ─── */
   const scr = (src, alt = '') => `<img src="${src}" alt="${esc(alt)}" loading="lazy" draggable="false" />`;
@@ -230,7 +244,7 @@
 
   const cols = (n) => (n % 3 === 0 ? 3 : n % 2 === 0 ? 2 : 3);
   function section(s, i) {
-    const head = `<header class="cs-head"><p class="cs-label"><b>${pad(i + 1)}</b>${esc(s.label)}</p><h3 class="cs-title">${esc(s.title || '')}</h3>${s.intro ? `<p class="cs-intro">${esc(s.intro)}</p>` : ''}</header>`;
+    const head = `<header class="cs-head"><h3 class="cs-title">${esc(s.title || '')}</h3>${s.intro ? `<p class="cs-intro">${esc(s.intro)}</p>` : ''}</header>`;
     let body = '';
     switch (s.type) {
       case 'text':
@@ -249,7 +263,7 @@
         body = `<ol class="cs-timeline">${s.items.map(([d, h, p]) => `<li><span class="d">${esc(d)}</span><h4>${esc(h)}</h4><p>${esc(p)}</p></li>`).join('')}</ol>`; break;
       case 'persona':
         body = `<div class="persona"><div class="persona-card"><span class="pa">IE</span><div><h4>${esc(s.name)}</h4><p class="mono">${esc(s.sub)}</p></div><ul>${s.traits.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></div>
-          <div class="persona-why"><p class="why-t">Why Emma matters</p><p>${esc(s.why)}</p><div class="persona-stats">${s.stats.map(([b, l]) => `<div><b>${esc(b)}</b><span>${esc(l)}</span></div>`).join('')}</div><p class="persona-note">${esc(s.note)}</p></div></div>`; break;
+          <div class="persona-why"><h4 class="why-t">Why Emma matters</h4><p>${esc(s.why)}</p><div class="persona-stats">${s.stats.map(([b, l]) => `<div><b>${esc(b)}</b><span>${esc(l)}</span></div>`).join('')}</div><p class="persona-note">${esc(s.note)}</p></div></div>`; break;
       case 'outcomes':
         body = `<div class="cs-outcomes" style="--cols:${s.items.length === 4 ? 4 : cols(s.items.length)}">${s.items.map(([h, b, p]) => `<article><h4>${esc(h)}</h4><b>${esc(b)}</b><p>${esc(p)}</p></article>`).join('')}</div>`; break;
       case 'gallery':
@@ -269,7 +283,7 @@
     const i = PROJECTS.indexOf(p);
     const next = PROJECTS[(i + 1) % PROJECTS.length];
     const live = p.live ? `<a class="btn btn-ink" href="${p.live.href}" target="_blank" rel="noopener noreferrer">${esc(p.live.label)} ${ARROW}</a>` : '';
-    const tools = p.tools.length ? `<section class="cs"><div class="wrap"><header class="cs-head"><p class="cs-label"><b>${pad(p.sections.length + 1)}</b>Stack &amp; platforms</p><h3 class="cs-title">Tools used.</h3></header><div class="cs-body"><ul class="cs-tools">${p.tools.map((t) => `<li>${LOGO[t] ? `<img src="${LOGO[t]}" alt="" />` : '<span class="dot"></span>'}${esc(t)}</li>`).join('')}</ul></div></div></section>` : '';
+    const tools = p.tools.length ? `<section class="cs"><div class="wrap"><header class="cs-head"><h3 class="cs-title">Tools used.</h3></header><div class="cs-body"><ul class="cs-tools">${p.tools.map((t) => `<li>${LOGO[t] ? `<img src="${LOGO[t]}" alt="" />` : '<span class="dot"></span>'}${esc(t)}</li>`).join('')}</ul></div></div></section>` : '';
     caseEl.className = 'case' + (p.tone === 'light' ? ' light' : '');
     caseEl.style.setProperty('--c', p.color);
     caseEl.innerHTML = `
@@ -280,9 +294,7 @@
       <header class="case-band">
         <div class="wrap case-band-grid">
           <div>
-            <p class="case-eyebrow mono"><span>${pad(i + 1)} / ${pad(PROJECTS.length)}</span><span>${esc(p.eyebrow)}</span></p>
             <h2 class="case-title" id="case-title">${p.headline.map((l) => `<span>${esc(l)}</span>`).join('')}</h2>
-            <p class="case-disc">${esc(p.discipline)}</p>
           </div>
           <div class="case-visual" aria-hidden="true">${cardHTML(p, 'tabindex="-1"')}</div>
         </div>
@@ -291,7 +303,7 @@
         <div class="wrap">
           <div class="case-top">
             <div><p class="case-lede">${esc(p.lede)}</p>${live ? `<div class="case-live">${live}</div>` : ''}</div>
-            <dl class="case-meta">${p.meta.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
+            <dl class="case-meta">${[...p.meta, ['Focus', p.discipline]].map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
           </div>
           ${p.stats.length ? `<div class="case-stats">${p.stats.map(([b, l]) => `<div><b>${esc(b)}</b><span>${esc(l)}</span></div>`).join('')}</div>` : ''}
         </div>
@@ -301,21 +313,18 @@
           <div class="wrap">
             <div class="case-end-grid">
               <div>
-                <p class="mono">Get in touch</p>
                 <h3>Let’s work<br />together</h3>
                 <p class="contact-mini"><a href="mailto:joelvoffcial101@gmail.com">joelvoffcial101@gmail.com</a><a href="tel:+16476698325">647 669 8325</a></p>
               </div>
               <button type="button" class="case-next" data-goto="${next.id}">
-                <span class="mono">Next case study</span>
+                <span class="nx-l">Next project</span>
                 <span class="nx"><i style="--c:${next.color}"></i>${esc(next.title)} <svg viewBox="0 0 24 24"><path d="M3 12h17M14 6l6 6-6 6"/></svg></span>
               </button>
             </div>
-            <div class="case-foot"><span>© 2026 Joel Varghese. All rights reserved.</span><button type="button" class="btn btn-line btn-sm" data-close>Back to portfolio</button></div>
+            <div class="case-foot"><span>© 2026 Joel Varghese. All rights reserved.</span><div class="footer-legal"><button type="button" data-dialog="terms">Terms &amp; Conditions</button><button type="button" data-dialog="privacy">Privacy Policy</button></div><button type="button" class="btn btn-line btn-sm" data-close>Back to portfolio</button></div>
           </div>
         </footer>
       </div>`;
-    // number the section labels in reading order (figures carry none)
-    $$('.cs-head .cs-label b', caseEl).forEach((b, k) => { b.textContent = pad(k + 1); });
   }
 
   /* ── open / close with lift-out ──────────────────────────── */
@@ -537,7 +546,10 @@
   if (m && byId[m[1]]) openCase(m[1], { push: false });
 
   /* ── legal dialogs ───────────────────────────────────────── */
-  $$('[data-dialog]').forEach((b) => b.addEventListener('click', () => $('#dlg-' + b.dataset.dialog).showModal()));
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-dialog]');
+    if (b) $('#dlg-' + b.dataset.dialog).showModal();
+  });
   $$('dialog.legal').forEach((d) => {
     d.addEventListener('click', (e) => { if (e.target === d || e.target.closest('.legal-x')) d.close(); });
   });
@@ -545,7 +557,6 @@
   /* ── contact form (FormSubmit, same endpoint as before) ───── */
   const form = $('#contact-form');
   const status = $('#form-status');
-  $('#form-date').textContent = new Date().toLocaleDateString('en-CA', { day: '2-digit', month: 'short', year: 'numeric' });
   const rules = {
     name: (v) => v.trim().length >= 2 || 'Please enter your name.',
     email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) || 'Please enter a valid email address.',
@@ -573,7 +584,7 @@
     status.textContent = 'Sending…';
     const btn = $('button[type="submit"]', form);
     btn.disabled = true;
-    if (form.elements._honey.value) { status.textContent = 'Thanks, your message is on its way.'; return; }
+    if (form.elements._honey.value) { status.textContent = 'Thanks, your message is on its way.'; btn.disabled = false; return; }
     try {
       const res = await fetch('https://formsubmit.co/ajax/joelvoffcial101@gmail.com', {
         method: 'POST',
@@ -586,7 +597,8 @@
           _template: 'table',
         }),
       });
-      if (!res.ok) throw new Error(res.status);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || String(data.success) !== 'true') throw new Error(data.message || res.status);
       form.reset();
       status.className = 'form-status ok';
       status.textContent = 'Thanks, your message is on its way. I’ll get back to you soon.';
