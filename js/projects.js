@@ -22,6 +22,46 @@ const LOGO = {
   'Hootsuite': 'assets/logo-hootsuite.svg',
 };
 
+// Intrinsic sizes of case-study figures, so lazy images reserve their space.
+const FIG_DIM = {
+  'assets/case-studies/kasador-audience.jpg': [
+    2000,
+    1116
+  ],
+  'assets/case-studies/kasador-partnership.jpg': [
+    2000,
+    1116
+  ],
+  'assets/case-studies/kingston-overview.jpg': [
+    2000,
+    1116
+  ],
+  'assets/case-studies/spwc-overview.jpg': [
+    2000,
+    1116
+  ],
+  'assets/design-work/logos/aura-brand-guidelines.jpg': [
+    2400,
+    1933
+  ],
+  'assets/shots/aura-desk.jpg': [
+    2160,
+    1350
+  ],
+  'assets/shots/bitlane-desk.jpg': [
+    2160,
+    1350
+  ],
+  'assets/shots/bitlane-mob.jpg': [
+    585,
+    1266
+  ],
+  'assets/shots/kingston-portal.jpg': [
+    2160,
+    1350
+  ]
+};
+
 const PROJECTS = [
   /* ── BITLANE ─────────────────────────────────────────────── */
   {

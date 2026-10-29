@@ -45,11 +45,66 @@
   }, { rootMargin: '-45% 0px -50% 0px' });
   ['about', 'services', 'work', 'contact'].forEach((id) => spy.observe(document.getElementById(id)));
 
-  /* ── reveals ─────────────────────────────────────────────── */
+  /* ── reveals & motion ────────────────────────────────────── */
+  // Titles rise line by line; .rules/.stagger lists arrive in sequence;
+  // [data-count] numbers count up; lazy images "develop" once loaded.
+  function splitLines(root) {
+    $$('.sec-title, .cs-title', root).forEach((h) => {
+      if (h.dataset.split) return;
+      h.dataset.split = '1';
+      h.innerHTML = h.innerHTML.split(/<br\s*\/?>/i)
+        .map((part, k) => `<span class="line" style="--k:${k}"><span>${part}</span></span>`).join('');
+    });
+  }
+  function countUp(el) {
+    if (el.dataset.counted) return;
+    el.dataset.counted = '1';
+    const m = el.textContent.match(/^(\D*)([\d,]*\.?\d+)(.*)$/);
+    if (!m || reduced.matches) return;
+    const [, pre, num, post] = m;
+    const target = parseFloat(num.replace(/,/g, ''));
+    const dec = (num.split('.')[1] || '').length;
+    const fmt = (v) => pre + (num.includes(',')
+      ? v.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec })
+      : v.toFixed(dec)) + post;
+    const t0 = performance.now();
+    const step = (t) => {
+      const k = Math.min(1, (t - t0) / 1500);
+      el.textContent = fmt(k >= 1 ? target : target * (1 - Math.pow(2, -10 * k)));
+      if (k < 1) requestAnimationFrame(step);
+    };
+    el.textContent = fmt(0);
+    requestAnimationFrame(step);
+  }
+  function develop(root) {
+    $$('.portrait img, .cs-fig img, .gal-item img', root).forEach((img) => {
+      if (img.classList.contains('dev-img')) return;
+      img.classList.add('dev-img');
+      const ok = () => img.classList.add('ok');
+      if (img.complete && img.naturalWidth) requestAnimationFrame(ok);
+      else { img.addEventListener('load', ok, { once: true }); img.addEventListener('error', ok, { once: true }); }
+    });
+  }
   const rev = new IntersectionObserver((entries) => {
-    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); rev.unobserve(e.target); } });
-  }, { rootMargin: '0px 0px -10% 0px' });
-  $$('.reveal').forEach((el) => rev.observe(el));
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      el.classList.add('in');
+      rev.unobserve(el);
+      if (el.matches('.rules, .stagger')) setTimeout(() => el.classList.add('done'), 1800);
+      $$('[data-count]', el).forEach(countUp);
+    });
+  }, { rootMargin: '0px 0px -8% 0px' });
+  function observe(root) {
+    splitLines(root);
+    $$('.rules, .stagger', root).forEach((list) => [...list.children].forEach((c, k) => c.style.setProperty('--k', Math.min(k, 12))));
+    $$('.reveal, .rules, .stagger, .write-on', root).forEach((el) => {
+      if (el.dataset.obs) return;
+      el.dataset.obs = '1';
+      rev.observe(el);
+    });
+    develop(root);
+  }
 
   /* ── tools marquee ───────────────────────────────────────── */
   const TOOLS = [
@@ -63,7 +118,7 @@
   const toolsTrack = $('#tools-track');
   const TOOL_SPEED = 80; // px per second
   function buildTools() {
-    const chip = (n, s, hidden) => `<li class="tool"${hidden ? ' aria-hidden="true"' : ''}><img src="${s}" alt="" /><span>${n}</span></li>`;
+    const chip = (n, s, hidden) => `<li class="tool"${hidden ? ' aria-hidden="true"' : ''}><img src="${s}" alt="" loading="lazy" decoding="async" /><span>${n}</span></li>`;
     toolsTrack.innerHTML = TOOLS.map(([n, s]) => chip(n, s, false)).join('');
     const setW = toolsTrack.scrollWidth;
     const reps = Math.max(1, Math.ceil(innerWidth / setW));
@@ -76,7 +131,7 @@
   addEventListener('resize', () => { if (Math.abs(innerWidth - toolsW) > 40) { toolsW = innerWidth; buildTools(); } });
 
   /* ── card markup (shared by the arc and the case header) ─── */
-  const scr = (src, alt = '') => `<img src="${src}" alt="${esc(alt)}" loading="lazy" draggable="false" />`;
+  const scr = (src, alt = '') => `<img src="${src}" alt="${esc(alt)}" loading="lazy" decoding="async" draggable="false" />`;
   const laptop = (src) => `<div class="dev laptop"><div class="screen">${scr(src)}</div><div class="base"></div></div>`;
   const phone = (src, cls = '') => `<div class="dev phone ${cls}">${scr(src)}</div>`;
   function mockup(m) {
@@ -109,6 +164,20 @@
       ${ARROW}
     </button></li>`).join('');
 
+  /* ── in numbers (figures taken from the case studies) ───── */
+  const NUMBERS = [
+    ['6', 'Municipalities benchmarked', 'kingston'],
+    ['70%', 'Targeted cut in incomplete applications', 'kingston'],
+    ['$10,000', 'Mother’s Day fundraising goal', 'spwc'],
+    ['+15%', 'Spotify listener target in 60 days', 'kasador'],
+    ['7', 'Routes designed and built', 'bitlane'],
+    ['5+', 'Brand deliverables produced', 'aurafilms'],
+  ];
+  $('#num-grid').innerHTML = NUMBERS.map(([v, label, id]) => `<li><button type="button" data-open="${id}">
+      <b data-count>${esc(v)}</b><span class="nl">${esc(label)}</span>
+      <span class="np"><i style="--c:${byId[id].color}"></i>${esc(byId[id].title)}${ARROW}</span>
+    </button></li>`).join('');
+
   /* ── arc carousel ────────────────────────────────────────── */
   const arc = $('#arc');
   const ring = $('#arc-ring');
@@ -126,6 +195,7 @@
     offset: 0, vel: 0, R: 1200, step: .2, total: 1, cw: 300, W: 1200,
     paused: false, hover: false, focus: false, inView: false, frozen: false, dragging: false,
     tween: null, last: 0,
+    spread: reduced.matches ? 1 : 0, dealT0: 0,
   };
   const speed = () => A.step / 3.6; // one card every ~3.6s
 
@@ -142,7 +212,8 @@
   function layout() {
     const lim = A.W / 2 + A.cw;
     for (let i = 0; i < cards.length; i++) {
-      const a = wrap(i * A.step - A.offset);
+      const true_a = wrap(i * A.step - A.offset);
+      const a = true_a * A.spread;
       const x = A.R * Math.sin(a);
       const y = A.R * (1 - Math.cos(a));
       const el = cards[i];
@@ -150,13 +221,18 @@
       if (Math.abs(x) > lim) { el.style.visibility = 'hidden'; continue; }
       if (el !== state.hiddenCard) el.style.visibility = '';
       el.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) rotate(${a.toFixed(4)}rad)`;
-      el.style.zIndex = String(500 + Math.round(a * 200));
+      el.style.zIndex = String(500 + Math.round(true_a * 200));
     }
   }
 
   function tick(t) {
     const dt = Math.min(.05, (t - (A.last || t)) / 1000);
     A.last = t;
+    if (A.dealT0) {
+      const k = Math.min(1, (t - A.dealT0) / 1500);
+      A.spread = 1 - Math.pow(1 - k, 3);
+      if (k >= 1) A.dealT0 = 0;
+    }
     if (A.tween) {
       const k = Math.min(1, (t - A.tween.t0) / A.tween.d);
       const e = 1 - Math.pow(1 - k, 3);
@@ -173,6 +249,25 @@
   let raf = 0;
 
   new IntersectionObserver(([e]) => { A.inView = e.isIntersecting; }, { rootMargin: '120px' }).observe(arc);
+  // Card screenshots start loading well before the arc is reached, and the
+  // deal waits for them (at most 1.2s) so no card is dealt with a blank screen.
+  let shotsReady = null;
+  function loadShots() {
+    if (shotsReady) return shotsReady;
+    const imgs = $$('img', ring);
+    imgs.forEach((img) => { img.loading = 'eager'; });
+    shotsReady = Promise.race([
+      Promise.all(imgs.map((img) => img.decode().catch(() => {}))),
+      new Promise((r) => setTimeout(r, 1200)),
+    ]);
+    return shotsReady;
+  }
+  new IntersectionObserver(([e], obs) => { if (e.isIntersecting) { loadShots(); obs.disconnect(); } }, { rootMargin: '1200px 0px' }).observe(arc);
+  new IntersectionObserver(([e], obs) => {
+    if (!e.isIntersecting) return;
+    obs.disconnect();
+    if (A.spread < 1) loadShots().then(() => { A.dealT0 = performance.now(); });
+  }, { threshold: 0.35 }).observe(arc);
   document.addEventListener('visibilitychange', () => { A.last = 0; });
 
   function nudge(dir) {
@@ -234,6 +329,10 @@
     if (!card || suppressClick) return;
     openCase(card.dataset.id, { card, opener: card });
   });
+  $('#num-grid').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-open]');
+    if (b) openCase(b.dataset.open, { opener: b });
+  });
   $('#work-index').addEventListener('click', (e) => {
     const b = e.target.closest('[data-open]');
     if (b) openCase(b.dataset.open, { opener: b });
@@ -248,35 +347,35 @@
 
   const cols = (n) => (n % 3 === 0 ? 3 : n % 2 === 0 ? 2 : 3);
   function section(s, i) {
-    const head = `<header class="cs-head"><h3 class="cs-title">${esc(s.title || '')}</h3>${s.intro ? `<p class="cs-intro">${esc(s.intro)}</p>` : ''}</header>`;
+    const head = `<header class="cs-head reveal"><h3 class="cs-title">${esc(s.title || '')}</h3>${s.intro ? `<p class="cs-intro">${esc(s.intro)}</p>` : ''}</header>`;
     let body = '';
     switch (s.type) {
       case 'text':
         body = `<div class="cs-text">${s.body.map((p) => `<p>${esc(p)}</p>`).join('')}</div>`; break;
       case 'cards':
-        body = `<div class="cs-cards" style="--cols:${cols(s.items.length)}">${s.items.map(([h, p], k) => `<article><span class="n">${pad(k + 1)}</span><h4>${esc(h)}</h4><p>${esc(p)}</p></article>`).join('')}</div>`; break;
+        body = `<div class="cs-cards stagger" style="--cols:${cols(s.items.length)}">${s.items.map(([h, p], k) => `<article><span class="n">${pad(k + 1)}</span><h4>${esc(h)}</h4><p>${esc(p)}</p></article>`).join('')}</div>`; break;
       case 'steps':
-        body = `<ol class="cs-steps">${s.items.map(([kick, h, p], k) => `<li><span class="sn">${k + 1}</span><div><span class="sk">${esc(kick)}</span><h4>${esc(h)}</h4></div><p>${esc(p)}</p></li>`).join('')}</ol>`; break;
+        body = `<ol class="cs-steps rules">${s.items.map(([kick, h, p], k) => `<li><span class="sn">${k + 1}</span><div><span class="sk">${esc(kick)}</span><h4>${esc(h)}</h4></div><p>${esc(p)}</p></li>`).join('')}</ol>`; break;
       case 'list':
-        body = `<ol class="cs-list${s.check ? ' check' : ''}">${s.items.map((t, k) => `<li><span class="ln">${s.check ? CHECK : pad(k + 1)}</span><span>${esc(t)}</span></li>`).join('')}</ol>`; break;
+        body = `<ol class="cs-list rules${s.check ? ' check' : ''}">${s.items.map((t, k) => `<li><span class="ln">${s.check ? CHECK : pad(k + 1)}</span><span>${esc(t)}</span></li>`).join('')}</ol>`; break;
       case 'figure':
-        return `<section class="cs"><div class="wrap"><figure class="cs-fig${s.phone ? ' phone-fig' : ''}"><div class="frame" data-lb="${esc(s.src)}" data-cap="${esc(s.caption)}" role="button" tabindex="0" aria-label="View image full size: ${esc(s.alt)}"><img src="${s.src}" alt="${esc(s.alt)}" loading="lazy" /></div><figcaption>${esc(s.caption)}</figcaption></figure></div></section>`;
+        return `<section class="cs"><div class="wrap"><figure class="cs-fig reveal${s.phone ? ' phone-fig' : ''}"><div class="frame" data-lb="${esc(s.src)}" data-cap="${esc(s.caption)}" role="button" tabindex="0" aria-label="View image full size: ${esc(s.alt)}"><img src="${s.src}" alt="${esc(s.alt)}"${FIG_DIM[s.src] ? ` width="${FIG_DIM[s.src][0]}" height="${FIG_DIM[s.src][1]}"` : ''} loading="lazy" decoding="async" /></div><figcaption>${esc(s.caption)}</figcaption></figure></div></section>`;
       case 'swatches':
-        body = `<div class="swatches">${s.items.map(([hex, n, u]) => `<div class="${['#FFFFFF'].includes(hex) ? 'lt' : ''}" style="--s:${hex}"><b>${esc(n)}</b><span>${hex} · ${esc(u)}</span></div>`).join('')}</div><p class="sw-note">${esc(s.note)}</p>`; break;
+        body = `<div class="swatches stagger">${s.items.map(([hex, n, u]) => `<div class="${['#FFFFFF'].includes(hex) ? 'lt' : ''}" style="--s:${hex}"><b>${esc(n)}</b><span>${hex} · ${esc(u)}</span></div>`).join('')}</div><p class="sw-note">${esc(s.note)}</p>`; break;
       case 'timeline':
-        body = `<ol class="cs-timeline">${s.items.map(([d, h, p]) => `<li><span class="d">${esc(d)}</span><h4>${esc(h)}</h4><p>${esc(p)}</p></li>`).join('')}</ol>`; break;
+        body = `<ol class="cs-timeline stagger">${s.items.map(([d, h, p]) => `<li><span class="d">${esc(d)}</span><h4>${esc(h)}</h4><p>${esc(p)}</p></li>`).join('')}</ol>`; break;
       case 'persona':
         body = `<div class="persona"><div class="persona-card"><span class="pa">IE</span><div><h4>${esc(s.name)}</h4><p class="mono">${esc(s.sub)}</p></div><ul>${s.traits.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></div>
-          <div class="persona-why"><h4 class="why-t">Why Emma matters</h4><p>${esc(s.why)}</p><div class="persona-stats">${s.stats.map(([b, l]) => `<div><b>${esc(b)}</b><span>${esc(l)}</span></div>`).join('')}</div><p class="persona-note">${esc(s.note)}</p></div></div>`; break;
+          <div class="persona-why"><h4 class="why-t">Why Emma matters</h4><p>${esc(s.why)}</p><div class="persona-stats stagger">${s.stats.map(([b, l]) => `<div><b data-count>${esc(b)}</b><span>${esc(l)}</span></div>`).join('')}</div><p class="persona-note">${esc(s.note)}</p></div></div>`; break;
       case 'outcomes':
-        body = `<div class="cs-outcomes" style="--cols:${s.items.length === 4 ? 4 : cols(s.items.length)}">${s.items.map(([h, b, p]) => `<article><h4>${esc(h)}</h4><b>${esc(b)}</b><p>${esc(p)}</p></article>`).join('')}</div>`; break;
+        body = `<div class="cs-outcomes stagger" style="--cols:${s.items.length === 4 ? 4 : cols(s.items.length)}">${s.items.map(([h, b, p]) => `<article><h4>${esc(h)}</h4><b>${esc(b)}</b><p>${esc(p)}</p></article>`).join('')}</div>`; break;
       case 'gallery':
-        body = s.groups.map((g) => `<div class="gal-group">${g.title ? `<p class="gal-title">${esc(g.title)}</p>` : ''}<div class="gal">${g.items.map((it) => {
+        body = s.groups.map((g) => `<div class="gal-group">${g.title ? `<p class="gal-title">${esc(g.title)}</p>` : ''}<div class="gal stagger">${g.items.map((it) => {
           const media = it.video && it.poster
             ? `<img src="${it.poster}" alt="${esc(it.t + ', ' + it.cap)}" loading="lazy" /><span class="play">Play</span>`
             : it.video
             ? `<video src="${it.video}#t=0.1" ${it.poster ? `poster="${it.poster}"` : ''} muted playsinline preload="metadata"></video><span class="play">Play</span>`
-            : `<img src="${it.src}" alt="${esc((it.t ? it.t + ', ' : '') + it.cap)}" loading="lazy" />`;
+            : `<img src="${it.src}" alt="${esc((it.t ? it.t + ', ' : '') + it.cap)}" loading="lazy" decoding="async" />`;
           return `<figure class="gal-item${it.plate ? ' plate' : ''}" style="--r:${it.r}"><button type="button" data-lb="${esc(it.video || it.src)}" data-video="${it.video ? 1 : ''}" data-cap="${esc((it.t ? it.t + ' · ' : '') + it.cap)}" aria-label="View ${esc((it.t ? it.t + ', ' : '') + it.cap)} full size">${media}</button>${it.t ? `<figcaption><b>${esc(it.t)}</b><span>${esc(it.cap)}</span></figcaption>` : `<figcaption><span>${esc(it.cap)}</span></figcaption>`}</figure>`;
         }).join('')}</div></div>`).join(''); break;
     }
@@ -288,7 +387,7 @@
     const next = PROJECTS[(i + 1) % PROJECTS.length];
     const live = (p.live ? `<a class="btn btn-ink" href="${p.live.href}" target="_blank" rel="noopener noreferrer">${esc(p.live.label)} ${ARROW}</a>` : '')
       + (p.social || []).map((s) => `<a class="case-social" href="${s.href}" target="_blank" rel="noopener noreferrer" aria-label="${esc(s.label)}" title="${esc(s.label)}"><img src="${s.icon}" alt="" /></a>`).join('');
-    const tools = p.tools.length ? `<section class="cs"><div class="wrap"><header class="cs-head"><h3 class="cs-title">Tools used.</h3></header><div class="cs-body"><ul class="cs-tools">${p.tools.map((t) => `<li>${LOGO[t] ? `<img src="${LOGO[t]}" alt="" />` : '<span class="dot"></span>'}${esc(t)}</li>`).join('')}</ul></div></div></section>` : '';
+    const tools = p.tools.length ? `<section class="cs"><div class="wrap"><header class="cs-head"><h3 class="cs-title">Tools used.</h3></header><div class="cs-body"><ul class="cs-tools stagger">${p.tools.map((t) => `<li>${LOGO[t] ? `<img src="${LOGO[t]}" alt="" />` : '<span class="dot"></span>'}${esc(t)}</li>`).join('')}</ul></div></div></section>` : '';
     caseEl.className = 'case' + (p.tone === 'light' ? ' light' : '');
     caseEl.style.setProperty('--c', p.color);
     caseEl.innerHTML = `
@@ -308,9 +407,9 @@
         <div class="wrap">
           <div class="case-top">
             <div><p class="case-lede">${esc(p.lede)}</p>${live ? `<div class="case-live">${live}</div>` : ''}</div>
-            <dl class="case-meta">${[...p.meta, ['Focus', p.discipline]].map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
+            <dl class="case-meta rules">${[...p.meta, ['Focus', p.discipline]].map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
           </div>
-          ${p.stats.length ? `<div class="case-stats">${p.stats.map(([b, l]) => `<div><b>${esc(b)}</b><span>${esc(l)}</span></div>`).join('')}</div>` : ''}
+          ${p.stats.length ? `<div class="case-stats stagger">${p.stats.map(([b, l]) => `<div><b data-count>${esc(b)}</b><span>${esc(l)}</span></div>`).join('')}</div>` : ''}
         </div>
         ${p.sections.map(section).join('')}
         ${tools}
@@ -403,6 +502,7 @@
     renderCase(p);
     caseEl.hidden = false;
     caseEl.scrollTop = 0;
+    observe(caseEl);
     caseEl.classList.add('pre');
     document.documentElement.classList.add('case-open');
     outside.forEach((el) => el.setAttribute('inert', ''));
@@ -569,6 +669,35 @@
     else { scrollTo({ top: 0, behavior }); $('.nav-logo').focus({ preventScroll: true }); }
   });
   updateToTop();
+
+  /* ── scroll-linked depth ─────────────────────────────────── */
+  const heroWord = $('.hero-word');
+  const heroName = $('.hero-name');
+  const svcs = $$('.svc');
+  let fxQueued = false;
+  function scrollFx() {
+    fxQueued = false;
+    if (reduced.matches) return;
+    const y = Math.min(scrollY, innerHeight * 1.2);
+    heroWord.style.translate = `0 ${(y * 0.16).toFixed(1)}px`;
+    heroName.style.translate = `0 ${(y * 0.07).toFixed(1)}px`;
+    const stacked = innerWidth > 600;
+    for (let i = 0; i < svcs.length - 1; i++) {
+      let p = 0;
+      if (stacked) {
+        const r = svcs[i].getBoundingClientRect();
+        const n = svcs[i + 1].getBoundingClientRect();
+        p = Math.max(0, Math.min(1, (r.bottom - n.top) / r.height));
+      }
+      svcs[i].style.scale = p ? String(1 - 0.05 * p) : '';
+      svcs[i].style.filter = p ? `brightness(${1 - 0.07 * p})` : '';
+    }
+  }
+  addEventListener('scroll', () => { if (!fxQueued) { fxQueued = true; requestAnimationFrame(scrollFx); } }, { passive: true });
+  addEventListener('resize', scrollFx);
+  scrollFx();
+
+  observe(document);
 
   /* ── deep link on load (also handles old kingston.html etc.) ─ */
   const m = location.hash.match(/^#work\/([\w-]+)/);
