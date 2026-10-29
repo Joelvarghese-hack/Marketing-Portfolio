@@ -11,6 +11,10 @@
   const CHECK = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7"/></svg>';
   const pad = (n) => String(n).padStart(2, '0');
 
+  let usedKeyboard = false;
+  addEventListener('keydown', (e) => { if (e.key === 'Tab' || e.key === 'Enter' || e.key === ' ') usedKeyboard = true; }, true);
+  addEventListener('pointerdown', () => { usedKeyboard = false; }, true);
+
   /* ── nav ─────────────────────────────────────────────────── */
   const nav = $('#nav');
   const burger = $('.nav-burger');
@@ -403,7 +407,7 @@
     outside.forEach((el) => el.setAttribute('inert', ''));
     void caseEl.offsetHeight;
     requestAnimationFrame(() => caseEl.classList.remove('pre'));
-    $('.case-back', caseEl).focus({ preventScroll: true });
+    (usedKeyboard ? $('.case-back', caseEl) : caseEl).focus({ preventScroll: true });
     document.title = `${p.title} · Joel Varghese`;
   }
 
@@ -540,6 +544,30 @@
     }
     if (state.open && e.key === 'Escape') closeCase();
   });
+
+  /* ── back to top (page, or the open case study) ──────────── */
+  const toTop = $('#to-top');
+  const bar = $('.ring .bar', toTop);
+  const RING = 2 * Math.PI * 25;
+  bar.style.strokeDasharray = RING;
+  function updateToTop() {
+    const open = !caseEl.hidden;
+    const y = open ? caseEl.scrollTop : scrollY;
+    const max = (open ? caseEl.scrollHeight - caseEl.clientHeight : document.documentElement.scrollHeight - innerHeight) || 1;
+    toTop.classList.toggle('show', y > innerHeight * 0.8 && menu.hidden && lb.hidden);
+    bar.style.strokeDashoffset = RING * (1 - Math.min(1, y / max));
+  }
+  addEventListener('scroll', updateToTop, { passive: true });
+  caseEl.addEventListener('scroll', updateToTop, { passive: true });
+  addEventListener('resize', updateToTop);
+  new MutationObserver(updateToTop).observe(caseEl, { attributes: true, attributeFilter: ['hidden'] });
+  burger.addEventListener('click', () => requestAnimationFrame(updateToTop));
+  toTop.addEventListener('click', () => {
+    const behavior = reduced.matches ? 'auto' : 'smooth';
+    if (!caseEl.hidden) { caseEl.scrollTo({ top: 0, behavior }); $('.case-back', caseEl).focus({ preventScroll: true }); }
+    else { scrollTo({ top: 0, behavior }); $('.nav-logo').focus({ preventScroll: true }); }
+  });
+  updateToTop();
 
   /* ── deep link on load (also handles old kingston.html etc.) ─ */
   const m = location.hash.match(/^#work\/([\w-]+)/);
