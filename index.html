@@ -126,7 +126,7 @@
 
         <figure class="portrait reveal">
           <div class="portrait-layers" aria-hidden="true"><i></i><i></i></div>
-          <img src="assets/joel-about.jpg" alt="Joel Varghese sitting on a park bench" width="1200" height="1600" loading="lazy" decoding="async" />
+          <div class="portrait-photo"><img src="assets/joel-about.jpg" srcset="assets/joel-about-w480.webp 480w, assets/joel-about-w960.webp 960w, assets/joel-about-w1200.webp 1200w" sizes="(max-width: 900px) 90vw, 440px" alt="Joel Varghese sitting on a park bench" width="1200" height="1600" loading="lazy" decoding="async" /></div>
           <figcaption class="sr-only">MBA, Marketing</figcaption>
           <svg class="stamp" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
             <defs>
@@ -250,23 +250,28 @@
   <!-- ── FOOTER ──────────────────────────────────────────── -->
   <footer class="footer">
     <div class="wrap">
-      <a class="footer-sign write-on" href="#top">Joel Varghese</a>
-      <div class="footer-cols">
-        <nav class="footer-links" aria-label="Footer">
-          <a href="#about">About</a>
-          <a href="#services">Services</a>
-          <a href="#work">Projects</a>
-          <a href="#contact">Contact</a>
-        </nav>
-        <div class="footer-links">
-          <a href="mailto:joelvoffcial101@gmail.com">joelvoffcial101@gmail.com</a>
-          <a href="tel:+16476698325">647 669 8325</a>
+      <div class="footer-grid">
+        <div class="footer-main">
+          <a class="footer-logo" href="#top" aria-label="Joel Varghese, back to top">
+            <img src="assets/design-work/logos/joel-varghese-personal-logo.png" alt="" width="1101" height="384" loading="lazy" decoding="async" />
+          </a>
+          <nav class="footer-nav" aria-label="Footer">
+            <a href="#about">About</a>
+            <a href="#services">Services</a>
+            <a href="#work">Projects</a>
+            <a href="#contact">Contact</a>
+          </nav>
+          <div class="footer-social">
+            <a href="https://www.linkedin.com/in/joel-varghese-604a51184/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="4" fill="#0A66C2"/><path fill="#fff" d="M6.9 9.6h2.6V18H6.9zM8.2 5.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM11 9.6h2.5v1.15c.35-.66 1.2-1.36 2.47-1.36 2.64 0 3.13 1.74 3.13 4V18h-2.6v-4.08c0-.97-.02-2.22-1.36-2.22s-1.56 1.06-1.56 2.15V18H11z"/></svg></a>
+            <a href="https://www.instagram.com/joelvarghese007/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><img src="assets/logo-instagram.svg" alt="" width="22" height="22" loading="lazy" /></a>
+            <a href="https://www.facebook.com/profile.php?id=100008405078173" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><img src="assets/logo-facebook.svg" alt="" width="22" height="22" loading="lazy" /></a>
+          </div>
+          <div class="footer-contact">
+            <a href="mailto:joelvoffcial101@gmail.com">joelvoffcial101@gmail.com</a>
+            <a href="tel:+16476698325">647 669 8325</a>
+          </div>
         </div>
-        <div class="footer-links">
-          <a href="https://www.linkedin.com/in/joel-varghese-604a51184/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-          <a href="https://www.instagram.com/joelvarghese007/" target="_blank" rel="noopener noreferrer">Instagram</a>
-          <a href="https://www.facebook.com/profile.php?id=100008405078173" target="_blank" rel="noopener noreferrer">Facebook</a>
-        </div>
+        <p class="footer-name write-on"><span class="line"><span>Joel</span></span><span class="line" style="--k:1"><span>Varghese</span></span></p>
       </div>
       <div class="footer-row">
         <p>© 2026 Joel Varghese. All rights reserved.</p>
@@ -318,6 +323,7 @@
   </button>
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" hidden></div>
 
+  <script src="js/images.js"></script>
   <script src="js/projects.js"></script>
   <script src="js/site.js"></script>
 </body>

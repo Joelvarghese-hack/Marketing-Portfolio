@@ -10,6 +10,24 @@
   const ARROW_L = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M14 8H3M7 4L3 8l4 4"/></svg>';
   const CHECK = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7"/></svg>';
   const pad = (n) => String(n).padStart(2, '0');
+  // Touch screens skip scroll-linked effects: they can't stay in sync with
+  // native scrolling there and only cost frames.
+  const touch = matchMedia('(hover: none), (pointer: coarse)');
+
+  // Responsive images: WebP widths listed in js/images.js, original as fallback.
+  function srcset(src) {
+    const ws = (typeof IMG_W !== 'undefined' && IMG_W[src]) || [];
+    const stem = src.replace(/\.[a-z]+$/i, '');
+    return ws.map((w) => `${stem}-w${w}.webp ${w}w`).join(', ');
+  }
+  function pic(src, alt, sizes, extra = '') {
+    const ss = srcset(src);
+    return `<img src="${src}"${ss ? ` srcset="${ss}" sizes="${sizes}"` : ''} alt="${esc(alt)}" loading="lazy" decoding="async" draggable="false"${extra} />`;
+  }
+  const largest = (src) => {
+    const ws = (typeof IMG_W !== 'undefined' && IMG_W[src]) || [];
+    return ws.length ? `${src.replace(/\.[a-z]+$/i, '')}-w${ws[ws.length - 1]}.webp` : src;
+  };
 
   let usedKeyboard = false;
   addEventListener('keydown', (e) => { if (e.key === 'Tab' || e.key === 'Enter' || e.key === ' ') usedKeyboard = true; }, true);
@@ -20,12 +38,12 @@
   const burger = $('.nav-burger');
   const menu = $('#mobile-menu');
   let lastY = scrollY;
-  addEventListener('scroll', () => {
+  function updateNav() {
     const y = scrollY;
-    nav.classList.toggle('scrolled', y > 24);
-    nav.classList.toggle('hide', y > 600 && y > lastY && menu.hidden);
-    lastY = y;
-  }, { passive: true });
+    nav.classList.toggle('scrolled', y > 24 || !menu.hidden);
+    nav.classList.toggle('hide', y > 600 && y > lastY + 2 && menu.hidden);
+    if (Math.abs(y - lastY) > 2) lastY = y;
+  }
 
   const setMenu = (open) => {
     burger.setAttribute('aria-expanded', open);
@@ -76,8 +94,18 @@
     el.textContent = fmt(0);
     requestAnimationFrame(step);
   }
+  const vidObs = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const v = e.target;
+      v.src = v.dataset.src;
+      v.removeAttribute('data-src');
+      vidObs.unobserve(v);
+    });
+  }, { rootMargin: '300px 0px' });
   function develop(root) {
-    $$('.portrait img, .cs-fig img, .gal-item img', root).forEach((img) => {
+    $$('video[data-src]', root).forEach((v) => vidObs.observe(v));
+    $$('.cs-fig img, .gal-item img', root).forEach((img) => {
       if (img.classList.contains('dev-img')) return;
       img.classList.add('dev-img');
       const ok = () => img.classList.add('ok');
@@ -127,27 +155,33 @@
     toolsTrack.style.setProperty('--loop', `${(setW * reps) / TOOL_SPEED}s`);
   }
   buildTools();
+  // Marquees only run while on screen.
+  const marqueeObs = new IntersectionObserver((entries) => {
+    entries.forEach((e) => e.target.classList.toggle('paused', !e.isIntersecting));
+  });
+  $$('.tape, .tools').forEach((el) => marqueeObs.observe(el));
   let toolsW = innerWidth;
   addEventListener('resize', () => { if (Math.abs(innerWidth - toolsW) > 40) { toolsW = innerWidth; buildTools(); } });
 
   /* ── card markup (shared by the arc and the case header) ─── */
-  const scr = (src, alt = '') => `<img src="${src}" alt="${esc(alt)}" loading="lazy" decoding="async" draggable="false" />`;
-  const laptop = (src) => `<div class="dev laptop"><div class="screen">${scr(src)}</div><div class="base"></div></div>`;
-  const phone = (src, cls = '') => `<div class="dev phone ${cls}">${scr(src)}</div>`;
+  const WIDE = '(max-width: 600px) 300px, 420px';
+  const NARROW = '(max-width: 600px) 120px, 170px';
+  const laptop = (src) => `<div class="dev laptop"><div class="screen">${pic(src, '', WIDE)}</div><div class="base"></div></div>`;
+  const phone = (src, cls = '') => `<div class="dev phone ${cls}">${pic(src, '', NARROW)}</div>`;
   function mockup(m) {
     switch (m.kind) {
       case 'laptop': return laptop(m.desk);
       case 'laptop-phone': return laptop(m.desk) + phone(m.mob);
-      case 'tablet': return `<div class="dev tablet">${scr(m.desk)}</div>`;
+      case 'tablet': return `<div class="dev tablet">${pic(m.desk, '', WIDE)}</div>`;
       case 'two-phones': return phone(m.a, 'a') + phone(m.b, 'b');
-      case 'posters': return ['a', 'b', 'c'].map((k) => `<div class="poster ${k}">${scr(m[k])}</div>`).join('');
+      case 'posters': return ['a', 'b', 'c'].map((k) => `<div class="poster ${k}">${pic(m[k], '', NARROW)}</div>`).join('');
       default: return '';
     }
   }
   function cardHTML(p, attrs = '') {
     return `<button class="card${p.tone === 'light' ? ' is-light' : ''}" style="--c:${p.color}" data-id="${p.id}" ${attrs}>
       <span class="card-inner m-${p.mock.kind}">
-        <img class="card-logo ${p.logoClass || ''}" src="${p.logo}" alt="" draggable="false" />
+        <img class="card-logo ${p.logoClass || ''}" src="${p.logo}" alt="" decoding="async" draggable="false" />
         ${mockup(p.mock)}
       </span>
       <span class="card-tag">${esc(p.category)}</span>
@@ -226,6 +260,7 @@
   }
 
   function tick(t) {
+    raf = 0;
     const dt = Math.min(.05, (t - (A.last || t)) / 1000);
     A.last = t;
     if (A.dealT0) {
@@ -243,12 +278,16 @@
       A.vel += (target - A.vel) * Math.min(1, dt * 3.2);
       A.offset += A.vel * dt;
     }
-    layout();
-    raf = requestAnimationFrame(tick);
+    if (A.inView || A.tween || A.dealT0) layout();
+    // Keep the loop alive only while something can still move on screen.
+    const target = (A.paused || A.hover || A.focus || reduced.matches) ? 0 : speed();
+    const moving = A.dealT0 || A.tween || A.dragging || Math.abs(A.vel) > 1e-6 || target > 0;
+    raf = (A.inView && !A.frozen && moving) || A.dealT0 || A.tween ? requestAnimationFrame(tick) : 0;
   }
   let raf = 0;
+  function wake() { if (!raf) { A.last = 0; raf = requestAnimationFrame(tick); } }
 
-  new IntersectionObserver(([e]) => { A.inView = e.isIntersecting; }, { rootMargin: '120px' }).observe(arc);
+  new IntersectionObserver(([e]) => { A.inView = e.isIntersecting; if (A.inView) wake(); }, { rootMargin: '120px' }).observe(arc);
   // Card screenshots start loading well before the arc is reached, and the
   // deal waits for them (at most 1.2s) so no card is dealt with a blank screen.
   let shotsReady = null;
@@ -266,7 +305,7 @@
   new IntersectionObserver(([e], obs) => {
     if (!e.isIntersecting) return;
     obs.disconnect();
-    if (A.spread < 1) loadShots().then(() => { A.dealT0 = performance.now(); });
+    if (A.spread < 1) loadShots().then(() => { A.dealT0 = performance.now(); wake(); });
   }, { threshold: 0.35 }).observe(arc);
   document.addEventListener('visibilitychange', () => { A.last = 0; });
 
@@ -275,6 +314,7 @@
     const to = (Math.round(from / A.step) + dir) * A.step;
     A.vel = 0;
     A.tween = { from, to, t0: performance.now(), d: reduced.matches ? 1 : 650 };
+    wake();
   }
   $('#arc-prev').addEventListener('click', () => nudge(-1));
   $('#arc-next').addEventListener('click', () => nudge(1));
@@ -283,14 +323,15 @@
     A.paused = p;
     playBtn.setAttribute('aria-pressed', p);
     playBtn.setAttribute('aria-label', p ? 'Play carousel' : 'Pause carousel');
+    wake();
   }
   playBtn.addEventListener('click', () => setPaused(!A.paused));
   if (reduced.matches) setPaused(true);
 
   arc.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') A.hover = true; });
-  arc.addEventListener('pointerleave', () => { A.hover = false; });
+  arc.addEventListener('pointerleave', () => { A.hover = false; wake(); });
   ring.addEventListener('focusin', () => { A.focus = true; });
-  ring.addEventListener('focusout', () => { A.focus = false; });
+  ring.addEventListener('focusout', () => { A.focus = false; wake(); });
 
   // drag with fling
   let drag = null;
@@ -302,7 +343,7 @@
   addEventListener('pointermove', (e) => {
     if (!drag || e.pointerId !== drag.id) return;
     const dx = e.clientX - drag.x0;
-    if (!drag.moved && Math.abs(dx) > 6) { drag.moved = true; A.dragging = true; A.tween = null; arc.classList.add('dragging'); }
+    if (!drag.moved && Math.abs(dx) > 6) { drag.moved = true; A.dragging = true; A.tween = null; arc.classList.add('dragging'); wake(); }
     if (!drag.moved) return;
     const now = performance.now();
     const ddt = Math.max(1, now - drag.lt) / 1000;
@@ -320,6 +361,7 @@
     A.dragging = false;
     arc.classList.remove('dragging');
     drag = null;
+    wake();
   };
   addEventListener('pointerup', endDrag);
   addEventListener('pointercancel', endDrag);
@@ -340,12 +382,13 @@
 
   addEventListener('resize', () => { measure(); layout(); });
   measure();
-  raf = requestAnimationFrame(tick);
+  layout();
 
   /* ── case study renderer ─────────────────────────────────── */
   const caseEl = $('#case');
 
   const cols = (n) => (n % 3 === 0 ? 3 : n % 2 === 0 ? 2 : 3);
+  const GAL = '(max-width: 600px) 50vw, (max-width: 1100px) 34vw, 440px';
   function section(s, i) {
     const head = `<header class="cs-head reveal"><h3 class="cs-title">${esc(s.title || '')}</h3>${s.intro ? `<p class="cs-intro">${esc(s.intro)}</p>` : ''}</header>`;
     let body = '';
@@ -359,7 +402,7 @@
       case 'list':
         body = `<ol class="cs-list rules${s.check ? ' check' : ''}">${s.items.map((t, k) => `<li><span class="ln">${s.check ? CHECK : pad(k + 1)}</span><span>${esc(t)}</span></li>`).join('')}</ol>`; break;
       case 'figure':
-        return `<section class="cs"><div class="wrap"><figure class="cs-fig reveal${s.phone ? ' phone-fig' : ''}"><div class="frame" data-lb="${esc(s.src)}" data-cap="${esc(s.caption)}" role="button" tabindex="0" aria-label="View image full size: ${esc(s.alt)}"><img src="${s.src}" alt="${esc(s.alt)}"${FIG_DIM[s.src] ? ` width="${FIG_DIM[s.src][0]}" height="${FIG_DIM[s.src][1]}"` : ''} loading="lazy" decoding="async" /></div><figcaption>${esc(s.caption)}</figcaption></figure></div></section>`;
+        return `<section class="cs"><div class="wrap"><figure class="cs-fig reveal${s.phone ? ' phone-fig' : ''}"><div class="frame" data-lb="${esc(s.src)}" data-cap="${esc(s.caption)}" role="button" tabindex="0" aria-label="View image full size: ${esc(s.alt)}">${pic(s.src, s.alt, s.phone ? '340px' : '(max-width: 1360px) calc(100vw - 32px), 1300px', FIG_DIM[s.src] ? ` width="${FIG_DIM[s.src][0]}" height="${FIG_DIM[s.src][1]}"` : '')}</div><figcaption>${esc(s.caption)}</figcaption></figure></div></section>`;
       case 'swatches':
         body = `<div class="swatches stagger">${s.items.map(([hex, n, u]) => `<div class="${['#FFFFFF'].includes(hex) ? 'lt' : ''}" style="--s:${hex}"><b>${esc(n)}</b><span>${hex} · ${esc(u)}</span></div>`).join('')}</div><p class="sw-note">${esc(s.note)}</p>`; break;
       case 'timeline':
@@ -372,10 +415,10 @@
       case 'gallery':
         body = s.groups.map((g) => `<div class="gal-group">${g.title ? `<p class="gal-title">${esc(g.title)}</p>` : ''}<div class="gal stagger">${g.items.map((it) => {
           const media = it.video && it.poster
-            ? `<img src="${it.poster}" alt="${esc(it.t + ', ' + it.cap)}" loading="lazy" /><span class="play">Play</span>`
+            ? `${pic(it.poster, it.t + ', ' + it.cap, GAL)}<span class="play">Play</span>`
             : it.video
-            ? `<video src="${it.video}#t=0.1" ${it.poster ? `poster="${it.poster}"` : ''} muted playsinline preload="metadata"></video><span class="play">Play</span>`
-            : `<img src="${it.src}" alt="${esc((it.t ? it.t + ', ' : '') + it.cap)}" loading="lazy" decoding="async" />`;
+            ? `<video data-src="${it.video}#t=0.1" muted playsinline preload="metadata"></video><span class="play">Play</span>`
+            : pic(it.src, (it.t ? it.t + ', ' : '') + it.cap, GAL);
           return `<figure class="gal-item${it.plate ? ' plate' : ''}" style="--r:${it.r}"><button type="button" data-lb="${esc(it.video || it.src)}" data-video="${it.video ? 1 : ''}" data-cap="${esc((it.t ? it.t + ' · ' : '') + it.cap)}" aria-label="View ${esc((it.t ? it.t + ', ' : '') + it.cap)} full size">${media}</button>${it.t ? `<figcaption><b>${esc(it.t)}</b><span>${esc(it.cap)}</span></figcaption>` : `<figcaption><span>${esc(it.cap)}</span></figcaption>`}</figure>`;
         }).join('')}</div></div>`).join(''); break;
     }
@@ -397,8 +440,9 @@
       </div>
       <header class="case-band">
         <div class="wrap case-band-grid">
-          <div>
-            <h2 class="case-title" id="case-title">${p.headline.map((l) => `<span>${esc(l)}</span>`).join('')}</h2>
+          <div class="case-head">
+            <div class="case-title ${p.logoClass || ''}" id="case-title" role="heading" aria-level="2"><img src="${p.logo}" alt="${esc(p.title)}" decoding="async" /></div>
+            <p class="case-sub">${esc(p.subtitle)}</p>
           </div>
           <div class="case-visual" aria-hidden="true">${cardHTML(p, 'tabindex="-1"')}</div>
         </div>
@@ -464,35 +508,55 @@
   }
   const px = (b) => ({ left: b.left + 'px', top: b.top + 'px', width: b.width + 'px', height: b.height + 'px' });
 
+  // Transform that maps a full-viewport sheet onto the lifted card's box.
+  function sheetToCard(b) {
+    const vw = innerWidth, vh = innerHeight;
+    const sx = (b.width * 1.07) / vw, sy = (b.height * 1.07) / vh;
+    const dx = b.left + b.width / 2 - vw / 2, dy = b.top - 46 + b.height / 2 - vh / 2;
+    return { t: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`, r: `${18 / sx}px / ${18 / sy}px` };
+  }
+
   async function liftOut(card) {
     const b = cardBox(card);
     const fly = makeFly(card);
     Object.assign(fly.style, px(b), { transform: `rotate(${b.a}rad)` });
     state.hiddenCard = card;
     card.style.visibility = 'hidden';
+    const inner = fly.querySelector('.card-inner');
+    const lift = fly.animate(
+      [{ transform: `rotate(${b.a}rad)` }, { transform: 'translateY(-46px) rotate(0rad) scale(1.07)' }],
+      { duration: 400, easing: EASE, fill: 'forwards' });
+    inner.animate([{ opacity: 1 }, { opacity: 1, offset: .6 }, { opacity: 0 }], { duration: 400, fill: 'forwards' });
+    await lift.finished;
+    // swap to a full-screen sheet drawn at the card's size, then let it grow
+    const m = sheetToCard(b);
+    inner.style.display = 'none';
+    lift.cancel();
+    Object.assign(fly.style, { left: '0px', top: '0px', width: innerWidth + 'px', height: innerHeight + 'px', transform: m.t, borderRadius: m.r, boxShadow: 'none' });
     await fly.animate(
-      [{ transform: `rotate(${b.a}rad)` }, { transform: 'translateY(-46px) rotate(0rad) scale(1.07)', boxShadow: '0 60px 90px -40px rgba(0,0,0,.6)' }],
-      { duration: 420, easing: EASE, fill: 'forwards' }).finished;
-    fly.querySelector('.card-inner').animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, fill: 'forwards' });
-    await fly.animate(
-      [{ ...px(b), transform: 'translateY(-46px) scale(1.07)', borderRadius: '18px' },
-       { left: '0px', top: '0px', width: innerWidth + 'px', height: innerHeight + 'px', transform: 'none', borderRadius: '0px' }],
-      { duration: 640, easing: EASE_IO, fill: 'forwards' }).finished;
+      [{ transform: m.t, borderRadius: m.r }, { transform: 'none', borderRadius: '0px' }],
+      { duration: 600, easing: EASE_IO, fill: 'forwards' }).finished;
     return fly;
   }
 
   async function dropIn(card) {
     const b = cardBox(card);
     const fly = makeFly(card);
-    Object.assign(fly.style, { left: '0px', top: '0px', width: innerWidth + 'px', height: innerHeight + 'px', borderRadius: '0px' });
     const inner = fly.querySelector('.card-inner');
-    inner.style.opacity = '0';
+    const m = sheetToCard(b);
+    inner.style.display = 'none';
+    Object.assign(fly.style, { left: '0px', top: '0px', width: innerWidth + 'px', height: innerHeight + 'px', borderRadius: '0px', boxShadow: 'none', transformOrigin: '50% 50%' });
     await fly.animate(
-      [{ left: '0px', top: '0px', width: innerWidth + 'px', height: innerHeight + 'px', transform: 'none', borderRadius: '0px' },
-       { ...px(b), transform: 'translateY(-46px) scale(1.07)', borderRadius: '18px', offset: .78 },
-       { ...px(b), transform: `rotate(${b.a}rad)`, borderRadius: '18px' }],
-      { duration: 880, easing: EASE_IO, fill: 'forwards' }).finished.then(() => {});
-    inner.style.opacity = '';
+      [{ transform: 'none', borderRadius: '0px' }, { transform: m.t, borderRadius: m.r }],
+      { duration: 560, easing: EASE_IO, fill: 'forwards' }).finished;
+    // back to card size, content visible, then settle into its slot
+    fly.getAnimations().forEach((a) => a.cancel());
+    inner.style.display = '';
+    Object.assign(fly.style, px(b), { borderRadius: '', boxShadow: '', transform: 'translateY(-46px) scale(1.07)' });
+    inner.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, fill: 'forwards' });
+    await fly.animate(
+      [{ transform: 'translateY(-46px) scale(1.07)' }, { transform: `rotate(${b.a}rad)` }],
+      { duration: 380, easing: EASE, fill: 'forwards' }).finished;
     card.style.visibility = '';
     state.hiddenCard = null;
     fly.remove();
@@ -500,6 +564,7 @@
 
   function showCase(p) {
     renderCase(p);
+    bandH = 0;
     caseEl.hidden = false;
     caseEl.scrollTop = 0;
     observe(caseEl);
@@ -569,6 +634,7 @@
     const opener = state.opener;
     Object.assign(state, { open: null, card: null, opener: null, pushed: false, busy: false });
     A.frozen = false; A.last = 0;
+    wake();
     if (opener && opener.isConnected) opener.focus({ preventScroll: true });
   }
 
@@ -585,9 +651,10 @@
     const lb = t.closest('[data-lb]');
     if (lb) openLightbox(lb);
   });
+  let bandH = 0;
   caseEl.addEventListener('scroll', () => {
-    const band = $('.case-band', caseEl);
-    caseEl.classList.toggle('bar-solid', !!band && caseEl.scrollTop > band.offsetHeight - 80);
+    if (!bandH) { const band = $('.case-band', caseEl); bandH = band ? band.offsetHeight : 0; }
+    caseEl.classList.toggle('bar-solid', caseEl.scrollTop > bandH - 80);
   }, { passive: true });
   caseEl.addEventListener('keydown', (e) => {
     if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.frame[data-lb]')) { e.preventDefault(); openLightbox(e.target); }
@@ -611,7 +678,7 @@
     const it = lbItems[lbIndex];
     const media = it.dataset.video
       ? `<video src="${esc(it.dataset.lb)}" controls autoplay playsinline></video>`
-      : `<img src="${esc(it.dataset.lb)}" alt="${esc(it.dataset.cap || '')}" />`;
+      : `<img src="${esc(largest(it.dataset.lb))}" alt="${esc(it.dataset.cap || '')}" decoding="async" />`;
     lb.innerHTML = `<div class="lb-bar"><span class="mono">${pad(lbIndex + 1)} / ${pad(lbItems.length)} · ${esc(it.dataset.cap || '')}</span><button type="button" data-lbx aria-label="Close viewer"><svg viewBox="0 0 16 16"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div>
       <div class="lb-stage">${media}</div>
       <div class="lb-nav">${lbItems.length > 1 ? `<button type="button" data-lbs="-1" aria-label="Previous">${ARROW_L}</button><button type="button" data-lbs="1" aria-label="Next">${ARROW}</button>` : ''}</div>`;
@@ -658,8 +725,12 @@
     toTop.classList.toggle('show', y > innerHeight * 0.8 && menu.hidden && lb.hidden);
     bar.style.strokeDashoffset = RING * (1 - Math.min(1, y / max));
   }
-  addEventListener('scroll', updateToTop, { passive: true });
-  caseEl.addEventListener('scroll', updateToTop, { passive: true });
+  let caseQueued = false;
+  caseEl.addEventListener('scroll', () => {
+    if (caseQueued) return;
+    caseQueued = true;
+    requestAnimationFrame(() => { caseQueued = false; updateToTop(); });
+  }, { passive: true });
   addEventListener('resize', updateToTop);
   new MutationObserver(updateToTop).observe(caseEl, { attributes: true, attributeFilter: ['hidden'] });
   burger.addEventListener('click', () => requestAnimationFrame(updateToTop));
@@ -674,28 +745,34 @@
   const heroWord = $('.hero-word');
   const heroName = $('.hero-name');
   const svcs = $$('.svc');
-  let fxQueued = false;
+  const shades = svcs.map((el) => el.appendChild(Object.assign(document.createElement('span'), { className: 'svc-shade' })));
+  const svcTops = [];
+  function measureSvcs() { svcs.forEach((el, i) => { svcTops[i] = parseFloat(getComputedStyle(el).top) || 0; }); }
   function scrollFx() {
-    fxQueued = false;
-    if (reduced.matches) return;
+    const fx = !reduced.matches && !touch.matches;
     const y = Math.min(scrollY, innerHeight * 1.2);
-    heroWord.style.translate = `0 ${(y * 0.16).toFixed(1)}px`;
-    heroName.style.translate = `0 ${(y * 0.07).toFixed(1)}px`;
-    const stacked = innerWidth > 600;
+    heroWord.style.translate = fx ? `0 ${(y * 0.16).toFixed(1)}px` : '';
+    heroName.style.translate = fx ? `0 ${(y * 0.07).toFixed(1)}px` : '';
+    const stacked = fx && innerWidth > 600;
     for (let i = 0; i < svcs.length - 1; i++) {
       let p = 0;
       if (stacked) {
         const r = svcs[i].getBoundingClientRect();
-        const n = svcs[i + 1].getBoundingClientRect();
-        p = Math.max(0, Math.min(1, (r.bottom - n.top) / r.height));
+        if (r.top <= svcTops[i] + 1) {
+          const n = svcs[i + 1].getBoundingClientRect();
+          p = Math.max(0, Math.min(1, (r.bottom - n.top) / r.height));
+        }
       }
       svcs[i].style.scale = p ? String(1 - 0.05 * p) : '';
-      svcs[i].style.filter = p ? `brightness(${1 - 0.07 * p})` : '';
+      shades[i].style.opacity = p ? String(0.08 * p) : '0';
     }
   }
-  addEventListener('scroll', () => { if (!fxQueued) { fxQueued = true; requestAnimationFrame(scrollFx); } }, { passive: true });
-  addEventListener('resize', scrollFx);
-  scrollFx();
+  let frameQueued = false;
+  function frame() { frameQueued = false; updateNav(); updateToTop(); scrollFx(); }
+  addEventListener('scroll', () => { if (!frameQueued) { frameQueued = true; requestAnimationFrame(frame); } }, { passive: true });
+  addEventListener('resize', () => { measureSvcs(); frame(); });
+  measureSvcs();
+  frame();
 
   observe(document);
 

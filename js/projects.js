@@ -75,7 +75,7 @@ const PROJECTS = [
     logoClass: 'logo-wide',
     mock: { kind: 'laptop-phone', desk: 'assets/shots/bitlane-desk.jpg', mob: 'assets/shots/bitlane-mob.jpg' },
     discipline: 'Web design · Front-end build · Brand system',
-    headline: ['Bitlane', 'Relocations'],
+    subtitle: 'Premium marketing website for a Kingston moving company',
     lede: 'A premium marketing website for a moving company based in Kingston, Ontario, serving the Greater Toronto Area, Eastern Ontario, Ottawa and Montreal. Dark, confident, and built to feel like a much bigger company than the brief.',
     live: { href: 'https://joelvarghese-hack.github.io/Bitlane-Website/', label: 'View live website' },
     meta: [
@@ -152,7 +152,7 @@ const PROJECTS = [
     logoClass: 'logo-tall logo-white',
     mock: { kind: 'laptop', desk: 'assets/shots/kingston-portal.jpg' },
     discipline: 'UX research · Information architecture',
-    headline: ['Grants', 'Management Portal'],
+    subtitle: 'Grants Management Portal',
     lede: 'The City of Kingston was managing multiple grant programs using a fragmented set of tools: email, Excel, Dropbox and Google Drive. This created systemic inefficiencies for staff and applicant organisations alike.',
     live: { href: 'kingston-grants-portal.html', label: 'View dashboard prototype' },
     meta: [
@@ -224,7 +224,7 @@ const PROJECTS = [
     logoClass: 'logo-wide logo-ink',
     mock: { kind: 'tablet', desk: 'assets/case-studies/kasador-audience.jpg' },
     discipline: 'Digital marketing plan',
-    headline: ['Kasador', 'Digital Marketing Plan'],
+    subtitle: 'Digital Marketing Plan',
     lede: 'Kasador is an emerging indie rock band from Kingston, Ontario. Under the Nova Solutions student agency, I developed a full digital marketing plan to help them convert rapid TikTok momentum into consistent engagement on Spotify, Instagram and at live shows.',
     meta: [
       ['Role', 'Marketing Strategist & Campaign Planner'],
@@ -288,7 +288,7 @@ const PROJECTS = [
     logoClass: 'logo-wide logo-plate',
     mock: { kind: 'two-phones', a: 'assets/case-studies/spwc-mothers-day.jpg', b: 'assets/case-studies/spwc-fundraiser.jpg' },
     discipline: 'Social media marketing plan · Spring Into Action',
-    headline: ['Sandy Pines', 'Wildlife Centre'],
+    subtitle: 'Social Media Marketing Plan · Spring Into Action',
     lede: 'A comprehensive social media marketing plan for Sandy Pines Wildlife Centre, a non-profit wildlife rehabilitation organisation in Kingston, Ontario. The existing presence suffered from inconsistent posting, outdated Facebook visuals and weak fundraising calls to action.',
     meta: [
       ['Role', 'Social Media Strategist & Content Planner'],
@@ -349,7 +349,7 @@ const PROJECTS = [
     logoClass: 'logo-mid logo-white',
     mock: { kind: 'laptop-phone', desk: 'assets/shots/aura-desk.jpg', mob: 'assets/shots/aura-mob.jpg' },
     discipline: 'Branding · Website design',
-    headline: ['Aura Films', 'Brand & Website'],
+    subtitle: 'Brand Identity & Website',
     lede: 'Aura Films is a photography and videography studio capturing weddings, portraits, maternity and engagement sessions. The studio needed a complete brand identity and a modern website to present its work professionally and turn visitors into booked clients.',
     live: { href: 'https://www.itsaurafilms.com', label: 'Visit website' },
     social: [{ href: 'https://www.instagram.com/aura.filmsca', label: 'Aura Films on Instagram', icon: 'assets/logo-instagram.svg' }],
@@ -420,7 +420,7 @@ const PROJECTS = [
     logoClass: 'logo-wide logo-white',
     mock: { kind: 'posters', a: 'assets/design-work/posters/poster-01.jpg', b: 'assets/design-work/posters/poster-03.jpg', c: 'assets/design-work/social-media/coolberg/coolberg-01.jpg' },
     discipline: 'Logos · Identities · Posters · Social · Thumbnails',
-    headline: ['Design', 'Work'],
+    subtitle: 'Logos, identities, posters, social and thumbnails',
     lede: 'The making side of the practice: logos, full identity systems, print, social creative and video thumbnails. Select any piece to view it full size.',
     meta: [
       ['Collections', '5'],
